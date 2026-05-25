@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "alpaca": {
+      "command": "C:\\Users\\macie\\.local\\bin\\alpaca-mcp-server.exe",
+      "args": ["--env-file", ".env"]
+    },
+    "openbb": {
+      "command": ".venv-openbb\\Scripts\\python.exe",
+      "args": ["openbb_wrapper.py"]
+    }
+  }
+}
