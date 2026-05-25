@@ -56,6 +56,7 @@ from alpaca.trading.requests import (
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from strategies.orb import Params  # noqa: E402
+from live.notify import notify  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
 UTC = ZoneInfo("UTC")
@@ -408,6 +409,33 @@ def _build_snapshot(tc: TradingClient, run: "RunState", watchlist: list[str],
     return snap
 
 
+def _send_eod_notification(tc: TradingClient, run: "RunState", watchlist: list[str], today: date) -> None:
+    """Best-effort end-of-session summary push. Never raises."""
+    try:
+        try:
+            final_eq = float(tc.get_account().equity)
+        except Exception:
+            final_eq = run.starting_equity
+        pnl = final_eq - run.starting_equity
+        submitted = [s for s in watchlist if run.states[s].entered and run.states[s].entry_order_id]
+        rejected = [s for s in watchlist if run.states[s].reject_reason]
+        lines = [
+            f"PnL: ${pnl:+,.2f}  (equity ${final_eq:,.2f})",
+            f"Entries submitted: {len(submitted)}" + (f" — {', '.join(submitted)}" if submitted else ""),
+        ]
+        if rejected:
+            lines.append(f"Rejected: {', '.join(rejected)}")
+        if run.halted:
+            lines.append("Note: NEW entries were halted today (loss cap or late start).")
+        notify(
+            "\n".join(lines),
+            title=f"ORB done ({today.isoformat()})",
+            tags=["checkered_flag"],
+        )
+    except Exception as e:
+        log.warning(f"EOD notification failed: {e}")
+
+
 def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                 watchlist: list[str], today: date, dry_run: bool,
                 skip_wait: bool = False) -> None:
@@ -427,6 +455,14 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
              f"OR ends={or_end_dt.strftime('%H:%M')}  "
              f"EOD flat={eod_dt.strftime('%H:%M')}  "
              f"close={close_dt.strftime('%H:%M')}")
+
+    # Phone notification: session is up. Sent once per run, before waiting for open.
+    notify(
+        f"Account ${run.starting_equity:,.0f}. Waiting for 09:30 ET market open. "
+        f"Watchlist: {', '.join(watchlist)}.",
+        title=f"ORB started ({today.isoformat()})",
+        tags=["green_circle"],
+    )
 
     # Optional tray icon + status window. Failures here never stop the trader.
     ui = None
@@ -462,9 +498,11 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
         if now >= eod_dt:
             log.info("EOD flat time reached. Flattening.")
             flatten_all(tc, watchlist, dry_run)
+            _send_eod_notification(tc, run, watchlist, today)
             return
         if now >= close_dt:
             log.info("Past market close. Exiting.")
+            _send_eod_notification(tc, run, watchlist, today)
             return
 
         # Daily-loss circuit breaker (halts NEW entries only)
@@ -593,6 +631,16 @@ def main() -> int:
     except Exception as e:
         log.exception(f"Unhandled error in run_session: {e}. Flattening before exit.")
         flatten_all(tc, watchlist, args.dry_run)
+        try:
+            notify(
+                f"Script crashed: {type(e).__name__}: {str(e)[:200]}\n"
+                f"Check logs at C:\\Users\\macie\\VSC\\Trading\\logs\\",
+                title=f"ORB CRASHED ({today.isoformat()})",
+                priority=5,
+                tags=["rotating_light"],
+            )
+        except Exception:
+            pass
         return 1
 
     log.info("Session complete.")
