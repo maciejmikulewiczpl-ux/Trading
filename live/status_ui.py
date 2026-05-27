@@ -190,14 +190,28 @@ class StatusController:
             return
         try:
             self._root.deiconify()
+            # Windows 11: a process not in the foreground can't legally raise
+            # itself above other windows. A brief topmost flash bypasses this
+            # — set topmost, force focus, then clear topmost on next idle so
+            # the user can still layer other windows over us afterwards.
+            self._root.attributes("-topmost", True)
             self._root.lift()
             self._root.focus_force()
+            self._root.after(300, self._clear_topmost)
             if self._refresh_after_id is None:
                 self._refresh()
         except Exception as e:
             log.warning(f"Show window failed: {e}")
 
+    def _clear_topmost(self) -> None:
+        try:
+            if self._root is not None and self._root.state() == "normal":
+                self._root.attributes("-topmost", False)
+        except Exception:
+            pass
+
     def _hide_window(self) -> None:
+        log.info("Status UI: hide requested (WM_DELETE_WINDOW or programmatic).")
         if self._root is None:
             return
         try:
@@ -208,8 +222,8 @@ class StatusController:
                 except Exception:
                     pass
                 self._refresh_after_id = None
-        except Exception:
-            pass
+        except Exception as e:
+            log.warning(f"_hide_window: withdraw failed: {e}")
 
     def _refresh(self) -> None:
         if self._root is None or self._text_widget is None:
