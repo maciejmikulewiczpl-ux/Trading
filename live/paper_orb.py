@@ -105,6 +105,11 @@ class SymbolState:
     exit_price: Optional[float] = None
     exit_reason: Optional[str] = None  # "target", "stop", or "EOD"
     realized_pnl: Optional[float] = None
+    # Slippage tracking (Tier-1 #2): theoretical entry = last close at breakout;
+    # actual entry = parent order's filled_avg_price. Logged once on first
+    # observation in poll_exits.
+    entry_estimate: Optional[float] = None
+    entry_slippage_logged: bool = False
 
 
 @dataclass
@@ -496,13 +501,16 @@ def _status_str(s) -> str:
 
 
 def poll_exits(tc: TradingClient, run: RunState) -> None:
-    """For each entered symbol, check if a bracket leg has filled and notify once.
+    """For each entered symbol, check the parent + bracket legs:
 
-    Pure read-only: never modifies orders/positions, only updates exit_notified.
-    Swallows all errors — notifications are decoration, not load-bearing.
+    - On first observed entry fill: log slippage (actual - theoretical) once.
+    - On first observed leg fill: log exit slippage AND push the ntfy.
+
+    Pure read-only: never modifies orders/positions, only updates flags.
+    Swallows all errors — notifications and logs are decoration.
     """
     for sym, st in run.states.items():
-        if not (st.entered and st.entry_order_id) or st.exit_notified or st.reject_reason:
+        if not (st.entered and st.entry_order_id) or st.reject_reason:
             continue
         if str(st.entry_order_id).startswith("dryrun-"):
             continue
@@ -514,6 +522,25 @@ def poll_exits(tc: TradingClient, run: RunState) -> None:
         entry_fill = getattr(parent, "filled_avg_price", None)
         if entry_fill is None:
             continue  # entry hasn't filled yet — wait
+        # ---- Entry slippage (once per symbol per session) ----
+        if not st.entry_slippage_logged and st.entry_estimate is not None:
+            try:
+                actual = float(entry_fill)
+                slip = actual - st.entry_estimate
+                qty = int(getattr(parent, "filled_qty", None) or st.shares or 0)
+                # For BUY entries, positive slip = paid more than expected (bad).
+                bps = (slip / st.entry_estimate * 10000) if st.entry_estimate else 0.0
+                log.info(
+                    f"SLIPPAGE entry {sym} BUY: theoretical ${st.entry_estimate:.4f} "
+                    f"actual ${actual:.4f} -> {slip:+.4f}/sh ({bps:+.2f} bps, "
+                    f"cost ${slip * qty:+.2f} on {qty} sh)"
+                )
+            except Exception as e:
+                log.debug(f"poll_exits: entry slippage log failed for {sym}: {e}")
+            st.entry_slippage_logged = True
+        # ---- Exit slippage + notify (once per symbol per session) ----
+        if st.exit_notified:
+            continue
         for leg in (getattr(parent, "legs", None) or []):
             if _status_str(getattr(leg, "status", "")) != "FILLED":
                 continue
@@ -525,6 +552,19 @@ def poll_exits(tc: TradingClient, run: RunState) -> None:
                 is_target = getattr(leg, "limit_price", None) is not None
                 reason = "target" if is_target else "stop"
                 pnl = (exit_fill - entry_px) * qty
+                # Slippage: actual exit price vs theoretical (limit for target,
+                # stop_price for stop). For SELL exits, positive slip = sold
+                # higher than expected (good); negative = sold lower (bad).
+                theoretical_exit = (st.target_price if is_target else st.stop_price)
+                if theoretical_exit is not None:
+                    slip = exit_fill - theoretical_exit
+                    bps = (slip / theoretical_exit * 10000) if theoretical_exit else 0.0
+                    log.info(
+                        f"SLIPPAGE exit {sym} {reason} SELL: "
+                        f"theoretical ${theoretical_exit:.4f} "
+                        f"actual ${exit_fill:.4f} -> {slip:+.4f}/sh "
+                        f"({bps:+.2f} bps, {slip * qty:+.2f} on {qty} sh)"
+                    )
                 notify(
                     f"{sym} {reason} @ ${exit_fill:.2f}  "
                     f"(entry ${entry_px:.2f}, qty {qty})  "
@@ -955,6 +995,7 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
             state.entered = True
             state.entry_order_id = oid
             state.entry_price = entry_estimate
+            state.entry_estimate = entry_estimate  # frozen for slippage comparison
             state.stop_price = stop
             state.target_price = target
             state.shares = qty
