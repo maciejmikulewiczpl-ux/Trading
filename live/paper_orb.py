@@ -412,17 +412,57 @@ def poll_exits(tc: TradingClient, run: RunState) -> None:
             break
 
 
+CLOSE_MAX_ATTEMPTS = 4
+CLOSE_RETRY_DELAY_SEC = 2.0
+CANCEL_PROPAGATION_DELAY_SEC = 1.5
+
+
+def _close_position_with_retry(tc: TradingClient, sym: str) -> bool:
+    """Call close_position with retries on the cancel-then-close race.
+
+    When EOD-flatten cancels bracket legs and immediately tries to close the
+    position, Alpaca may briefly report `insufficient qty available` because
+    the cancellations haven't propagated. Retry with a short delay until
+    Alpaca releases the held qty. Returns True on success.
+    """
+    for attempt in range(1, CLOSE_MAX_ATTEMPTS + 1):
+        try:
+            tc.close_position(sym)
+            if attempt > 1:
+                log.info(f"Close {sym} succeeded on attempt {attempt}")
+            return True
+        except APIError as e:
+            msg = str(e).lower()
+            is_race = "insufficient qty" in msg or '"available":"0"' in msg
+            if is_race and attempt < CLOSE_MAX_ATTEMPTS:
+                log.info(f"Close {sym} attempt {attempt}: held by pending cancels, "
+                         f"retrying in {CLOSE_RETRY_DELAY_SEC}s")
+                time_mod.sleep(CLOSE_RETRY_DELAY_SEC)
+                continue
+            log.warning(f"Close {sym} failed on attempt {attempt}: {e}")
+            return False
+        except Exception as e:
+            log.warning(f"Close {sym} unexpected error on attempt {attempt}: {e}")
+            return False
+    return False
+
+
 def flatten_all(tc: TradingClient, watchlist: list[str], dry_run: bool,
                 run: Optional[RunState] = None) -> None:
     """Cancel any open orders for our symbols, then market-close any open positions in them.
 
     If `run` is provided, push an ntfy exit notification per position closed
     (using the position's unrealized PnL just before close).
+
+    Handles the cancel-then-close race: after cancelling bracket legs, Alpaca
+    needs a moment to release the held qty. We sleep briefly, then use a
+    retry-with-backoff close to recover if `insufficient qty` is still seen.
     """
     try:
         open_orders = tc.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN, limit=500))
     except TypeError:
         open_orders = tc.get_orders(GetOrdersRequest(status=QueryOrderStatus.OPEN, limit=500))
+    cancelled_any = False
     for o in open_orders:
         if o.symbol not in watchlist:
             continue
@@ -430,8 +470,16 @@ def flatten_all(tc: TradingClient, watchlist: list[str], dry_run: bool,
         if not dry_run:
             try:
                 tc.cancel_order_by_id(o.id)
+                cancelled_any = True
             except APIError as e:
                 log.warning(f"Cancel {o.id} failed: {e}")
+
+    # Give Alpaca a moment to release qty held by cancelled bracket legs before
+    # we try to close the underlying positions.
+    if cancelled_any and not dry_run:
+        log.info(f"Waiting {CANCEL_PROPAGATION_DELAY_SEC}s for cancellations to propagate.")
+        time_mod.sleep(CANCEL_PROPAGATION_DELAY_SEC)
+
     try:
         positions = tc.get_all_positions()
     except APIError as e:
@@ -457,10 +505,7 @@ def flatten_all(tc: TradingClient, watchlist: list[str], dry_run: bool,
                     log.warning(f"EOD exit notification failed for {p.symbol}: {e}")
                 st.exit_notified = True
         if not dry_run:
-            try:
-                tc.close_position(p.symbol)
-            except APIError as e:
-                log.warning(f"Close {p.symbol} failed: {e}")
+            _close_position_with_retry(tc, p.symbol)
 
 
 # ---------- Windows sleep prevention ----------
