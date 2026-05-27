@@ -63,6 +63,10 @@ UTC = ZoneInfo("UTC")
 
 # === Hard-coded guardrails (intentionally not configurable via CLI) ===
 WATCHLIST_DEFAULT = ["SPY", "QQQ", "AAPL", "NVDA", "TSLA"]
+# Note: move_stop_to_be_at_r is intentionally left unset. The backtest A/B
+# in backtest/compare_be_lift.py showed BE-lift at +0.5R and +1.0R both
+# UNDERPERFORM no-lift on this universe (avg_R drops, total PnL drops 33-36%).
+# Lifting the stop catches trades that would have finished positive at EOD.
 PARAMS = Params(or_minutes=15, target_r=2.0,
                 risk_per_trade=100.0, max_position_dollars=10_000.0)
 DAILY_LOSS_CAP = 500.0   # absolute dollars; halts NEW entries after this much realized loss
