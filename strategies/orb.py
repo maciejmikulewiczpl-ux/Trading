@@ -38,6 +38,9 @@ class Params:
     max_position_dollars: Optional[float] = None  # absolute cap; if set, combines with pct cap
     move_stop_to_be_at_r: Optional[float] = None  # e.g. 1.0 = lift stop to entry once +1R reached
     eod_flat: time = EOD_FLAT_TIME
+    # No new entries after this time-of-day (existing trades still ride to eod_flat).
+    # ORB breakouts after the first ~90 min of the session have weaker follow-through.
+    no_entry_after_time: Optional[time] = None
 
 
 @dataclass(frozen=True)
@@ -99,6 +102,15 @@ def simulate_day(
     post_or = bars[bars.index >= or_end]
     if post_or.empty:
         return None
+
+    # Time-of-day entry cutoff: ignore breakouts after this time.
+    if p.no_entry_after_time is not None:
+        cutoff_dt = pd.Timestamp.combine(
+            session_date.date(), p.no_entry_after_time
+        ).tz_localize(tz)
+        post_or = post_or[post_or.index <= cutoff_dt]
+        if post_or.empty:
+            return None
 
     breakout_idx = None
     for ts, row in post_or.iterrows():

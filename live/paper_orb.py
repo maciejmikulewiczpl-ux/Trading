@@ -67,8 +67,14 @@ WATCHLIST_DEFAULT = ["SPY", "QQQ", "AAPL", "NVDA", "TSLA"]
 # in backtest/compare_be_lift.py showed BE-lift at +0.5R and +1.0R both
 # UNDERPERFORM no-lift on this universe (avg_R drops, total PnL drops 33-36%).
 # Lifting the stop catches trades that would have finished positive at EOD.
+#
+# no_entry_after_time=11:30 ET: backtest/compare_cutoff.py shows this more
+# than doubles PnL (+111% vs no cutoff) and cuts max-DD by ~$1,225 on the
+# 180-day window. 11:00 ET scored higher in backtest but smells like a local
+# optimum; 11:30 is the more robust choice.
 PARAMS = Params(or_minutes=15, target_r=2.0,
-                risk_per_trade=100.0, max_position_dollars=10_000.0)
+                risk_per_trade=100.0, max_position_dollars=10_000.0,
+                no_entry_after_time=time(11, 30))
 DAILY_LOSS_CAP = 500.0   # absolute dollars; halts NEW entries after this much realized loss
 MIN_RISK_PER_SHARE = 0.05
 MAX_RISK_PER_SHARE = 10.00
@@ -897,6 +903,26 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
             log.info("Past market close. Exiting.")
             _send_eod_notification(tc, run, watchlist, today)
             return
+
+        # Time-of-day entry cutoff (halts NEW entries only; existing trades ride)
+        if (not run.halted and PARAMS.no_entry_after_time is not None
+                and now.time() >= PARAMS.no_entry_after_time):
+            cutoff_str = PARAMS.no_entry_after_time.strftime("%H:%M")
+            log.info(f"Past no-entry cutoff {cutoff_str} ET; halting new entries.")
+            run.halted = True
+            run.halt_reason = f"cutoff ({cutoff_str} ET)"
+            if ui is not None:
+                ui.set_state("warning")
+            try:
+                notify(
+                    f"Past {cutoff_str} ET no-entry cutoff. NEW entries halted; "
+                    f"existing positions ride their brackets to EOD-flat at 15:55 ET.",
+                    title="ORB cutoff halt",
+                    priority=3,
+                    tags=["alarm_clock"],
+                )
+            except Exception as e:
+                log.warning(f"Cutoff notification failed: {e}")
 
         # Daily-loss circuit breaker (halts NEW entries only)
         if not run.halted:
