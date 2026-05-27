@@ -95,6 +95,7 @@ class SymbolState:
     shares: Optional[int] = None
     last_close: Optional[float] = None
     reject_reason: Optional[str] = None
+    exit_notified: bool = False
 
 
 @dataclass
@@ -159,7 +160,8 @@ def preflight(tc: TradingClient, today: date) -> bool:
         log.error(f"Account is blocked (trading_blocked={acct.trading_blocked}, "
                   f"account_blocked={acct.account_blocked}). Aborting.")
         return False
-    if str(acct.status).upper() != "ACTIVE":
+    status_str = getattr(acct.status, "value", str(acct.status)).rsplit(".", 1)[-1].upper()
+    if status_str != "ACTIVE":
         log.error(f"Account status is {acct.status}, expected ACTIVE. Aborting.")
         return False
     return True
@@ -248,7 +250,8 @@ def realized_pnl_today(tc: TradingClient, today: date) -> float:
 
 
 # ---------- order submission ----------
-def submit_bracket(tc: TradingClient, sym: str, qty: int, stop: float, target: float,
+def submit_bracket(tc: TradingClient, sym: str, qty: int, entry_est: float,
+                   stop: float, target: float,
                    today: date, dry_run: bool) -> Optional[str]:
     coid = f"orb-{today.strftime('%Y%m%d')}-{sym}-entry"
     req = MarketOrderRequest(
@@ -268,14 +271,77 @@ def submit_bracket(tc: TradingClient, sym: str, qty: int, stop: float, target: f
     try:
         o = tc.submit_order(req)
         log.info(f"SUBMITTED {sym}: id={o.id} status={o.status} coid={coid}")
+        try:
+            notify(
+                f"BUY {qty} {sym} @ ~${entry_est:.2f}  "
+                f"stop ${stop:.2f}  target ${target:.2f}  "
+                f"risk ${(entry_est - stop) * qty:.0f}",
+                title=f"ORB entry: {sym}",
+                tags=["chart_with_upwards_trend"],
+            )
+        except Exception as e:
+            log.warning(f"Entry notification failed: {e}")
         return str(o.id)
     except APIError as e:
         log.error(f"{sym} submission FAILED: {e}")
         return None
 
 
-def flatten_all(tc: TradingClient, watchlist: list[str], dry_run: bool) -> None:
-    """Cancel any open orders for our symbols, then market-close any open positions in them."""
+def _status_str(s) -> str:
+    """Normalize an alpaca-py enum or string to its bare upper-case name (e.g. 'FILLED')."""
+    return getattr(s, "value", str(s)).rsplit(".", 1)[-1].upper()
+
+
+def poll_exits(tc: TradingClient, run: RunState) -> None:
+    """For each entered symbol, check if a bracket leg has filled and notify once.
+
+    Pure read-only: never modifies orders/positions, only updates exit_notified.
+    Swallows all errors — notifications are decoration, not load-bearing.
+    """
+    for sym, st in run.states.items():
+        if not (st.entered and st.entry_order_id) or st.exit_notified or st.reject_reason:
+            continue
+        if str(st.entry_order_id).startswith("dryrun-"):
+            continue
+        try:
+            parent = tc.get_order_by_id(st.entry_order_id)
+        except Exception as e:
+            log.debug(f"poll_exits: get_order_by_id({sym}) failed: {e}")
+            continue
+        entry_fill = getattr(parent, "filled_avg_price", None)
+        if entry_fill is None:
+            continue  # entry hasn't filled yet — wait
+        for leg in (getattr(parent, "legs", None) or []):
+            if _status_str(getattr(leg, "status", "")) != "FILLED":
+                continue
+            try:
+                exit_fill = float(leg.filled_avg_price)
+                entry_px = float(entry_fill)
+                qty = int(getattr(leg, "filled_qty", None) or st.shares or 0)
+                # Take-profit leg has a limit_price; stop-loss has stop_price.
+                is_target = getattr(leg, "limit_price", None) is not None
+                reason = "target" if is_target else "stop"
+                pnl = (exit_fill - entry_px) * qty
+                notify(
+                    f"{sym} {reason} @ ${exit_fill:.2f}  "
+                    f"(entry ${entry_px:.2f}, qty {qty})  "
+                    f"PnL ${pnl:+,.0f}",
+                    title=f"ORB exit: {sym} {reason}",
+                    tags=["dart"] if is_target else ["octagonal_sign"],
+                )
+            except Exception as e:
+                log.warning(f"poll_exits: notify failed for {sym}: {e}")
+            st.exit_notified = True
+            break
+
+
+def flatten_all(tc: TradingClient, watchlist: list[str], dry_run: bool,
+                run: Optional[RunState] = None) -> None:
+    """Cancel any open orders for our symbols, then market-close any open positions in them.
+
+    If `run` is provided, push an ntfy exit notification per position closed
+    (using the position's unrealized PnL just before close).
+    """
     try:
         open_orders = tc.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN, limit=500))
     except TypeError:
@@ -298,6 +364,21 @@ def flatten_all(tc: TradingClient, watchlist: list[str], dry_run: bool) -> None:
         if p.symbol not in watchlist:
             continue
         log.info(f"EOD close: position {p.symbol} qty={p.qty} mv=${p.market_value}")
+        if run is not None:
+            st = run.states.get(p.symbol)
+            if st is not None and not st.exit_notified:
+                try:
+                    pnl = float(getattr(p, "unrealized_pl", 0) or 0)
+                    px  = float(getattr(p, "current_price", 0) or 0)
+                    notify(
+                        f"{p.symbol} EOD-flat @ ${px:.2f}  qty {p.qty}  "
+                        f"PnL ${pnl:+,.0f}",
+                        title=f"ORB exit: {p.symbol} EOD",
+                        tags=["checkered_flag"],
+                    )
+                except Exception as e:
+                    log.warning(f"EOD exit notification failed for {p.symbol}: {e}")
+                st.exit_notified = True
         if not dry_run:
             try:
                 tc.close_position(p.symbol)
@@ -497,7 +578,7 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
         now = datetime.now(ET)
         if now >= eod_dt:
             log.info("EOD flat time reached. Flattening.")
-            flatten_all(tc, watchlist, dry_run)
+            flatten_all(tc, watchlist, dry_run, run=run)
             _send_eod_notification(tc, run, watchlist, today)
             return
         if now >= close_dt:
@@ -513,6 +594,12 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                 run.halted = True
                 if ui is not None:
                     ui.set_state("halted")
+
+        # Push per-trade exit notifications when target/stop legs fill (best-effort).
+        try:
+            poll_exits(tc, run)
+        except Exception as e:
+            log.warning(f"poll_exits cycle failed: {e}")
 
         try:
             bars = fetch_today_bars(dc, watchlist, today)
@@ -572,7 +659,7 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                 state.reject_reason = reason
                 continue
 
-            oid = submit_bracket(tc, sym, qty, stop, target, today, dry_run)
+            oid = submit_bracket(tc, sym, qty, entry_estimate, stop, target, today, dry_run)
             state.entered = True
             state.entry_order_id = oid
             state.entry_price = entry_estimate
