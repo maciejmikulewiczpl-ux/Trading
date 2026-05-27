@@ -103,6 +103,7 @@ class RunState:
     states: dict[str, SymbolState] = field(default_factory=dict)
     halted: bool = False
     starting_equity: float = 0.0
+    or_lock_notified: bool = False
 
 
 # ---------- env / clients ----------
@@ -270,6 +271,18 @@ def sync_existing_orders_today(tc: TradingClient, run: RunState, today: date) ->
             resumed += 1
     if resumed:
         log.info(f"Resumed {resumed} entry state(s) from existing orders today.")
+        resumed_syms = [s for s, st in run.states.items() if st.entered and st.entry_order_id]
+        try:
+            notify(
+                f"Recovered {resumed} in-flight position(s) on restart: "
+                f"{', '.join(resumed_syms)}.\n"
+                f"Existing brackets continue server-side; EOD-flat at 15:55 ET unchanged.",
+                title="ORB recovered after restart",
+                priority=4,
+                tags=["arrows_counterclockwise"],
+            )
+        except Exception as e:
+            log.warning(f"Recovery notification failed: {e}")
 
 
 # ---------- bars ----------
@@ -695,6 +708,17 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
         run.halted = True
         if ui is not None:
             ui.set_state("warning")
+        try:
+            notify(
+                f"Started {late_by_min} min after OR window closed "
+                f"(threshold {LATE_START_CUTOFF_MINUTES}m). "
+                f"NEW entries halted for today; existing positions still EOD-flatten at 15:55 ET.",
+                title="ORB late-start halt",
+                priority=4,
+                tags=["warning"],
+            )
+        except Exception as e:
+            log.warning(f"Late-start notification failed: {e}")
 
     while True:
         now = datetime.now(ET)
@@ -716,6 +740,16 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                 run.halted = True
                 if ui is not None:
                     ui.set_state("halted")
+                try:
+                    notify(
+                        f"Daily loss cap hit: realized PnL ${pnl:+,.2f} (cap ${DAILY_LOSS_CAP:,.0f}).\n"
+                        f"NEW entries halted; existing positions ride their brackets.",
+                        title="ORB loss-cap halt",
+                        priority=5,
+                        tags=["octagonal_sign"],
+                    )
+                except Exception as e:
+                    log.warning(f"Loss-cap notification failed: {e}")
 
         # Push per-trade exit notifications when target/stop legs fill (best-effort).
         try:
@@ -779,6 +813,15 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                 log.warning(f"{sym} REJECTED: {reason}")
                 state.entered = True  # don't keep retrying a rejected setup
                 state.reject_reason = reason
+                try:
+                    notify(
+                        f"{sym} breakout REJECTED: {reason}\n"
+                        f"entry~${entry_estimate:.2f}  stop ${stop:.2f}  target ${target:.2f}",
+                        title=f"ORB rejected: {sym}",
+                        tags=["no_entry"],
+                    )
+                except Exception as e:
+                    log.warning(f"Reject notification failed: {e}")
                 continue
 
             oid = submit_bracket(tc, sym, qty, entry_estimate, stop, target, today, dry_run)
@@ -789,6 +832,31 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
             state.target_price = target
             state.shares = qty
             state.last_close = last_close
+
+        # One-time OR-locked summary push (after the OR window has closed and
+        # at least one symbol has locked).
+        if (not run.or_lock_notified
+                and now >= or_end_dt
+                and any(s.or_locked for s in run.states.values())):
+            run.or_lock_notified = True
+            try:
+                lines = []
+                for sym in watchlist:
+                    s = run.states[sym]
+                    if s.or_locked and s.or_high is not None and s.or_low is not None:
+                        rng = s.or_high - s.or_low
+                        lines.append(f"{sym}: ${s.or_low:.2f} – ${s.or_high:.2f}  (range ${rng:.2f})")
+                    else:
+                        lines.append(f"{sym}: no OR data")
+                halt_note = "  (NEW entries halted)" if run.halted else ""
+                notify(
+                    "Opening range locked. Watching for breakouts above OR-high"
+                    f"{halt_note}.\n\n" + "\n".join(lines),
+                    title=f"ORB OR locked ({today.isoformat()})",
+                    tags=["lock"],
+                )
+            except Exception as e:
+                log.warning(f"OR-lock notification failed: {e}")
 
         time_mod.sleep(POLL_SECONDS)
 
