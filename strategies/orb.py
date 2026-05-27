@@ -41,6 +41,11 @@ class Params:
     # No new entries after this time-of-day (existing trades still ride to eod_flat).
     # ORB breakouts after the first ~90 min of the session have weaker follow-through.
     no_entry_after_time: Optional[time] = None
+    # Stop buffer below OR_low as a fraction of the OR range. 0.0 = no buffer
+    # (stop is exactly OR_low, current default). 0.10 = stop is 10% of the
+    # OR range below OR_low — reduces "death by liquidity sweep" at the exact
+    # round number every retail trader is watching.
+    stop_offset_pct: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -126,7 +131,8 @@ def simulate_day(
 
     entry_ts = after_breakout.index[0]
     entry_price = float(after_breakout.iloc[0]["open"])
-    stop_price = or_low
+    or_range = or_high - or_low
+    stop_price = or_low - p.stop_offset_pct * or_range
     target_price = entry_price + p.target_r * (entry_price - stop_price)
 
     shares = size_shares(entry_price, stop_price, equity, p)
