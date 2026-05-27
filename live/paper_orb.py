@@ -167,6 +167,83 @@ def preflight(tc: TradingClient, today: date) -> bool:
     return True
 
 
+def smoke_test(tc: TradingClient, dc: StockHistoricalDataClient, today: date) -> int:
+    """Validate everything except wait-for-open and the trading-day gate.
+
+    Designed to be run any time (including overnight or on holidays) to catch
+    bugs that would only surface at the 06:15 PDT live fire. Returns 0 on
+    pass, 1 on any hard fail. Notifications and status-UI import are soft
+    checks that warn but don't fail the run.
+    """
+    ok = True
+    log.info("=" * 56)
+    log.info("Smoke test: account / data / notifications / status_ui")
+    log.info("=" * 56)
+
+    acct = None
+    try:
+        acct = tc.get_account()
+        log.info(f"Account {acct.account_number} status={acct.status} "
+                 f"equity=${acct.equity} cash=${acct.cash}")
+        if acct.trading_blocked or acct.account_blocked or acct.transfers_blocked:
+            log.error("FAIL  account is blocked")
+            ok = False
+        status_str = getattr(acct.status, "value", str(acct.status)).rsplit(".", 1)[-1].upper()
+        if status_str != "ACTIVE":
+            log.error(f"FAIL  account status is {acct.status}, expected ACTIVE")
+            ok = False
+        else:
+            log.info("PASS  account ACTIVE, no blocks")
+    except Exception as e:
+        log.error(f"FAIL  account check raised: {e}")
+        ok = False
+
+    try:
+        is_open = is_today_a_trading_day(tc, today)
+        if is_open:
+            log.info(f"PASS  calendar: {today} is a trading day")
+        else:
+            log.info(f"INFO  {today} is not a trading day (live runner would exit 0)")
+    except Exception as e:
+        log.error(f"FAIL  calendar lookup raised: {e}")
+        ok = False
+
+    try:
+        bars = fetch_today_bars(dc, ["SPY"], today)
+        log.info(f"PASS  data feed reachable (SPY bars returned: {len(bars)})")
+    except Exception as e:
+        log.error(f"FAIL  bar fetch raised: {e}")
+        ok = False
+
+    try:
+        eq = f"${acct.equity}" if acct is not None else "?"
+        sent = notify(
+            f"Smoke test push from ORB runner.\n"
+            f"Account {eq}, today {today.isoformat()}.\n"
+            "If you see this, notifications are wired up.",
+            title="ORB smoke test",
+            tags=["test_tube"],
+        )
+        if sent:
+            log.info("PASS  ntfy push accepted")
+        else:
+            log.warning("WARN  ntfy not configured (NTFY_TOPIC unset?) — push not sent")
+    except Exception as e:
+        log.warning(f"WARN  ntfy push raised: {e}")
+
+    try:
+        from live.status_ui import _AVAILABLE  # noqa: F401
+        from live import status_ui  # noqa: F401
+        log.info(f"PASS  status_ui imports (pystray available: {_AVAILABLE})")
+    except Exception as e:
+        log.warning(f"WARN  status_ui import failed: {e}")
+
+    log.info("=" * 56)
+    log.info(f"Smoke test result: {'PASS' if ok else 'FAIL'}")
+    log.info("=" * 56)
+    return 0 if ok else 1
+
+
 def sync_existing_orders_today(tc: TradingClient, run: RunState, today: date) -> None:
     """Find any orb-* orders already submitted today and mark those symbols as entered."""
     today_start = datetime.combine(today, time(0, 0, tzinfo=ET))
@@ -680,6 +757,9 @@ def main() -> int:
     ap.add_argument("--ignore-clock", action="store_true",
                     help="TESTING: skip the 'market open today' check and the wait-for-9:30 step. "
                          "Use ONLY with --dry-run to exercise the loop on a closed day.")
+    ap.add_argument("--preflight-only", action="store_true",
+                    help="Run smoke test (account, data feed, ntfy, imports) and exit. "
+                         "Safe to run any time, including overnight or on holidays.")
     args = ap.parse_args()
     if args.ignore_clock and not args.dry_run:
         print("Refusing to run with --ignore-clock without --dry-run.", file=sys.stderr)
@@ -701,6 +781,9 @@ def main() -> int:
         return 1
 
     today = datetime.now(ET).date()
+    if args.preflight_only:
+        return smoke_test(tc, dc, today)
+
     if args.ignore_clock:
         log.warning("--ignore-clock set: skipping market-open pre-flight (TESTING MODE)")
         acct = tc.get_account()
