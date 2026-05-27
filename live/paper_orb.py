@@ -230,9 +230,20 @@ def smoke_test(tc: TradingClient, dc: StockHistoricalDataClient, today: date) ->
         log.error(f"FAIL  calendar lookup raised: {e}")
         ok = False
 
+    # Use a 7-day lookback rather than fetch_today_bars: smoke test runs
+    # pre-market (06:05 PDT) and Alpaca rejects when end < start.
     try:
-        bars = fetch_today_bars(dc, ["SPY"], today)
-        log.info(f"PASS  data feed reachable (SPY bars returned: {len(bars)})")
+        end_et = datetime.now(ET)
+        start_et = end_et - timedelta(days=7)
+        req = StockBarsRequest(
+            symbol_or_symbols=["SPY"],
+            timeframe=TimeFrame.Minute,
+            start=start_et.astimezone(UTC),
+            end=end_et.astimezone(UTC),
+            feed=DataFeed.IEX,
+        )
+        bars = dc.get_stock_bars(req).df
+        log.info(f"PASS  data feed reachable (SPY bars in last 7 days: {len(bars)})")
     except Exception as e:
         log.error(f"FAIL  bar fetch raised: {e}")
         ok = False
