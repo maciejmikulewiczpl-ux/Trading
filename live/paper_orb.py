@@ -96,12 +96,18 @@ class SymbolState:
     last_close: Optional[float] = None
     reject_reason: Optional[str] = None
     exit_notified: bool = False
+    # Populated when a bracket leg fills or EOD-flatten closes the position
+    exited: bool = False
+    exit_price: Optional[float] = None
+    exit_reason: Optional[str] = None  # "target", "stop", or "EOD"
+    realized_pnl: Optional[float] = None
 
 
 @dataclass
 class RunState:
     states: dict[str, SymbolState] = field(default_factory=dict)
     halted: bool = False
+    halt_reason: Optional[str] = None  # "late-start", "loss-cap", or None when not halted
     starting_equity: float = 0.0
     or_lock_notified: bool = False
 
@@ -246,17 +252,31 @@ def smoke_test(tc: TradingClient, dc: StockHistoricalDataClient, today: date) ->
 
 
 def sync_existing_orders_today(tc: TradingClient, run: RunState, today: date) -> None:
-    """Find any orb-* orders already submitted today and mark those symbols as entered."""
+    """Find any orb-* orders submitted today and rehydrate state from them.
+
+    Pulls entry fill price, share count, stop/target levels, and exit status
+    (if a bracket leg has filled) so the UI shows realistic data on restart
+    instead of just "ENTERED" with no numbers.
+    """
     today_start = datetime.combine(today, time(0, 0, tzinfo=ET))
-    req = GetOrdersRequest(
-        status=QueryOrderStatus.ALL,
-        after=today_start.astimezone(UTC),
-        limit=500,
-    )
+    # alpaca-py supports `nested=True` to embed bracket legs; fall back if not.
+    try:
+        req = GetOrdersRequest(
+            status=QueryOrderStatus.ALL,
+            after=today_start.astimezone(UTC),
+            limit=500,
+            nested=True,
+        )
+    except TypeError:
+        req = GetOrdersRequest(
+            status=QueryOrderStatus.ALL,
+            after=today_start.astimezone(UTC),
+            limit=500,
+        )
     try:
         orders = tc.get_orders(filter=req)
     except TypeError:
-        orders = tc.get_orders(req)  # SDK signature variants
+        orders = tc.get_orders(req)
     coid_prefix = f"orb-{today.strftime('%Y%m%d')}-"
     resumed = 0
     for o in orders:
@@ -265,24 +285,113 @@ def sync_existing_orders_today(tc: TradingClient, run: RunState, today: date) ->
         if not o.client_order_id.startswith(coid_prefix):
             continue
         sym = o.symbol
-        if sym in run.states:
-            run.states[sym].entered = True
-            run.states[sym].entry_order_id = str(o.id)
-            resumed += 1
+        if sym not in run.states:
+            continue
+        st = run.states[sym]
+        st.entered = True
+        st.entry_order_id = str(o.id)
+        # Entry fill details (so the UI shows real entry prices, not blanks)
+        entry_fill = getattr(o, "filled_avg_price", None)
+        if entry_fill is not None:
+            try:
+                st.entry_price = float(entry_fill)
+            except Exception:
+                pass
+        filled_qty = getattr(o, "filled_qty", None)
+        if filled_qty is not None:
+            try:
+                st.shares = int(float(filled_qty))
+            except Exception:
+                pass
+        # Bracket legs: capture stop/target levels and detect already-filled exits
+        for leg in (getattr(o, "legs", None) or []):
+            limit_px = getattr(leg, "limit_price", None)
+            stop_px = getattr(leg, "stop_price", None)
+            is_target = limit_px is not None
+            try:
+                if is_target and st.target_price is None and limit_px is not None:
+                    st.target_price = float(limit_px)
+                if (not is_target) and stop_px is not None and st.stop_price is None:
+                    st.stop_price = float(stop_px)
+            except Exception:
+                pass
+            leg_status = _status_str(getattr(leg, "status", ""))
+            if leg_status == "FILLED" and not st.exited:
+                exit_fill = getattr(leg, "filled_avg_price", None)
+                if exit_fill is not None and st.entry_price is not None:
+                    try:
+                        epx = float(exit_fill)
+                        exit_qty_raw = getattr(leg, "filled_qty", None)
+                        qty = int(float(exit_qty_raw)) if exit_qty_raw else (st.shares or 0)
+                        st.exited = True
+                        st.exit_price = epx
+                        st.exit_reason = "target" if is_target else "stop"
+                        st.realized_pnl = (epx - st.entry_price) * qty
+                        st.exit_notified = True  # poll_exits already missed this fill
+                    except Exception:
+                        pass
+        resumed += 1
     if resumed:
-        log.info(f"Resumed {resumed} entry state(s) from existing orders today.")
-        resumed_syms = [s for s, st in run.states.items() if st.entered and st.entry_order_id]
+        resumed_syms = [s for s, sx in run.states.items()
+                        if sx.entered and sx.entry_order_id]
+        exited_syms = [s for s, sx in run.states.items() if sx.exited]
+        log.info(f"Resumed {resumed} entry state(s) from existing orders today "
+                 f"(of which exited: {len(exited_syms)}).")
         try:
+            parts = [f"Recovered {resumed} in-flight position(s): {', '.join(resumed_syms)}."]
+            if exited_syms:
+                parts.append(f"Already exited: {', '.join(exited_syms)}.")
+            parts.append("Existing brackets continue server-side; "
+                         "EOD-flat at 15:55 ET unchanged.")
             notify(
-                f"Recovered {resumed} in-flight position(s) on restart: "
-                f"{', '.join(resumed_syms)}.\n"
-                f"Existing brackets continue server-side; EOD-flat at 15:55 ET unchanged.",
+                "\n".join(parts),
                 title="ORB recovered after restart",
                 priority=4,
                 tags=["arrows_counterclockwise"],
             )
         except Exception as e:
             log.warning(f"Recovery notification failed: {e}")
+
+
+def prebuild_or_if_late(dc: StockHistoricalDataClient, run: RunState,
+                       watchlist: list[str], today: date,
+                       or_end_dt: datetime) -> None:
+    """If we start after the OR window closes, fetch today's bars and lock OR
+    levels from them now — instead of waiting for the first main-loop iteration.
+
+    No-op if now < or_end_dt. Safe to call even when bars haven't materialized
+    (e.g., the market hasn't opened or it's a closed day).
+    """
+    if datetime.now(ET) < or_end_dt:
+        return
+    try:
+        bars = fetch_today_bars(dc, watchlist, today)
+    except Exception as e:
+        log.warning(f"prebuild_or: bar fetch failed: {e}")
+        return
+    if bars.empty:
+        log.info("prebuild_or: no bars for today; skipping (closed day or pre-open).")
+        return
+    symbols_in_data = set(bars.index.get_level_values(0).unique())
+    locked = 0
+    for sym in watchlist:
+        if sym not in symbols_in_data:
+            continue
+        state = run.states[sym]
+        if state.or_locked:
+            continue
+        sym_bars = bars.xs(sym, level=0)
+        or_bars = sym_bars[sym_bars.index < or_end_dt]
+        if or_bars.empty:
+            continue
+        state.or_high = float(or_bars["high"].max())
+        state.or_low = float(or_bars["low"].min())
+        state.or_locked = True
+        locked += 1
+        log.info(f"{sym} OR pre-locked from history: "
+                 f"high=${state.or_high:.2f} low=${state.or_low:.2f}")
+    if locked:
+        log.info(f"prebuild_or: locked {locked}/{len(watchlist)} symbols from history.")
 
 
 # ---------- bars ----------
@@ -595,6 +704,7 @@ def _build_snapshot(tc: TradingClient, run: "RunState", watchlist: list[str],
     snap = {
         "phase": _phase_for(now, open_dt, or_end_dt, eod_dt),
         "halted": run.halted,
+        "halt_reason": run.halt_reason,
         "last_update": now.strftime("%H:%M:%S %Z"),
         "symbols": {},
     }
@@ -606,7 +716,11 @@ def _build_snapshot(tc: TradingClient, run: "RunState", watchlist: list[str],
         pass
     for sym in watchlist:
         st = run.states[sym]
-        if st.entered and st.entry_order_id and not st.reject_reason:
+        if st.exited and st.exit_price is not None:
+            pnl_str = (f" PnL ${st.realized_pnl:+,.0f}"
+                       if st.realized_pnl is not None else "")
+            status = f"EXITED {st.exit_reason} @ ${st.exit_price:.2f}{pnl_str}"
+        elif st.entered and st.entry_order_id and not st.reject_reason:
             status = "ENTERED (bracket live on Alpaca)"
         elif st.entered and st.reject_reason:
             status = f"skipped ({st.reject_reason[:18]})"
@@ -618,9 +732,11 @@ def _build_snapshot(tc: TradingClient, run: "RunState", watchlist: list[str],
             status = "building OR..."
         snap["symbols"][sym] = {
             "or_high": st.or_high, "or_low": st.or_low, "or_locked": st.or_locked,
-            "entered": st.entered, "status": status,
+            "entered": st.entered, "exited": st.exited, "status": status,
             "entry_price": st.entry_price, "stop_price": st.stop_price,
             "target_price": st.target_price, "shares": st.shares,
+            "exit_price": st.exit_price, "exit_reason": st.exit_reason,
+            "realized_pnl": st.realized_pnl,
         }
     return snap
 
@@ -667,6 +783,11 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
     eod_dt = combine_et(today, EOD_FLAT_TIME)
     close_dt = combine_et(today, RTH_CLOSE)
 
+    # If we're starting after the OR window has already closed (restart or
+    # late fire), lock OR levels from today's historical bars now so the UI
+    # shows them immediately.
+    prebuild_or_if_late(dc, run, watchlist, today, or_end_dt)
+
     log.info(f"Today: open={open_dt.strftime('%H:%M %Z')}  "
              f"OR ends={or_end_dt.strftime('%H:%M')}  "
              f"EOD flat={eod_dt.strftime('%H:%M')}  "
@@ -706,6 +827,7 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                     f"{LATE_START_CUTOFF_MINUTES} min). Halting NEW entries for today. "
                     f"Will still EOD-flatten any positions that already exist.")
         run.halted = True
+        run.halt_reason = f"late-start (+{late_by_min}m)"
         if ui is not None:
             ui.set_state("warning")
         try:
@@ -738,6 +860,7 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
             if pnl <= -DAILY_LOSS_CAP:
                 log.warning(f"Daily loss cap hit: realized PnL ${pnl:+,.2f}. Halting new entries.")
                 run.halted = True
+                run.halt_reason = f"loss-cap (${pnl:+,.0f})"
                 if ui is not None:
                     ui.set_state("halted")
                 try:

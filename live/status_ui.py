@@ -267,9 +267,12 @@ class StatusController:
         pnl = snap.get('day_pnl')
         if pnl is not None:
             out.append(f"Day PnL  : ${pnl:+,.2f}")
-        out.append(f"Halted   : {snap.get('halted', False)}  "
-                   f"({snap.get('halt_reason', '')})" if snap.get('halted') else
-                   f"Halted   : {snap.get('halted', False)}")
+        halted = snap.get('halted', False)
+        halt_reason = snap.get('halt_reason') or ""
+        if halted and halt_reason:
+            out.append(f"Halted   : True  ({halt_reason})")
+        else:
+            out.append(f"Halted   : {halted}")
         last_update = snap.get('last_update')
         if last_update:
             out.append(f"Last poll: {last_update}")
@@ -281,9 +284,25 @@ class StatusController:
             orl = f"${st['or_low']:.2f}"  if st.get('or_low')  is not None else "    -   "
             status = st.get('status', '?')
             out.append(f"{sym:<7}{orh:>10}{orl:>10}  {status:<28}")
+            # Sub-line: show entry/stop/target if we know them. For exited
+            # positions, also show the exit price + reason.
             if st.get('entry_price') is not None:
-                out.append(f"         entry ${st['entry_price']:.2f}  "
-                           f"stop ${st['stop_price']:.2f}  "
-                           f"target ${st['target_price']:.2f}  "
-                           f"qty {st.get('shares', '?')}")
+                ep = st['entry_price']
+                sp = st.get('stop_price')
+                tp = st.get('target_price')
+                qty = st.get('shares', '?')
+                parts = [f"         entry ${ep:.2f}"]
+                if sp is not None:
+                    parts.append(f"stop ${sp:.2f}")
+                if tp is not None:
+                    parts.append(f"target ${tp:.2f}")
+                parts.append(f"qty {qty}")
+                out.append("  ".join(parts))
+                if st.get('exited') and st.get('exit_price') is not None:
+                    exit_price = st['exit_price']
+                    exit_reason = st.get('exit_reason') or "?"
+                    rp = st.get('realized_pnl')
+                    pnl_str = f"  PnL ${rp:+,.0f}" if rp is not None else ""
+                    out.append(f"         exit  ${exit_price:.2f}  "
+                               f"({exit_reason}){pnl_str}")
         return "\n".join(out)
