@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Get-Date*)",
+      "PowerShell(Get-Process *)",
+      "PowerShell(Get-ScheduledTask*)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(& \"C:\\Users\\macie\\VSC\\Trading\\.venv\\Scripts\\python.exe\" \"C:\\Users\\macie\\VSC\\Trading\\live\\paper_orb.py\" --preflight-only)",
+      "PowerShell(& \"C:\\Users\\macie\\VSC\\Trading\\.venv\\Scripts\\python.exe\" \"C:\\Users\\macie\\VSC\\Trading\\scripts\\smoke_status_ui.py\")",
+      "mcp__alpaca__get_all_positions",
+      "mcp__alpaca__get_orders",
+      "mcp__alpaca__get_account_info",
+      "mcp__alpaca__get_clock"
+    ]
+  }
+}
