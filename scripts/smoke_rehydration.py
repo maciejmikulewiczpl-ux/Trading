@@ -21,6 +21,7 @@ from live.paper_orb import (
     WATCHLIST_DEFAULT,
     build_clients,
     combine_et,
+    detect_untracked_positions,
     load_env,
     prebuild_or_if_late,
     sync_existing_orders_today,
@@ -39,6 +40,7 @@ def main() -> int:
     print("=" * 70)
 
     sync_existing_orders_today(tc, run, today)
+    detect_untracked_positions(tc, run, watchlist)
 
     open_dt = combine_et(today, RTH_OPEN)
     or_end_dt = open_dt + timedelta(minutes=PARAMS.or_minutes)

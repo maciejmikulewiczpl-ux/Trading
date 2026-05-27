@@ -392,6 +392,73 @@ def sync_existing_orders_today(tc: TradingClient, run: RunState, today: date) ->
             log.warning(f"Recovery notification failed: {e}")
 
 
+def detect_untracked_positions(tc: TradingClient, run: RunState,
+                               watchlist: list[str]) -> None:
+    """Flag any open watchlist position that sync_existing_orders_today didn't
+    rehydrate as 'entered'. These are positions held across sessions (or by
+    manual action) that the script doesn't own.
+
+    Effect: mark the symbol entered with reject_reason='untracked' so the
+    breakout loop skips it (prevents double-entry). Push a priority-5 ntfy
+    so the user can close manually if undesired.
+
+    Call AFTER sync_existing_orders_today and BEFORE prebuild_or_if_late.
+    Origin: 2026-05-27 morning — yesterday's OPG sell on the stranded QQQ
+    position expired without filling, leaving QQQ naked while the script
+    was unaware (different coid prefix).
+    """
+    try:
+        positions = tc.get_all_positions()
+    except Exception as e:
+        log.warning(f"detect_untracked_positions: get_all_positions failed: {e}")
+        return
+
+    untracked = []
+    for p in positions:
+        if p.symbol not in watchlist:
+            continue
+        st = run.states.get(p.symbol)
+        if st is None or st.entered:
+            continue  # already rehydrated from today's orders
+        try:
+            qty = int(float(p.qty))
+            entry = float(p.avg_entry_price)
+            current = float(getattr(p, "current_price", 0) or 0)
+            unrealized = float(getattr(p, "unrealized_pl", 0) or 0)
+        except Exception:
+            qty, entry, current, unrealized = 0, 0.0, 0.0, 0.0
+        st.entered = True
+        st.entry_price = entry
+        st.shares = qty
+        st.reject_reason = "untracked"
+        untracked.append((p.symbol, qty, entry, current, unrealized))
+        log.warning(
+            f"UNTRACKED position {p.symbol}: qty={qty} avg_entry=${entry:.2f} "
+            f"current=${current:.2f} unrealized=${unrealized:+.2f}. "
+            f"Marked entered to block double-entry; close manually if undesired."
+        )
+
+    if untracked:
+        try:
+            lines = ["Open positions the script does NOT own:", ""]
+            for sym, qty, entry, current, unrl in untracked:
+                lines.append(
+                    f"  {sym}: {qty} sh @ ${entry:.2f}  now ${current:.2f}  "
+                    f"unrealized ${unrl:+,.0f}"
+                )
+            lines.append("")
+            lines.append("Script will NOT enter new orders in these symbols today. "
+                         "Close manually via Alpaca if undesired.")
+            notify(
+                "\n".join(lines),
+                title=f"ORB untracked positions ({datetime.now(ET).date().isoformat()})",
+                priority=5,
+                tags=["warning"],
+            )
+        except Exception as e:
+            log.warning(f"Untracked positions notification failed: {e}")
+
+
 def prebuild_or_if_late(dc: StockHistoricalDataClient, run: RunState,
                        watchlist: list[str], today: date,
                        or_end_dt: datetime) -> None:
@@ -960,6 +1027,10 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
     run.starting_equity = float(acct.equity)
 
     sync_existing_orders_today(tc, run, today)
+    # Catch cross-day or manual positions that don't have today's orb-* coid.
+    # Blocks double-entry on already-held symbols (e.g., yesterday's QQQ that
+    # rode overnight because the OPG sell expired).
+    detect_untracked_positions(tc, run, watchlist)
 
     # Short-side regime gate: decided once, pre-open, from prior SPY closes.
     run.shorts_enabled, run.regime_note = compute_short_regime(dc, today)
