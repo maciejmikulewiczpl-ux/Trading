@@ -23,6 +23,7 @@ __pycache__/
 # Runtime artifacts
 logs/
 backtest/orb_trades.csv
+backtest/.bars_cache_*.pkl
 openbb-out.json
 
 # Editor / IDE

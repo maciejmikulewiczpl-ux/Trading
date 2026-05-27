@@ -17,7 +17,7 @@ from alpaca.trading.requests import GetCalendarRequest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from strategies.orb import Params, Trade, simulate_day  # noqa: E402
+from strategies.orb import Params, Trade, simulate_session  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
 UTC = ZoneInfo("UTC")
@@ -90,8 +90,7 @@ def run_backtest(
             day_bars = day_bars[(t >= time(9, 30)) & (t < time(16, 0))]
             if day_bars.empty:
                 continue
-            trade = simulate_day(day_bars, symbol, day_equity, params)
-            if trade is not None:
+            for trade in simulate_session(day_bars, symbol, day_equity, params):
                 trades.append(trade)
                 day_trades.append(trade)
         for tr in day_trades:
@@ -99,8 +98,13 @@ def run_backtest(
     return trades, running_equity
 
 
-def load_all_bars(verbose: bool = True):
-    """Fetch trading-day calendar and 1-min IEX bars for the watchlist. Returns (bars, days)."""
+def load_all_bars(verbose: bool = True, lookback_days: int | None = None):
+    """Fetch trading-day calendar and 1-min IEX bars for the watchlist. Returns (bars, days).
+
+    lookback_days overrides the module default (LOOKBACK_DAYS) — pass a large
+    value for multi-year backtests. IEX minute history on the basic tier starts
+    ~2021-01; older windows return empty.
+    """
     load_env()
     api_key = os.environ.get("ALPACA_API_KEY")
     secret = os.environ.get("ALPACA_SECRET_KEY")
@@ -110,10 +114,11 @@ def load_all_bars(verbose: bool = True):
     data_client = StockHistoricalDataClient(api_key, secret)
     trading_client = TradingClient(api_key, secret, paper=True)
 
+    days_back = LOOKBACK_DAYS if lookback_days is None else lookback_days
     end = datetime.now(tz=ET)
-    start = end - timedelta(days=LOOKBACK_DAYS)
+    start = end - timedelta(days=days_back)
     if verbose:
-        print(f"Window   : {start.date()} -> {end.date()}  ({LOOKBACK_DAYS} calendar days)")
+        print(f"Window   : {start.date()} -> {end.date()}  ({days_back} calendar days)")
 
     trading_days = get_trading_days(trading_client, start, end)
     if verbose:
@@ -146,6 +151,7 @@ def main() -> int:
     df = pd.DataFrame([{
         "symbol": t.symbol,
         "date": t.date.date(),
+        "side": t.side,
         "or_high": round(t.or_high, 2),
         "or_low": round(t.or_low, 2),
         "entry_time": t.entry_time.tz_convert(ET).strftime("%Y-%m-%d %H:%M"),
@@ -172,6 +178,17 @@ def main() -> int:
         avg_r = grp["pnl_r"].mean()
         tot = grp["pnl_dollars"].sum()
         print(f"{sym:<7} {n:>4} {wins/n*100:>5.1f}% {avg_r:>+7.2f} {tot:>+12,.2f}")
+
+    # Per-side breakdown (only interesting once shorts are enabled).
+    if df["side"].nunique() > 1:
+        print()
+        print(f"{'side':<7} {'n':>4} {'win%':>6} {'avg_R':>7} {'pnl $':>12}")
+        for side, grp in df.groupby("side"):
+            n = len(grp)
+            wins = (grp["pnl_r"] > 0).sum()
+            avg_r = grp["pnl_r"].mean()
+            tot = grp["pnl_dollars"].sum()
+            print(f"{side:<7} {n:>4} {wins/n*100:>5.1f}% {avg_r:>+7.2f} {tot:>+12,.2f}")
 
     n = len(df)
     wins = (df["pnl_r"] > 0).sum()

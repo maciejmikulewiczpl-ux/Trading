@@ -7,8 +7,11 @@ Run on a US-equity trading day, ideally a few minutes before 9:30 ET.
   2. Wait for 9:30 ET. From 9:30 -> 9:30+OR_MINUTES, build the opening range
      (high/low of 1-min bars) per symbol.
   3. From 9:45 ET onward, on every newly-closed 1-min bar, check each not-yet-entered
-     symbol: if bar close > OR high, submit a BRACKET market buy with take_profit at
-     +target_R and stop_loss at OR low.
+     symbol:
+       - LONG: bar close > OR high -> BRACKET market BUY, take_profit +target_R, stop OR low.
+       - SHORT: bar close < OR low -> BRACKET market SELL, take_profit -target_R, stop OR high.
+         Shorts are regime-gated (only when SPY is in a confirmed downtrend) and limited
+         to SHORT_SYMBOLS (index/large-cap; TSLA excluded). See compute_short_regime.
   4. At 15:55 ET, cancel any unfilled bracket legs and market-close remaining positions.
 
 Usage (PowerShell):
@@ -57,27 +60,31 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from strategies.orb import Params  # noqa: E402
 from live.notify import notify  # noqa: E402
+from live import config as orb_config  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
 UTC = ZoneInfo("UTC")
 
-# === Hard-coded guardrails (intentionally not configurable via CLI) ===
-WATCHLIST_DEFAULT = ["SPY", "QQQ", "AAPL", "NVDA", "TSLA"]
-# Note: move_stop_to_be_at_r is intentionally left unset. The backtest A/B
-# in backtest/compare_be_lift.py showed BE-lift at +0.5R and +1.0R both
-# UNDERPERFORM no-lift on this universe (avg_R drops, total PnL drops 33-36%).
-# Lifting the stop catches trades that would have finished positive at EOD.
-#
-# no_entry_after_time=11:30 ET: backtest/compare_cutoff.py shows this more
-# than doubles PnL (+111% vs no cutoff) and cuts max-DD by ~$1,225 on the
-# 180-day window. 11:00 ET scored higher in backtest but smells like a local
-# optimum; 11:30 is the more robust choice.
-PARAMS = Params(or_minutes=15, target_r=2.0,
-                risk_per_trade=100.0, max_position_dollars=10_000.0,
-                no_entry_after_time=time(11, 30))
-DAILY_LOSS_CAP = 500.0   # absolute dollars; halts NEW entries after this much realized loss
-MIN_RISK_PER_SHARE = 0.05
-MAX_RISK_PER_SHARE = 10.00
+# === Tunable parameters ===
+# Loaded from live/orb_config.json if present, else the validated defaults in
+# live/config.py (see each Setting.help there for the basis). Edit them via the
+# GUI: `python live/config_ui.py`. Changes apply on the NEXT session (a running
+# bot keeps the params it started with). When no config file exists these equal
+# the project's backtested defaults, so behavior is unchanged.
+_CFG = orb_config.load_config()
+WATCHLIST_DEFAULT = list(_CFG["watchlist"])
+PARAMS = orb_config.build_params(_CFG)
+DAILY_LOSS_CAP = float(_CFG["daily_loss_cap"])   # halts NEW entries after this much realized loss
+MIN_RISK_PER_SHARE = float(_CFG["min_risk_per_share"])
+MAX_RISK_PER_SHARE = float(_CFG["max_risk_per_share"])
+
+# Short side (regime-gated). See live/config.py for the validation basis.
+SHORT_ENABLED = bool(_CFG["short_enabled"])
+SHORT_SYMBOLS = set(_CFG["short_symbols"])
+REGIME_REF_SYMBOL = str(_CFG["regime_ref_symbol"])
+REGIME_SMA_WINDOW = int(_CFG["regime_sma_window"])
+REGIME_CONFIRM_DAYS = int(_CFG["regime_confirm_days"])
+
 LATE_START_CUTOFF_MINUTES = 10  # if script starts > N min after OR window closes, halt new entries
 POLL_SECONDS = 10
 RTH_OPEN = time(9, 30)
@@ -96,6 +103,7 @@ class SymbolState:
     or_low: Optional[float] = None
     or_locked: bool = False
     entered: bool = False
+    side: str = "long"  # "long" or "short" — set when a breakout is taken
     entry_order_id: Optional[str] = None
     last_processed_bar_ts: Optional[pd.Timestamp] = None
     # Trade details (set when we submit a bracket — purely for status display)
@@ -125,6 +133,8 @@ class RunState:
     halt_reason: Optional[str] = None  # "late-start", "loss-cap", or None when not halted
     starting_equity: float = 0.0
     or_lock_notified: bool = False
+    shorts_enabled: bool = False       # set once at session start from the regime gate
+    regime_note: str = ""              # human-readable explanation of the gate decision
 
 
 # ---------- env / clients ----------
@@ -316,6 +326,8 @@ def sync_existing_orders_today(tc: TradingClient, run: RunState, today: date) ->
         st = run.states[sym]
         st.entered = True
         st.entry_order_id = str(o.id)
+        # Recover direction from the parent order side (SELL = short).
+        st.side = "short" if _status_str(getattr(o, "side", "")) == "SELL" else "long"
         # Entry fill details (so the UI shows real entry prices, not blanks)
         entry_fill = getattr(o, "filled_avg_price", None)
         if entry_fill is not None:
@@ -352,7 +364,8 @@ def sync_existing_orders_today(tc: TradingClient, run: RunState, today: date) ->
                         st.exited = True
                         st.exit_price = epx
                         st.exit_reason = "target" if is_target else "stop"
-                        st.realized_pnl = (epx - st.entry_price) * qty
+                        st.realized_pnl = ((st.entry_price - epx) if st.side == "short"
+                                           else (epx - st.entry_price)) * qty
                         st.exit_notified = True  # poll_exits already missed this fill
                     except Exception:
                         pass
@@ -444,10 +457,59 @@ def fetch_today_bars(dc: StockHistoricalDataClient, symbols: list[str], today: d
     return bars
 
 
+# ---------- regime gate (short side) ----------
+def compute_short_regime(dc: StockHistoricalDataClient, today: date) -> tuple[bool, str]:
+    """Decide, pre-open, whether shorts are enabled today.
+
+    Bearish regime = SPY's daily close below its REGIME_SMA_WINDOW-day SMA for
+    REGIME_CONFIRM_DAYS consecutive sessions, using only sessions strictly
+    BEFORE today (no lookahead). Returns (shorts_enabled, human_note). Any
+    failure fails safe to shorts-OFF.
+    """
+    if not SHORT_ENABLED:
+        return False, "shorts OFF (SHORT_ENABLED=False)"
+    try:
+        end_et = datetime.combine(today, RTH_OPEN, tzinfo=ET)  # pre-open today
+        start_et = end_et - timedelta(days=REGIME_SMA_WINDOW * 3 + 30)
+        req = StockBarsRequest(
+            symbol_or_symbols=[REGIME_REF_SYMBOL],
+            timeframe=TimeFrame.Day,
+            start=start_et.astimezone(UTC),
+            end=end_et.astimezone(UTC),
+            feed=DataFeed.IEX,
+        )
+        df = dc.get_stock_bars(req).df
+        if df.empty:
+            return False, f"shorts OFF (no {REGIME_REF_SYMBOL} daily bars)"
+        closes = df.xs(REGIME_REF_SYMBOL, level=0)["close"] if isinstance(df.index, pd.MultiIndex) else df["close"]
+        closes = closes.astype(float)
+        # Drop any bar dated today or later (belt-and-braces against lookahead).
+        keep = [ts.tz_convert(ET).date() < today if getattr(ts, "tzinfo", None) else ts.date() < today
+                for ts in closes.index]
+        closes = closes[keep]
+        if len(closes) < REGIME_SMA_WINDOW + REGIME_CONFIRM_DAYS:
+            return False, f"shorts OFF (only {len(closes)} daily bars, need {REGIME_SMA_WINDOW + REGIME_CONFIRM_DAYS})"
+        sma = closes.rolling(REGIME_SMA_WINDOW).mean()
+        below = (closes < sma)
+        n_below = int(below.tail(REGIME_CONFIRM_DAYS).sum())
+        bearish = n_below == REGIME_CONFIRM_DAYS
+        note = (f"shorts {'ON' if bearish else 'OFF'}: {REGIME_REF_SYMBOL} "
+                f"{closes.iloc[-1]:.2f} vs SMA{REGIME_SMA_WINDOW} {sma.iloc[-1]:.2f}; "
+                f"{n_below}/{REGIME_CONFIRM_DAYS} latest closes below SMA "
+                f"(as of {closes.index[-1].date() if hasattr(closes.index[-1], 'date') else closes.index[-1]})")
+        return bearish, note
+    except Exception as e:
+        return False, f"shorts OFF (regime check failed: {e})"
+
+
 # ---------- sizing / guardrails ----------
 def size_position(entry: float, stop: float, equity: float) -> tuple[int, str]:
-    """Returns (shares, reason). shares==0 means reject; reason explains."""
-    risk_per_share = entry - stop
+    """Returns (shares, reason). shares==0 means reject; reason explains.
+
+    Direction-agnostic: risk per share is |entry - stop| (stop is below entry
+    for longs, above for shorts).
+    """
+    risk_per_share = abs(entry - stop)
     if risk_per_share < MIN_RISK_PER_SHARE:
         return 0, f"risk_per_share ${risk_per_share:.4f} < min ${MIN_RISK_PER_SHARE}"
     if risk_per_share > MAX_RISK_PER_SHARE:
@@ -476,13 +538,17 @@ def realized_pnl_today(tc: TradingClient, today: date) -> float:
 
 # ---------- order submission ----------
 def submit_bracket(tc: TradingClient, sym: str, qty: int, entry_est: float,
-                   stop: float, target: float,
+                   stop: float, target: float, side: OrderSide,
                    today: date, dry_run: bool) -> Optional[str]:
+    """Submit a bracket market order. For a long (BUY) the take-profit sits above
+    and stop below entry; for a short (SELL) Alpaca expects the opposite, which
+    is exactly how the caller computes target (< entry) and stop (> entry)."""
+    side_name = "BUY" if side == OrderSide.BUY else "SELL"
     coid = f"orb-{today.strftime('%Y%m%d')}-{sym}-entry"
     req = MarketOrderRequest(
         symbol=sym,
         qty=qty,
-        side=OrderSide.BUY,
+        side=side,
         time_in_force=TimeInForce.DAY,
         order_class=OrderClass.BRACKET,
         take_profit=TakeProfitRequest(limit_price=round(target, 2)),
@@ -490,19 +556,20 @@ def submit_bracket(tc: TradingClient, sym: str, qty: int, entry_est: float,
         client_order_id=coid,
     )
     if dry_run:
-        log.info(f"[DRY-RUN] WOULD SUBMIT bracket BUY {qty} {sym} "
+        log.info(f"[DRY-RUN] WOULD SUBMIT bracket {side_name} {qty} {sym} "
                  f"target=${target:.2f} stop=${stop:.2f} coid={coid}")
         return f"dryrun-{coid}"
     try:
         o = tc.submit_order(req)
-        log.info(f"SUBMITTED {sym}: id={o.id} status={o.status} coid={coid}")
+        log.info(f"SUBMITTED {sym} {side_name}: id={o.id} status={o.status} coid={coid}")
         try:
             notify(
-                f"BUY {qty} {sym} @ ~${entry_est:.2f}  "
+                f"{side_name} {qty} {sym} @ ~${entry_est:.2f}  "
                 f"stop ${stop:.2f}  target ${target:.2f}  "
-                f"risk ${(entry_est - stop) * qty:.0f}",
-                title=f"ORB entry: {sym}",
-                tags=["chart_with_upwards_trend"],
+                f"risk ${abs(entry_est - stop) * qty:.0f}",
+                title=f"ORB entry: {sym} ({side_name})",
+                tags=["chart_with_upwards_trend"] if side == OrderSide.BUY
+                     else ["chart_with_downwards_trend"],
             )
         except Exception as e:
             log.warning(f"Entry notification failed: {e}")
@@ -539,16 +606,19 @@ def poll_exits(tc: TradingClient, run: RunState) -> None:
         entry_fill = getattr(parent, "filled_avg_price", None)
         if entry_fill is None:
             continue  # entry hasn't filled yet — wait
+        is_short = st.side == "short"
+        entry_action = "SELL" if is_short else "BUY"   # how the position was OPENED
         # ---- Entry slippage (once per symbol per session) ----
         if not st.entry_slippage_logged and st.entry_estimate is not None:
             try:
                 actual = float(entry_fill)
                 slip = actual - st.entry_estimate
                 qty = int(getattr(parent, "filled_qty", None) or st.shares or 0)
-                # For BUY entries, positive slip = paid more than expected (bad).
+                # BUY entry: positive slip = paid more (bad). SELL (short) entry:
+                # positive slip = sold higher than expected (good).
                 bps = (slip / st.entry_estimate * 10000) if st.entry_estimate else 0.0
                 log.info(
-                    f"SLIPPAGE entry {sym} BUY: theoretical ${st.entry_estimate:.4f} "
+                    f"SLIPPAGE entry {sym} {entry_action}: theoretical ${st.entry_estimate:.4f} "
                     f"actual ${actual:.4f} -> {slip:+.4f}/sh ({bps:+.2f} bps, "
                     f"cost ${slip * qty:+.2f} on {qty} sh)"
                 )
@@ -568,16 +638,17 @@ def poll_exits(tc: TradingClient, run: RunState) -> None:
                 # Take-profit leg has a limit_price; stop-loss has stop_price.
                 is_target = getattr(leg, "limit_price", None) is not None
                 reason = "target" if is_target else "stop"
-                pnl = (exit_fill - entry_px) * qty
-                # Slippage: actual exit price vs theoretical (limit for target,
-                # stop_price for stop). For SELL exits, positive slip = sold
-                # higher than expected (good); negative = sold lower (bad).
+                # Direction-aware P&L: long profits when exit > entry; short
+                # profits when exit (buy-to-cover) < entry.
+                pnl = (entry_px - exit_fill) * qty if is_short else (exit_fill - entry_px) * qty
+                # Exit closes the position: a long exits via SELL, a short via BUY-to-cover.
+                exit_action = "BUY" if is_short else "SELL"
                 theoretical_exit = (st.target_price if is_target else st.stop_price)
                 if theoretical_exit is not None:
                     slip = exit_fill - theoretical_exit
                     bps = (slip / theoretical_exit * 10000) if theoretical_exit else 0.0
                     log.info(
-                        f"SLIPPAGE exit {sym} {reason} SELL: "
+                        f"SLIPPAGE exit {sym} {reason} {exit_action}: "
                         f"theoretical ${theoretical_exit:.4f} "
                         f"actual ${exit_fill:.4f} -> {slip:+.4f}/sh "
                         f"({bps:+.2f} bps, {slip * qty:+.2f} on {qty} sh)"
@@ -595,18 +666,46 @@ def poll_exits(tc: TradingClient, run: RunState) -> None:
             break
 
 
-CLOSE_MAX_ATTEMPTS = 4
-CLOSE_RETRY_DELAY_SEC = 2.0
-CANCEL_PROPAGATION_DELAY_SEC = 1.5
+# Closing a position requires the qty held by cancelled bracket legs to be
+# released first. Empirically that release can lag 15-20s+ after the cancel, so
+# the close budget must comfortably exceed it (the old 4x2s=8s budget was the
+# 2026-05-27 naked-AAPL bug: cancels released at +17s, every close had already
+# failed and the loop gave up silently).
+CLOSE_MAX_ATTEMPTS = 12          # ~ up to ~36s of close retries
+CLOSE_RETRY_DELAY_SEC = 3.0
+CANCEL_CONFIRM_TIMEOUT_SEC = 25.0   # poll until our open orders actually clear
+CANCEL_CONFIRM_POLL_SEC = 2.0
 
 
-def _close_position_with_retry(tc: TradingClient, sym: str) -> bool:
-    """Call close_position with retries on the cancel-then-close race.
+def _our_open_orders(tc: TradingClient, watchlist: list[str]) -> list:
+    """Open orders whose symbol is in our watchlist. Empty list on API error."""
+    try:
+        try:
+            oo = tc.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN, limit=500))
+        except TypeError:
+            oo = tc.get_orders(GetOrdersRequest(status=QueryOrderStatus.OPEN, limit=500))
+        return [o for o in oo if o.symbol in watchlist]
+    except Exception as e:
+        log.warning(f"Could not list open orders: {e}")
+        return []
 
-    When EOD-flatten cancels bracket legs and immediately tries to close the
-    position, Alpaca may briefly report `insufficient qty available` because
-    the cancellations haven't propagated. Retry with a short delay until
-    Alpaca releases the held qty. Returns True on success.
+
+def _our_positions(tc: TradingClient, watchlist: list[str]) -> list:
+    """Open positions whose symbol is in our watchlist. Empty list on API error."""
+    try:
+        return [p for p in tc.get_all_positions() if p.symbol in watchlist]
+    except Exception as e:
+        log.warning(f"get_all_positions failed: {e}")
+        return []
+
+
+def _close_position_with_retry(tc: TradingClient, sym: str, watchlist: list[str]) -> bool:
+    """close_position with a generous retry budget for the cancel-then-close race.
+
+    While bracket legs are being cancelled Alpaca reports `insufficient qty
+    available` until the held qty is released. On each race we also re-cancel
+    any lingering orders for this symbol (in case a leg cancel didn't take),
+    then wait and retry. Returns True only once Alpaca accepts the close.
     """
     for attempt in range(1, CLOSE_MAX_ATTEMPTS + 1):
         try:
@@ -616,10 +715,17 @@ def _close_position_with_retry(tc: TradingClient, sym: str) -> bool:
             return True
         except APIError as e:
             msg = str(e).lower()
-            is_race = "insufficient qty" in msg or '"available":"0"' in msg
+            is_race = ("insufficient qty" in msg or '"available":"0"' in msg
+                       or "held for orders" in msg)
             if is_race and attempt < CLOSE_MAX_ATTEMPTS:
-                log.info(f"Close {sym} attempt {attempt}: held by pending cancels, "
-                         f"retrying in {CLOSE_RETRY_DELAY_SEC}s")
+                # Re-cancel anything still holding this symbol's qty.
+                for o in _our_open_orders(tc, [sym]):
+                    try:
+                        tc.cancel_order_by_id(o.id)
+                    except Exception:
+                        pass
+                log.info(f"Close {sym} attempt {attempt}: qty still held by pending "
+                         f"cancels, retrying in {CLOSE_RETRY_DELAY_SEC}s")
                 time_mod.sleep(CLOSE_RETRY_DELAY_SEC)
                 continue
             log.warning(f"Close {sym} failed on attempt {attempt}: {e}")
@@ -632,45 +738,38 @@ def _close_position_with_retry(tc: TradingClient, sym: str) -> bool:
 
 def flatten_all(tc: TradingClient, watchlist: list[str], dry_run: bool,
                 run: Optional[RunState] = None) -> None:
-    """Cancel any open orders for our symbols, then market-close any open positions in them.
+    """Cancel open orders for our symbols, close any positions, then VERIFY flat.
 
-    If `run` is provided, push an ntfy exit notification per position closed
-    (using the position's unrealized PnL just before close).
-
-    Handles the cancel-then-close race: after cancelling bracket legs, Alpaca
-    needs a moment to release the held qty. We sleep briefly, then use a
-    retry-with-backoff close to recover if `insufficient qty` is still seen.
+    Order of operations matters: (1) cancel bracket legs, (2) poll until those
+    cancels actually clear so the held qty is released, (3) market-close each
+    position with a generous retry budget, (4) re-check positions and fire a
+    high-priority alert if anything is left open (a naked position with no stop
+    is the worst-case outcome — the user must know to intervene).
     """
-    try:
-        open_orders = tc.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN, limit=500))
-    except TypeError:
-        open_orders = tc.get_orders(GetOrdersRequest(status=QueryOrderStatus.OPEN, limit=500))
-    cancelled_any = False
-    for o in open_orders:
-        if o.symbol not in watchlist:
-            continue
+    # 1. Cancel all open orders for our symbols.
+    for o in _our_open_orders(tc, watchlist):
         log.info(f"EOD cancel: order {o.id} ({o.symbol} {o.side} qty={o.qty})")
         if not dry_run:
             try:
                 tc.cancel_order_by_id(o.id)
-                cancelled_any = True
             except APIError as e:
                 log.warning(f"Cancel {o.id} failed: {e}")
 
-    # Give Alpaca a moment to release qty held by cancelled bracket legs before
-    # we try to close the underlying positions.
-    if cancelled_any and not dry_run:
-        log.info(f"Waiting {CANCEL_PROPAGATION_DELAY_SEC}s for cancellations to propagate.")
-        time_mod.sleep(CANCEL_PROPAGATION_DELAY_SEC)
+    # 2. Poll until our open orders clear (qty released), up to a timeout.
+    if not dry_run:
+        deadline = time_mod.monotonic() + CANCEL_CONFIRM_TIMEOUT_SEC
+        while time_mod.monotonic() < deadline:
+            remaining = _our_open_orders(tc, watchlist)
+            if not remaining:
+                break
+            log.info(f"Waiting for {len(remaining)} order cancel(s) to clear...")
+            time_mod.sleep(CANCEL_CONFIRM_POLL_SEC)
+        else:
+            log.warning("Cancellations did not fully clear within "
+                        f"{CANCEL_CONFIRM_TIMEOUT_SEC}s; closing anyway (with retries).")
 
-    try:
-        positions = tc.get_all_positions()
-    except APIError as e:
-        log.warning(f"get_all_positions failed: {e}")
-        return
-    for p in positions:
-        if p.symbol not in watchlist:
-            continue
+    # 3. Close positions (notify once each), with generous retry.
+    for p in _our_positions(tc, watchlist):
         log.info(f"EOD close: position {p.symbol} qty={p.qty} mv=${p.market_value}")
         if run is not None:
             st = run.states.get(p.symbol)
@@ -688,7 +787,29 @@ def flatten_all(tc: TradingClient, watchlist: list[str], dry_run: bool,
                     log.warning(f"EOD exit notification failed for {p.symbol}: {e}")
                 st.exit_notified = True
         if not dry_run:
-            _close_position_with_retry(tc, p.symbol)
+            _close_position_with_retry(tc, p.symbol, watchlist)
+
+    # 4. VERIFY flat. A leftover position has no protective bracket (we cancelled
+    #    the legs) — alert loudly so the user can close it manually.
+    if not dry_run:
+        leftover = _our_positions(tc, watchlist)
+        if leftover:
+            desc = ", ".join(f"{p.symbol} {p.side} {p.qty}" for p in leftover)
+            log.error(f"EOD FLATTEN INCOMPLETE — still holding: {desc}. "
+                      f"These positions have NO stop attached (legs were cancelled).")
+            try:
+                notify(
+                    f"EOD flatten INCOMPLETE. Still holding: {desc}.\n"
+                    f"Protective brackets were cancelled — these positions are "
+                    f"UNHEDGED. Close them manually in Alpaca ASAP.",
+                    title="ORB EOD FLATTEN FAILED",
+                    priority=5,
+                    tags=["rotating_light"],
+                )
+            except Exception as e:
+                log.warning(f"Naked-position alert notification failed: {e}")
+        else:
+            log.info("EOD flatten verified: no open positions remain in watchlist.")
 
 
 # ---------- Windows sleep prevention ----------
@@ -780,9 +901,9 @@ def _build_snapshot(tc: TradingClient, run: "RunState", watchlist: list[str],
         if st.exited and st.exit_price is not None:
             pnl_str = (f" PnL ${st.realized_pnl:+,.0f}"
                        if st.realized_pnl is not None else "")
-            status = f"EXITED {st.exit_reason} @ ${st.exit_price:.2f}{pnl_str}"
+            status = f"EXITED {st.side} {st.exit_reason} @ ${st.exit_price:.2f}{pnl_str}"
         elif st.entered and st.entry_order_id and not st.reject_reason:
-            status = "ENTERED (bracket live on Alpaca)"
+            status = f"ENTERED {st.side} (bracket live on Alpaca)"
         elif st.entered and st.reject_reason:
             status = f"skipped ({st.reject_reason[:18]})"
         elif st.or_locked:
@@ -793,6 +914,7 @@ def _build_snapshot(tc: TradingClient, run: "RunState", watchlist: list[str],
             status = "building OR..."
         snap["symbols"][sym] = {
             "or_high": st.or_high, "or_low": st.or_low, "or_locked": st.or_locked,
+            "side": st.side,
             "entered": st.entered, "exited": st.exited, "status": status,
             "entry_price": st.entry_price, "stop_price": st.stop_price,
             "target_price": st.target_price, "shares": st.shares,
@@ -839,6 +961,12 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
 
     sync_existing_orders_today(tc, run, today)
 
+    # Short-side regime gate: decided once, pre-open, from prior SPY closes.
+    run.shorts_enabled, run.regime_note = compute_short_regime(dc, today)
+    log.info(f"Regime gate: {run.regime_note}")
+    if run.shorts_enabled:
+        log.info(f"Short-eligible symbols today: {sorted(SHORT_SYMBOLS & set(watchlist))}")
+
     open_dt = combine_et(today, RTH_OPEN)
     or_end_dt = open_dt + timedelta(minutes=PARAMS.or_minutes)
     eod_dt = combine_et(today, EOD_FLAT_TIME)
@@ -855,9 +983,11 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
              f"close={close_dt.strftime('%H:%M')}")
 
     # Phone notification: session is up. Sent once per run, before waiting for open.
+    shorts_line = (f"Shorts ON ({', '.join(sorted(SHORT_SYMBOLS & set(watchlist)))})"
+                   if run.shorts_enabled else "Shorts OFF (regime not bearish)")
     notify(
         f"Account ${run.starting_equity:,.0f}. Waiting for 09:30 ET market open. "
-        f"Watchlist: {', '.join(watchlist)}.",
+        f"Watchlist: {', '.join(watchlist)}.\n{shorts_line}.",
         title=f"ORB started ({today.isoformat()})",
         tags=["green_circle"],
     )
@@ -998,28 +1128,42 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                 continue
             state.last_processed_bar_ts = last_bar_ts
             last_close = float(post_or.iloc[-1]["close"])
+            state.last_close = last_close
 
-            if last_close <= state.or_high:
+            # Direction of breakout. Longs (close > OR_high) are always eligible.
+            # Shorts (close < OR_low) only for short-eligible names when today's
+            # regime gate is bearish (run.shorts_enabled). Stop/target mirror the
+            # backtest: long stop=OR_low/target above; short stop=OR_high/target below.
+            short_ok = run.shorts_enabled and sym in SHORT_SYMBOLS
+            entry_estimate = last_close
+            if last_close > state.or_high:
+                side, side_name = OrderSide.BUY, "long"
+                stop = state.or_low
+                target = entry_estimate + PARAMS.target_r * (entry_estimate - stop)
+                ref_label, ref_val, arrow = "OR_high", state.or_high, ">"
+            elif short_ok and last_close < state.or_low:
+                side, side_name = OrderSide.SELL, "short"
+                stop = state.or_high
+                target = entry_estimate - PARAMS.target_r * (stop - entry_estimate)
+                ref_label, ref_val, arrow = "OR_low", state.or_low, "<"
+            else:
                 continue
 
-            # Breakout. Use last_close as entry estimate (true fill will be next-bar market).
-            entry_estimate = last_close
-            stop = state.or_low
-            target = entry_estimate + PARAMS.target_r * (entry_estimate - stop)
             equity = float(tc.get_account().equity)
             qty, reason = size_position(entry_estimate, stop, equity)
 
-            log.info(f"BREAKOUT {sym}: close=${last_close:.2f} > OR_high=${state.or_high:.2f}  "
-                     f"-> entry~=${entry_estimate:.2f} stop=${stop:.2f} target=${target:.2f}  "
-                     f"qty={qty} (sizing: {reason})")
+            log.info(f"BREAKOUT {sym} {side_name.upper()}: close=${last_close:.2f} {arrow} "
+                     f"{ref_label}=${ref_val:.2f}  -> entry~=${entry_estimate:.2f} "
+                     f"stop=${stop:.2f} target=${target:.2f}  qty={qty} (sizing: {reason})")
 
             if qty == 0:
                 log.warning(f"{sym} REJECTED: {reason}")
                 state.entered = True  # don't keep retrying a rejected setup
+                state.side = side_name
                 state.reject_reason = reason
                 try:
                     notify(
-                        f"{sym} breakout REJECTED: {reason}\n"
+                        f"{sym} {side_name} breakout REJECTED: {reason}\n"
                         f"entry~${entry_estimate:.2f}  stop ${stop:.2f}  target ${target:.2f}",
                         title=f"ORB rejected: {sym}",
                         tags=["no_entry"],
@@ -1028,15 +1172,15 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                     log.warning(f"Reject notification failed: {e}")
                 continue
 
-            oid = submit_bracket(tc, sym, qty, entry_estimate, stop, target, today, dry_run)
+            oid = submit_bracket(tc, sym, qty, entry_estimate, stop, target, side, today, dry_run)
             state.entered = True
+            state.side = side_name
             state.entry_order_id = oid
             state.entry_price = entry_estimate
             state.entry_estimate = entry_estimate  # frozen for slippage comparison
             state.stop_price = stop
             state.target_price = target
             state.shares = qty
-            state.last_close = last_close
 
         # One-time OR-locked summary push (after the OR window has closed and
         # at least one symbol has locked).
@@ -1054,8 +1198,11 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                     else:
                         lines.append(f"{sym}: no OR data")
                 halt_note = "  (NEW entries halted)" if run.halted else ""
+                dir_note = ("long breakouts (OR-high) + short breakdowns (OR-low) on "
+                            f"{', '.join(sorted(SHORT_SYMBOLS & set(watchlist)))}"
+                            if run.shorts_enabled else "long breakouts above OR-high")
                 notify(
-                    "Opening range locked. Watching for breakouts above OR-high"
+                    f"Opening range locked. Watching for {dir_note}"
                     f"{halt_note}.\n\n" + "\n".join(lines),
                     title=f"ORB OR locked ({today.isoformat()})",
                     tags=["lock"],
@@ -1090,6 +1237,11 @@ def main() -> int:
     log.info(f"Params: or_min={PARAMS.or_minutes} target_r={PARAMS.target_r} "
              f"risk=${PARAMS.risk_per_trade} max_pos=${PARAMS.max_position_dollars} "
              f"loss_cap=${DAILY_LOSS_CAP}")
+    if SHORT_ENABLED:
+        log.info(f"Shorts: regime-gated (SPY < SMA{REGIME_SMA_WINDOW} x{REGIME_CONFIRM_DAYS} days), "
+                 f"symbols={sorted(SHORT_SYMBOLS)}, flips=0")
+    else:
+        log.info("Shorts: DISABLED (SHORT_ENABLED=False)")
 
     load_env()
     try:
