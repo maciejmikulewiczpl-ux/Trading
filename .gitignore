@@ -35,3 +35,6 @@ openbb-out.json
 # OS
 .DS_Store
 Thumbs.db
+
+# PEAD research event table (regenerable via backtest/run_pead.py)
+backtest/pead_events.csv
