@@ -745,8 +745,12 @@ CLOSE_MAX_ATTEMPTS = 12          # ~ up to ~36s of close retries
 CLOSE_RETRY_DELAY_SEC = 3.0
 CANCEL_CONFIRM_TIMEOUT_SEC = 25.0   # poll until our open orders actually clear
 CANCEL_CONFIRM_POLL_SEC = 2.0
-FLATTEN_VERIFY_TIMEOUT_SEC = 20.0   # poll until close MARKET ORDERS fill before alerting
-FLATTEN_VERIFY_POLL_SEC = 2.0
+# Poll until close MARKET ORDERS fill before alerting. On 2026-05-28 the close
+# orders queued behind leg-cancellations and didn't fill for ~29s, so the window
+# must be generous. EOD flatten runs at 15:55 ET (300s before the 16:00 close),
+# so 60s is safe headroom and still leaves time to react to a genuine failure.
+FLATTEN_VERIFY_TIMEOUT_SEC = 60.0
+FLATTEN_VERIFY_POLL_SEC = 3.0
 
 
 def _our_open_orders(tc: TradingClient, watchlist: list[str]) -> list:
