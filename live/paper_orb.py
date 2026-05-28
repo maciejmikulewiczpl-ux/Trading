@@ -77,6 +77,9 @@ PARAMS = orb_config.build_params(_CFG)
 DAILY_LOSS_CAP = float(_CFG["daily_loss_cap"])   # halts NEW entries after this much realized loss
 MIN_RISK_PER_SHARE = float(_CFG["min_risk_per_share"])
 MAX_RISK_PER_SHARE = float(_CFG["max_risk_per_share"])
+# Max simultaneously-open positions (broad-watchlist guardrail). 0 = unlimited.
+_mcp = int(_CFG.get("max_concurrent_positions", 0))
+MAX_CONCURRENT_POSITIONS = _mcp if _mcp > 0 else None
 
 # Short side (regime-gated). See live/config.py for the validation basis.
 SHORT_ENABLED = bool(_CFG["short_enabled"])
@@ -1219,6 +1222,23 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                 ref_label, ref_val, arrow = "OR_low", state.or_low, "<"
             else:
                 continue
+
+            # Concurrency cap: with a broad watchlist, many names break out near
+            # the open. Don't exceed MAX_CONCURRENT_POSITIONS open at once. When
+            # full, this breakout is skipped for the day (first-come, matching
+            # the greedy fill in backtest/universe_portfolio.py).
+            if MAX_CONCURRENT_POSITIONS is not None:
+                open_now = sum(
+                    1 for s in run.states.values()
+                    if s.entered and s.entry_order_id and not s.exited and not s.reject_reason
+                )
+                if open_now >= MAX_CONCURRENT_POSITIONS:
+                    log.info(f"{sym} {side_name} breakout SKIPPED: at concurrency cap "
+                             f"({open_now}/{MAX_CONCURRENT_POSITIONS} open).")
+                    state.entered = True
+                    state.side = side_name
+                    state.reject_reason = "cap full"
+                    continue
 
             equity = float(tc.get_account().equity)
             qty, reason = size_position(entry_estimate, stop, equity)

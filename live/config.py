@@ -38,10 +38,22 @@ SETTINGS: list[Setting] = [
     # ---- Universe ----
     Setting(
         "watchlist", "Watchlist (symbols)", "Universe", "csv",
-        ["SPY", "QQQ", "AAPL", "NVDA", "TSLA"],
-        "Symbols the bot trades for LONG breakouts. Comma-separated. These five "
-        "liquid US large-caps/ETFs are the universe every backtest in this "
-        "project was validated on.",
+        [
+            "SPY", "QQQ", "IWM", "DIA",
+            "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "AVGO", "ORCL",
+            "AMD", "NFLX", "ADBE", "CRM", "INTC", "CSCO", "QCOM", "TXN", "MU",
+            "JPM", "BAC", "WFC", "GS", "MS", "C", "V", "MA", "AXP",
+            "UNH", "JNJ", "LLY", "PFE", "MRK", "ABBV",
+            "WMT", "HD", "COST", "NKE", "MCD", "SBUX", "DIS", "KO", "PEP",
+            "XOM", "CVX", "CAT", "BA", "GE",
+            "PLTR", "COIN", "UBER", "BABA",
+        ],
+        "Symbols the bot trades for LONG breakouts. Comma-separated. This broad "
+        "55-name liquid universe replaced the original 5: universe_scan.py showed "
+        "the ORB edge is real and OOS-robust (+0.041 avg_R, positive in BOTH "
+        "halves) only when averaged over many names, and that per-name selection "
+        "is NOISE (first-half winners don't persist). So: trade broad, don't "
+        "cherry-pick. Pair with the concurrency cap so $100k isn't over-deployed.",
     ),
 
     # ---- Opening range / long entries ----
@@ -110,6 +122,15 @@ SETTINGS: list[Setting] = [
         minv=0.0, maxv=1000000.0,
     ),
     Setting(
+        "max_concurrent_positions", "Max concurrent positions", "Risk", "int", 8,
+        "Cap on how many positions may be open at once. With a broad 55-name "
+        "watchlist many breakouts fire near the open; this stops $100k from being "
+        "over-deployed. universe_portfolio.py: cap=5 had the best Sharpe (1.34), "
+        "cap 8-10 fits $100k cash (8x$10k=$80k). When full, further breakouts are "
+        "skipped for the day (first-come). 0 = unlimited.",
+        minv=0, maxv=100,
+    ),
+    Setting(
         "min_risk_per_share", "Min risk/share ($)", "Risk", "float", 0.05,
         "Reject a setup if entry-to-stop is tighter than this — too tight means "
         "oversized share counts and noise-driven stops.",
@@ -124,10 +145,12 @@ SETTINGS: list[Setting] = [
 
     # ---- Short side (regime-gated) ----
     Setting(
-        "short_enabled", "Enable shorts", "Shorts", "bool", True,
-        "Master switch for the short side. Shorts are REGIME-GATED (see below): a "
-        "naive always-on short LOSES out-of-sample (validate_short_oos.py). When "
-        "off, the bot is long-only.",
+        "short_enabled", "Enable shorts", "Shorts", "bool", False,
+        "Master switch for the short side. Shorts are REGIME-GATED: a naive "
+        "always-on short LOSES out-of-sample (validate_short_oos.py). STAGED OFF "
+        "as of the 55-name watchlist rollout — we change one big thing at a time: "
+        "validate that breadth (longs) helps live first, THEN re-enable shorts. "
+        "Flip back to true once the broad long-only config has live data.",
     ),
     Setting(
         "short_symbols", "Short-eligible symbols", "Shorts", "csv",
