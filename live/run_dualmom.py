@@ -242,6 +242,15 @@ def main() -> int:
                  f"(use --force to override)")
         return 0
 
+    # Safety: never place live dual-momentum orders in the shared ORB account.
+    # Live trading requires a dedicated DUALMOM_ALPACA_API_KEY (separate account).
+    if not args.dry_run and not dedicated:
+        log.error("REFUSING live orders: no dedicated DUALMOM_ALPACA_API_KEY set, so "
+                  "this would trade in the shared ORB account (whose EOD-flatten would "
+                  "then liquidate the holdings). Add the dedicated key to .env, or use "
+                  "--dry-run.")
+        return 2
+
     acct = tc.get_account()
     capital = min(float(acct.equity), DUALMOM_CAPITAL)
     log.info(f"Account equity ${float(acct.equity):,.0f}; sleeve capital ${capital:,.0f} "
