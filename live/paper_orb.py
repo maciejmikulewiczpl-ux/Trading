@@ -745,6 +745,8 @@ CLOSE_MAX_ATTEMPTS = 12          # ~ up to ~36s of close retries
 CLOSE_RETRY_DELAY_SEC = 3.0
 CANCEL_CONFIRM_TIMEOUT_SEC = 25.0   # poll until our open orders actually clear
 CANCEL_CONFIRM_POLL_SEC = 2.0
+FLATTEN_VERIFY_TIMEOUT_SEC = 20.0   # poll until close MARKET ORDERS fill before alerting
+FLATTEN_VERIFY_POLL_SEC = 2.0
 
 
 def _our_open_orders(tc: TradingClient, watchlist: list[str]) -> list:
@@ -859,10 +861,21 @@ def flatten_all(tc: TradingClient, watchlist: list[str], dry_run: bool,
         if not dry_run:
             _close_position_with_retry(tc, p.symbol, watchlist)
 
-    # 4. VERIFY flat. A leftover position has no protective bracket (we cancelled
-    #    the legs) — alert loudly so the user can close it manually.
+    # 4. VERIFY flat. close_position only SUBMITS a market sell; it doesn't wait
+    #    for the fill, so positions still show as held for a few seconds. Poll
+    #    until they clear before alerting — otherwise every busy EOD false-alarms
+    #    (observed 2026-05-28: ADBE/CRM/MSFT flagged "INCOMPLETE" but had filled
+    #    seconds later). Only a position still open AFTER the poll window is a
+    #    genuine naked-position emergency.
     if not dry_run:
         leftover = _our_positions(tc, watchlist)
+        if leftover:
+            deadline = time_mod.monotonic() + FLATTEN_VERIFY_TIMEOUT_SEC
+            while leftover and time_mod.monotonic() < deadline:
+                time_mod.sleep(FLATTEN_VERIFY_POLL_SEC)
+                leftover = _our_positions(tc, watchlist)
+                if leftover:
+                    log.info(f"Waiting for {len(leftover)} close order(s) to fill...")
         if leftover:
             desc = ", ".join(f"{p.symbol} {p.side} {p.qty}" for p in leftover)
             log.error(f"EOD FLATTEN INCOMPLETE — still holding: {desc}. "
