@@ -42,7 +42,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 from alpaca.common.exceptions import APIError
-from alpaca.data.enums import DataFeed
+from alpaca.data.enums import Adjustment, DataFeed
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
@@ -80,6 +80,9 @@ MAX_RISK_PER_SHARE = float(_CFG["max_risk_per_share"])
 # Max simultaneously-open positions (broad-watchlist guardrail). 0 = unlimited.
 _mcp = int(_CFG.get("max_concurrent_positions", 0))
 MAX_CONCURRENT_POSITIONS = _mcp if _mcp > 0 else None
+TREND_FILTER_ENABLED = bool(_CFG.get("trend_filter_enabled", True))
+TREND_SMA_DAYS = 200
+TREND_RET_DAYS = 20
 
 # Short side (regime-gated). See live/config.py for the validation basis.
 SHORT_ENABLED = bool(_CFG["short_enabled"])
@@ -138,6 +141,10 @@ class RunState:
     or_lock_notified: bool = False
     shorts_enabled: bool = False       # set once at session start from the regime gate
     regime_note: str = ""              # human-readable explanation of the gate decision
+    # Trend filter (multi-timeframe): symbols eligible for LONG entries today.
+    # Computed once at session start from prior daily closes. None = filter
+    # disabled or unavailable (fail-open, every name eligible).
+    trend_eligible: Optional[set] = None
 
 
 # ---------- env / clients ----------
@@ -180,6 +187,79 @@ def setup_logging(dry_run: bool) -> None:
 
 
 # ---------- pre-flight ----------
+def compute_trend_eligibility(dc: StockHistoricalDataClient,
+                              watchlist: list[str]) -> Optional[set]:
+    """Symbols passing the trend filter as of the PRIOR trading day's close:
+    (close > 200d SMA) AND (20d return > SPY's 20d return).
+
+    Validated by backtest/compare_trend_filter.py — nearly doubles avg_R, lifts
+    win rate to 50.4%, cuts max DD ~79%, OOS-robust both halves.
+
+    Fails open on any error: returns None and the caller treats every name as
+    eligible (baseline behaviour). Never raises. Runs once at session start.
+    """
+    syms = sorted(set(watchlist) | {"SPY"})
+    end = datetime.now(ET)
+    start = end - timedelta(days=int(TREND_SMA_DAYS * 1.6))
+    try:
+        req = StockBarsRequest(
+            symbol_or_symbols=syms, timeframe=TimeFrame.Day,
+            start=start.astimezone(UTC), end=end.astimezone(UTC),
+            feed=DataFeed.IEX, adjustment=Adjustment.ALL,
+        )
+        df = dc.get_stock_bars(req).df
+    except Exception as e:
+        log.warning(f"Trend filter: daily fetch failed ({e}); FAIL-OPEN (baseline).")
+        try:
+            notify(f"Trend filter daily fetch failed: {e}\nFalling back to baseline "
+                   f"(all names eligible).", title="ORB trend filter degraded",
+                   tags=["warning"])
+        except Exception:
+            pass
+        return None
+    if df.empty:
+        log.warning("Trend filter: no daily bars returned; FAIL-OPEN (baseline).")
+        return None
+    closes = df["close"].unstack(level=0)
+    closes.index = (pd.to_datetime(closes.index).tz_convert(ET)
+                    .normalize().tz_localize(None))
+    closes = closes.sort_index()
+    today_naive = pd.Timestamp(datetime.now(ET).date())
+    closes_prior = closes.loc[closes.index < today_naive]
+    if len(closes_prior) < TREND_SMA_DAYS:
+        log.warning(f"Trend filter: only {len(closes_prior)} prior days available "
+                    f"(need {TREND_SMA_DAYS}); FAIL-OPEN (baseline).")
+        return None
+    prior_close = closes_prior.iloc[-1]
+    sma = closes_prior.rolling(TREND_SMA_DAYS).mean().iloc[-1]
+    ret = closes_prior.pct_change(TREND_RET_DAYS).iloc[-1]
+    spy_ret = ret.get("SPY") if "SPY" in ret.index else None
+    if spy_ret is None or pd.isna(spy_ret):
+        log.warning("Trend filter: SPY 20d return unavailable; FAIL-OPEN.")
+        return None
+    eligible = set()
+    for sym in watchlist:
+        if sym not in closes_prior.columns:
+            continue
+        pc, s, r = prior_close.get(sym), sma.get(sym), ret.get(sym)
+        if any(pd.isna(x) for x in (pc, s, r)):
+            continue
+        if pc > s and r > spy_ret:
+            eligible.add(sym)
+    log.info(f"Trend filter: {len(eligible)}/{len(watchlist)} names eligible today "
+             f"(close > {TREND_SMA_DAYS}d SMA AND {TREND_RET_DAYS}d return > "
+             f"SPY's {spy_ret:+.2%}).")
+    if eligible:
+        log.info(f"  eligible: {', '.join(sorted(eligible))}")
+    filtered = [s for s in watchlist if s not in eligible
+                and s in closes_prior.columns and not pd.isna(prior_close.get(s))]
+    if filtered:
+        preview = ', '.join(sorted(filtered)[:25])
+        more = f" ... (+{len(filtered) - 25} more)" if len(filtered) > 25 else ""
+        log.info(f"  filtered: {preview}{more}")
+    return eligible
+
+
 def wait_for_network(tc: TradingClient, max_attempts: int = 5,
                      delay_sec: float = 30.0) -> bool:
     """Block until Alpaca is reachable; handle 'laptop just woke up' wifi lag.
@@ -1086,6 +1166,15 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
     if run.shorts_enabled:
         log.info(f"Short-eligible symbols today: {sorted(SHORT_SYMBOLS & set(watchlist))}")
 
+    # Trend filter (multi-timeframe momentum confirmation): decide which names
+    # are eligible for LONG entries today from prior daily closes. None = filter
+    # disabled or fetch failed -> treat all as eligible (baseline behaviour).
+    if TREND_FILTER_ENABLED:
+        run.trend_eligible = compute_trend_eligibility(dc, watchlist)
+    else:
+        log.info("Trend filter: DISABLED in config.")
+        run.trend_eligible = None
+
     open_dt = combine_et(today, RTH_OPEN)
     or_end_dt = open_dt + timedelta(minutes=PARAMS.or_minutes)
     eod_dt = combine_et(today, EOD_FLAT_TIME)
@@ -1266,6 +1355,19 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                 target = entry_estimate - PARAMS.target_r * (stop - entry_estimate)
                 ref_label, ref_val, arrow = "OR_low", state.or_low, "<"
             else:
+                continue
+
+            # Trend filter (longs only): skip names that didn't pass the daily
+            # SMA + relative-strength check at session start. run.trend_eligible
+            # is None when the filter is off or the daily fetch failed
+            # (fail-open -> baseline behaviour).
+            if (side_name == "long" and TREND_FILTER_ENABLED
+                    and run.trend_eligible is not None
+                    and sym not in run.trend_eligible):
+                log.info(f"{sym} long breakout SKIPPED: not in trend-eligible set today.")
+                state.entered = True
+                state.side = side_name
+                state.reject_reason = "trend filter"
                 continue
 
             # Concurrency cap: with a broad watchlist, many names break out near

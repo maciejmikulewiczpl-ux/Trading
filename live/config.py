@@ -94,6 +94,18 @@ SETTINGS: list[Setting] = [
         "improvement, so default is 0.0 (stop exactly at the OR boundary).",
         minv=0.0, maxv=0.5,
     ),
+    Setting(
+        "trend_filter_enabled", "Trend filter (200d SMA + RS)", "Strategy", "bool", True,
+        "Only take LONG breakouts on names that, as of the prior trading day's "
+        "close, satisfy BOTH: (1) close > 200-day SMA (daily uptrend) AND (2) "
+        "20-day return > SPY's 20-day return (cross-sectional relative strength). "
+        "Multi-timeframe momentum confirmation: compare_trend_filter.py shows the "
+        "combo nearly DOUBLES avg_R (+0.045 -> +0.085), lifts win rate to 50.4%, "
+        "and slashes max DD ~79% (-$11,687 -> -$2,412), while staying positive in "
+        "BOTH OOS halves. Trade-off: ~62% fewer trades, ~38% lower raw PnL — same "
+        "edge with a far smoother equity curve. Fails open (treats all eligible) "
+        "if the daily fetch fails so it can never silently disable trading.",
+    ),
 
     # ---- Sizing / risk guardrails ----
     Setting(
