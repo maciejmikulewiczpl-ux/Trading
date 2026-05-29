@@ -180,6 +180,34 @@ def setup_logging(dry_run: bool) -> None:
 
 
 # ---------- pre-flight ----------
+def wait_for_network(tc: TradingClient, max_attempts: int = 5,
+                     delay_sec: float = 30.0) -> bool:
+    """Block until Alpaca is reachable; handle 'laptop just woke up' wifi lag.
+
+    On 2026-05-29 the scheduled 06:15 fire crashed with DNS resolution failure
+    because the laptop's network hadn't joined yet (user travelling). Retries
+    the lightest API call (get_clock) before letting preflight try and crash.
+
+    Returns True if reachable within the budget, False otherwise.
+    """
+    for attempt in range(1, max_attempts + 1):
+        try:
+            tc.get_clock()
+            if attempt > 1:
+                log.info(f"Network reachable on attempt {attempt}/{max_attempts}.")
+            return True
+        except Exception as e:
+            if attempt < max_attempts:
+                log.warning(f"Network unreachable on attempt {attempt}/{max_attempts} "
+                            f"({type(e).__name__}); retrying in {delay_sec:.0f}s")
+                time_mod.sleep(delay_sec)
+            else:
+                log.error(f"Network unreachable after {max_attempts} attempts; aborting. "
+                          f"Last error: {e}")
+                return False
+    return False
+
+
 def is_today_a_trading_day(tc: TradingClient, today: date) -> bool:
     cal = tc.get_calendar(GetCalendarRequest(start=today, end=today))
     return len(cal) > 0 and cal[0].date == today
@@ -1361,6 +1389,11 @@ def main() -> int:
     today = datetime.now(ET).date()
     if args.preflight_only:
         return smoke_test(tc, dc, today)
+
+    # Tolerate a brief 'laptop just woke / wifi still joining' startup lag at
+    # the 06:15 fire (2026-05-29 incident). 5 attempts x 30s = up to 2.5 min.
+    if not wait_for_network(tc):
+        return 1
 
     if args.ignore_clock:
         log.warning("--ignore-clock set: skipping market-open pre-flight (TESTING MODE)")
