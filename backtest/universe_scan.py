@@ -42,20 +42,31 @@ ET = ZoneInfo("America/New_York")
 UTC = ZoneInfo("UTC")
 
 # Fixed, liquid, listed-throughout universe (no survivorship/lookahead bias).
+# Expanded 2026-05-29 from 55 to ~100 names (S&P-100-ish liquid set) so the
+# trend filter has more candidates to rank. Kept to the upper-liquidity tier to
+# avoid worsening slippage and to stay under the live runner's 10s poll cycle.
 UNIVERSE = [
     # broad ETFs
     "SPY", "QQQ", "IWM", "DIA",
     # mega/large-cap tech & semis
     "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "AVGO", "ORCL",
     "AMD", "NFLX", "ADBE", "CRM", "INTC", "CSCO", "QCOM", "TXN", "MU",
+    "ACN", "IBM", "NOW", "PANW", "CRWD", "SHOP", "ABNB", "INTU", "PYPL",
+    "ANET", "AMAT", "LRCX",
     # financials
     "JPM", "BAC", "WFC", "GS", "MS", "C", "V", "MA", "AXP",
+    "SCHW", "BLK", "USB", "SPGI", "ICE", "CME",
     # healthcare
     "UNH", "JNJ", "LLY", "PFE", "MRK", "ABBV",
+    "TMO", "ABT", "DHR", "AMGN", "ISRG", "BMY", "ELV", "CVS",
     # consumer
     "WMT", "HD", "COST", "NKE", "MCD", "SBUX", "DIS", "KO", "PEP",
+    "TGT", "LOW", "BKNG", "LULU", "ROST", "CMG", "F", "GM",
     # energy / industrial
     "XOM", "CVX", "CAT", "BA", "GE",
+    "HON", "RTX", "LMT", "DE", "UNP", "COP",
+    # telecom / utility
+    "T", "VZ", "TMUS", "CMCSA", "NEE",
     # higher-beta / high-volume
     "PLTR", "COIN", "UBER", "BABA",
 ]

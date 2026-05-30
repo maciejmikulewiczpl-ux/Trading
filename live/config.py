@@ -39,21 +39,38 @@ SETTINGS: list[Setting] = [
     Setting(
         "watchlist", "Watchlist (symbols)", "Universe", "csv",
         [
+            # ETFs (4)
             "SPY", "QQQ", "IWM", "DIA",
+            # Mega/large-cap tech & semis (21)
             "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "AVGO", "ORCL",
             "AMD", "NFLX", "ADBE", "CRM", "INTC", "CSCO", "QCOM", "TXN", "MU",
+            "ACN", "IBM", "NOW", "PANW", "CRWD", "SHOP", "ABNB", "INTU", "PYPL",
+            "ANET", "AMAT", "LRCX",
+            # Financials (15)
             "JPM", "BAC", "WFC", "GS", "MS", "C", "V", "MA", "AXP",
+            "SCHW", "BLK", "USB", "SPGI", "ICE", "CME",
+            # Healthcare (14)
             "UNH", "JNJ", "LLY", "PFE", "MRK", "ABBV",
+            "TMO", "ABT", "DHR", "AMGN", "ISRG", "BMY", "ELV", "CVS",
+            # Consumer (17)
             "WMT", "HD", "COST", "NKE", "MCD", "SBUX", "DIS", "KO", "PEP",
+            "TGT", "LOW", "BKNG", "LULU", "ROST", "CMG", "F", "GM",
+            # Industrial / energy (11)
             "XOM", "CVX", "CAT", "BA", "GE",
+            "HON", "RTX", "LMT", "DE", "UNP", "COP",
+            # Telecom / utility (5)
+            "T", "VZ", "TMUS", "CMCSA", "NEE",
+            # Higher-beta / high-volume (4)
             "PLTR", "COIN", "UBER", "BABA",
         ],
-        "Symbols the bot trades for LONG breakouts. Comma-separated. This broad "
-        "55-name liquid universe replaced the original 5: universe_scan.py showed "
-        "the ORB edge is real and OOS-robust (+0.041 avg_R, positive in BOTH "
-        "halves) only when averaged over many names, and that per-name selection "
-        "is NOISE (first-half winners don't persist). So: trade broad, don't "
-        "cherry-pick. Pair with the concurrency cap so $100k isn't over-deployed.",
+        "Symbols the bot trades for LONG breakouts. Comma-separated. Broad ~100 "
+        "liquid US large-caps (roughly S&P-100 + a few momentum/high-volume "
+        "names + 4 ETFs). universe_scan.py validated the breadth thesis (the "
+        "ORB edge is OOS-robust only when averaged over many names; per-name "
+        "selection is noise). Pair with the trend filter (200d SMA + RS) and "
+        "the concurrency cap so the filter has many candidates to pick the "
+        "strongest setups from. ~100 names is the practical ceiling before "
+        "intraday fetches stretch past the 10s poll cycle.",
     ),
 
     # ---- Opening range / long entries ----
