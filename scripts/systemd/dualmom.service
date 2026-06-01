@@ -1,0 +1,16 @@
+[Unit]
+Description=Monthly dual-momentum rebalance (Alpaca, self-gated)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# One-shot: the runner self-gates to the first trading day of the month and
+# exits in seconds on every other day. Fires every weekday so we never miss the
+# month start (DST, market holidays on the 1st, etc).
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/trading
+ExecStart=/home/ubuntu/trading/scripts/launch_dualmom.sh
+
+[Install]
+WantedBy=multi-user.target

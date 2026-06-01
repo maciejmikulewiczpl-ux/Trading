@@ -1,0 +1,25 @@
+[Unit]
+Description=ORB paper-trading runner (intraday opening-range breakout)
+# Don't even start the unit if there's no network; the runner can survive
+# transient drops mid-session but the preflight checks need Alpaca reachable.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Long-running: the runner stays resident from preflight (~09:25 ET) until EOD
+# verify-poll completes (~16:05 ET). It exits 0 on a normal market-closed day.
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/trading
+# .env is sourced by the runner itself (live/paper_orb.py -> load_env), so we
+# don't EnvironmentFile=.env here -- single source of truth.
+ExecStart=/home/ubuntu/trading/scripts/launch_orb.sh
+# Do NOT restart on failure: the script's crash handler flattens positions
+# before exiting; an auto-restart could re-enter after intentional shutdown.
+Restart=no
+# Generous kill timeout: the runner has its own 15:55 ET flatten + verify-poll
+# that can take 60-90s; SIGTERM during this window must not be cut short.
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

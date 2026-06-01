@@ -14,8 +14,12 @@ Behaviour:
     BTC orphan). Sells/reductions first, brief pause, then buys (notional).
   - --dry-run prints the plan and places nothing.
 
+  # Windows
   .venv\\Scripts\\python.exe live\\run_dualmom.py --dry-run --force   # test now
   .venv\\Scripts\\python.exe live\\run_dualmom.py                      # live, self-gated
+  # Linux
+  ./.venv/bin/python live/run_dualmom.py --dry-run --force
+  ./.venv/bin/python live/run_dualmom.py
 
 ACCOUNT NOTE: do NOT run this in the same Alpaca account as the ORB bot if their
 symbol universes overlap (SPY/QQQ): ORB's 15:55 ET EOD-flatten liquidates any

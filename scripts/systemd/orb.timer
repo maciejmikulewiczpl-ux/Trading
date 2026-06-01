@@ -1,0 +1,18 @@
+[Unit]
+Description=Fire ORB runner at 09:25 ET on US weekdays
+# The runner's own preflight refuses to trade on US-equity holidays, so a
+# blanket Mon..Fri timer is safe -- holidays are no-ops, not errors.
+
+[Timer]
+# 09:25 ET fires 5 min before the opening bell so preflight + sync + the
+# opening-range wait have margin. systemd 244+ accepts a trailing tz spec on
+# OnCalendar, which handles US DST transitions automatically.
+OnCalendar=Mon..Fri *-*-* 09:25:00 America/New_York
+# If the machine was off when the timer should have fired (e.g. boot after
+# 09:25 ET), fire immediately. The runner will detect the late start and refuse
+# new entries if it's > LATE_START_CUTOFF_MINUTES past the OR window close.
+Persistent=true
+Unit=orb.service
+
+[Install]
+WantedBy=timers.target

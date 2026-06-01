@@ -14,9 +14,13 @@ Run on a US-equity trading day, ideally a few minutes before 9:30 ET.
          to SHORT_SYMBOLS (index/large-cap; TSLA excluded). See compute_short_regime.
   4. At 15:55 ET, cancel any unfilled bracket legs and market-close remaining positions.
 
-Usage (PowerShell):
+Usage:
+    # Windows (PowerShell)
     .\\.venv\\Scripts\\python.exe live\\paper_orb.py --dry-run
     .\\.venv\\Scripts\\python.exe live\\paper_orb.py        # live (paper) submission
+    # Linux (bash)
+    ./.venv/bin/python live/paper_orb.py --dry-run
+    ./.venv/bin/python live/paper_orb.py
 
 Safety:
   - --dry-run logs every decision but submits no orders.
@@ -1517,7 +1521,7 @@ def main() -> int:
         try:
             notify(
                 f"Script crashed: {type(e).__name__}: {str(e)[:200]}\n"
-                f"Check logs at C:\\Users\\macie\\VSC\\Trading\\logs\\",
+                f"Check logs at {LOG_DIR}",
                 title=f"ORB CRASHED ({today.isoformat()})",
                 priority=5,
                 tags=["rotating_light"],

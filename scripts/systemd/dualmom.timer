@@ -1,0 +1,13 @@
+[Unit]
+Description=Fire dual-momentum runner at 09:20 ET on US weekdays
+
+[Timer]
+# 09:20 ET -- runs 5 min before the ORB timer so a rare day where both fire on
+# the 1st-of-month doesn't race on the same Alpaca daily-bar fetch. The dualmom
+# runner uses a SEPARATE Alpaca account (DUALMOM_ALPACA_*) anyway.
+OnCalendar=Mon..Fri *-*-* 09:20:00 America/New_York
+Persistent=true
+Unit=dualmom.service
+
+[Install]
+WantedBy=timers.target
