@@ -38,3 +38,6 @@ Thumbs.db
 
 # PEAD research event table (regenerable via backtest/run_pead.py)
 backtest/pead_events.csv
+
+# Strategies summary (regenerable via scripts/generate_strategies_summary.py)
+strategies_summary.xlsx
