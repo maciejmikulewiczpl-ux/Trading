@@ -17,8 +17,15 @@ ExecStart=/home/ubuntu/trading/scripts/launch_orb.sh
 # Do NOT restart on failure: the script's crash handler flattens positions
 # before exiting; an auto-restart could re-enter after intentional shutdown.
 Restart=no
+# Send SIGINT (Ctrl-C) instead of the default SIGTERM on `systemctl stop`.
+# paper_orb.py:main() has `except KeyboardInterrupt: flatten_all(...)` which
+# Python raises only for SIGINT (not SIGTERM). Without this, `systemctl stop`
+# kills the process WITHOUT flattening open positions -- an emergency stop
+# would leave positions exposed overnight. With KillSignal=SIGINT, stop is
+# safe by default and the user can just `sudo systemctl stop orb.service`.
+KillSignal=SIGINT
 # Generous kill timeout: the runner has its own 15:55 ET flatten + verify-poll
-# that can take 60-90s; SIGTERM during this window must not be cut short.
+# that can take 60-90s; the SIGINT-triggered flatten must not be cut short.
 TimeoutStopSec=120
 
 [Install]
