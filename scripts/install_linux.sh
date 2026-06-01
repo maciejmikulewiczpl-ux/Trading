@@ -104,7 +104,7 @@ sudo systemctl enable --now orb.timer dualmom.timer
 # ----- 6. smoke test -----
 echo "==> Running paper_orb smoke test (account + data + ntfy)"
 set +e
-"$ROOT/.venv/bin/python" "$ROOT/live/paper_orb.py" --smoke-test
+"$ROOT/.venv/bin/python" "$ROOT/live/paper_orb.py" --preflight-only
 SMOKE_RC=$?
 set -e
 if [[ $SMOKE_RC -ne 0 ]]; then
