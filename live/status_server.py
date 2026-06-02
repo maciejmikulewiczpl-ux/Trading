@@ -28,6 +28,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import threading
 import time as _time
 from datetime import datetime, time as dtime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -45,6 +46,14 @@ from live.paper_orb import ET, UTC, EOD_FLAT_TIME, build_clients, load_env  # no
 BIND = os.environ.get("STATUS_BIND", "127.0.0.1")
 PORT = int(os.environ.get("STATUS_PORT", "8787"))
 CACHE_TTL = 4.0  # seconds; one Alpaca gather shared across rapid page polls
+
+# Hardening for public (0.0.0.0) exposure: this server shares a 1 GB VM with the
+# live trading runners, so a connection flood must not be able to starve them.
+# Cap concurrent in-flight requests (excess get a fast 503) and time out slow/
+# half-open sockets so a thread can't be held hostage (slowloris). Read-only
+# server, so dropping requests under load is harmless.
+MAX_CONN = int(os.environ.get("STATUS_MAX_CONN", "24"))
+_conn_sema = threading.BoundedSemaphore(MAX_CONN)
 
 _cache: dict = {"ts": 0.0, "data": None}
 
@@ -321,9 +330,29 @@ tick(); setInterval(tick, 3000);
 
 class Handler(BaseHTTPRequestHandler):
     tc = None  # set in serve()
+    timeout = 15  # drop slow/half-open sockets so a thread can't be held hostage
 
     def log_message(self, *a):  # silence per-request stderr spam
         pass
+
+    def handle_one_request(self):
+        # Shed load instead of spawning unbounded work: if we're already at the
+        # concurrency cap, answer 503 immediately and move on. acquire() is
+        # non-blocking so a flood can't queue up and pin the VM.
+        if not _conn_sema.acquire(blocking=False):
+            try:
+                self.send_response(503)
+                self.send_header("Content-Length", "0")
+                self.send_header("Retry-After", "2")
+                self.end_headers()
+            except Exception:
+                pass
+            self.close_connection = True
+            return
+        try:
+            super().handle_one_request()
+        finally:
+            _conn_sema.release()
 
     def _send(self, code, body: bytes, ctype: str):
         self.send_response(code)

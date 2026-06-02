@@ -12,13 +12,14 @@ Wants=network-online.target
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/trading
-# Bind to localhost only -- reach it from your laptop over an SSH tunnel:
-#   ssh -i <key> -L 8787:localhost:8787 ubuntu@<vm-ip>
-#   then open http://localhost:8787
-# To expose it on the LAN/internet instead, set STATUS_BIND=0.0.0.0 AND open
-# the port in the Oracle security list + ufw -- but then it shows account
-# figures publicly, so prefer the tunnel.
-Environment=STATUS_BIND=127.0.0.1
+# Public bind (0.0.0.0): the page is intentionally reachable from any device
+# with no password. This is acceptable ONLY because it's a PAPER account (the
+# equity/positions shown are not real money) and the server is strictly
+# read-only (cannot place or cancel orders). Binding alone does NOT expose it --
+# reachability also requires the VM firewall (iptables/ufw) AND the Oracle VCN
+# security list to allow TCP 8787. If this VM ever runs REAL money, revert to
+# 127.0.0.1 + SSH tunnel (or put auth + HTTPS in front).
+Environment=STATUS_BIND=0.0.0.0
 Environment=STATUS_PORT=8787
 # .env (Alpaca keys) is sourced by the script itself via load_env(), matching
 # orb.service -- single source of truth, no EnvironmentFile here.
