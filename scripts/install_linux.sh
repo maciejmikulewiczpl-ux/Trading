@@ -84,7 +84,7 @@ chmod +x "$ROOT/scripts/launch_orb.sh" "$ROOT/scripts/launch_dualmom.sh"
 # ----- 5. systemd units -----
 echo "==> Installing systemd units (sudo)"
 SYS_DIR="/etc/systemd/system"
-for unit in orb.service orb.timer dualmom.service dualmom.timer; do
+for unit in orb.service orb.timer dualmom.service dualmom.timer status.service; do
   src="$ROOT/scripts/systemd/$unit"
   dst="$SYS_DIR/$unit"
   # Substitute user + path if they don't match the unit's hardcoded defaults
@@ -100,6 +100,12 @@ sudo systemctl stop orb.timer dualmom.timer 2>/dev/null || true
 
 echo "==> Enabling + starting timers"
 sudo systemctl enable --now orb.timer dualmom.timer
+
+# Always-on status web page. enable --now won't restart an already-running
+# instance, so restart explicitly to pick up code changes on re-install.
+echo "==> Enabling + (re)starting status web page service"
+sudo systemctl enable status.service
+sudo systemctl restart status.service
 
 # ----- 6. smoke test -----
 echo "==> Running paper_orb smoke test (account + data + ntfy)"
@@ -119,5 +125,9 @@ systemctl list-timers --all 'orb.timer' 'dualmom.timer'
 echo
 echo "Install complete."
 echo "  Logs:           tail -F $ROOT/logs/orb_*.log"
-echo "  Service status: systemctl status orb.timer dualmom.timer"
+echo "  Service status: systemctl status orb.timer dualmom.timer status.service"
 echo "  Manual fire:    sudo systemctl start orb.service   # for testing only"
+echo
+echo "  Status page (bound to 127.0.0.1:8787 on this VM). From your laptop:"
+echo "    ssh -i <key> -L 8787:localhost:8787 ${USER_NAME}@<this-vm-ip>"
+echo "    then open http://localhost:8787 in your browser."

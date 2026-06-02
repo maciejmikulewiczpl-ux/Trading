@@ -65,6 +65,7 @@ sys.path.insert(0, str(ROOT))
 from strategies.orb import Params  # noqa: E402
 from live.notify import notify  # noqa: E402
 from live import config as orb_config  # noqa: E402
+from live import heartbeat  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
 UTC = ZoneInfo("UTC")
@@ -1123,6 +1124,29 @@ def _build_snapshot(tc: TradingClient, run: "RunState", watchlist: list[str],
     return snap
 
 
+def _emit_heartbeat(run: "RunState", watchlist: list[str], today: date,
+                    phase: str, valid_for_s: float, dry_run: bool) -> None:
+    """Write one liveness beat. Cheap (no API call) — counts from run state only.
+
+    valid_for_s: how long this beat stays fresh. The status server treats
+    now > (this beat's ts + valid_for_s) as "no fresh beat". Pass the poll
+    interval (+grace) in the loop, or the seconds-until-open during the wait.
+    """
+    open_positions = sum(
+        1 for s in run.states.values()
+        if s.entered and s.entry_order_id and not s.reject_reason and not s.exited
+    )
+    heartbeat.write(
+        time_mod.time() + valid_for_s,
+        phase=phase,
+        halted=run.halted,
+        halt_reason=run.halt_reason or "",
+        session_date=today.isoformat(),
+        open_positions=open_positions,
+        dry_run=dry_run,
+    )
+
+
 def _send_eod_notification(tc: TradingClient, run: "RunState", watchlist: list[str], today: date) -> None:
     """Best-effort end-of-session summary push. Never raises."""
     try:
@@ -1217,6 +1241,14 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
         log.info(f"Status UI not loaded ({e}). Trader continues without it.")
         ui = None
 
+    # First beat before the pre-open wait blocks. Keep it fresh until just past
+    # the open so the status server shows "starting up" rather than "DOWN"
+    # during the 09:25->09:30 gap when nothing else is running.
+    _emit_heartbeat(run, watchlist, today,
+                    phase="pre-market (waiting for 9:30 ET open)",
+                    valid_for_s=max(0.0, (open_dt - datetime.now(ET)).total_seconds()) + 60,
+                    dry_run=dry_run)
+
     if not skip_wait:
         wait_until(open_dt)
 
@@ -1247,6 +1279,12 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
 
     while True:
         now = datetime.now(ET)
+        # Liveness beat — written every iteration before any work that could
+        # raise/continue, so a stuck or crashed loop stops refreshing it and
+        # the status server flips to DOWN. Valid for one poll interval + grace.
+        _emit_heartbeat(run, watchlist, today,
+                        phase=_phase_for(now, open_dt, or_end_dt, eod_dt),
+                        valid_for_s=POLL_SECONDS + 45, dry_run=dry_run)
         if now >= eod_dt:
             log.info("EOD flat time reached. Flattening.")
             flatten_all(tc, watchlist, dry_run, run=run)

@@ -1,0 +1,32 @@
+[Unit]
+Description=ORB status web page (always-on liveness + trade-state dashboard)
+# Needs Alpaca reachable to gather trade state; tolerates transient drops (each
+# page request re-queries and surfaces errors inline rather than crashing).
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Long-running daemon, independent of the timer-fired orb/dualmom runners. It
+# reads logs/heartbeat.json (written by the runner) and queries Alpaca; it
+# never trades. Safe to restart at any time.
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/trading
+# Bind to localhost only -- reach it from your laptop over an SSH tunnel:
+#   ssh -i <key> -L 8787:localhost:8787 ubuntu@<vm-ip>
+#   then open http://localhost:8787
+# To expose it on the LAN/internet instead, set STATUS_BIND=0.0.0.0 AND open
+# the port in the Oracle security list + ufw -- but then it shows account
+# figures publicly, so prefer the tunnel.
+Environment=STATUS_BIND=127.0.0.1
+Environment=STATUS_PORT=8787
+# .env (Alpaca keys) is sourced by the script itself via load_env(), matching
+# orb.service -- single source of truth, no EnvironmentFile here.
+ExecStart=/home/ubuntu/trading/.venv/bin/python /home/ubuntu/trading/live/status_server.py
+# Always bring it back: a dashboard that silently died would defeat its own
+# purpose. It holds no trading state, so restarting is harmless.
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
