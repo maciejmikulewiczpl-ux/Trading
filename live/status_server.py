@@ -30,7 +30,7 @@ import os
 import sys
 import threading
 import time as _time
-from datetime import datetime, time as dtime
+from datetime import datetime, time as dtime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -38,7 +38,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from alpaca.trading.enums import QueryOrderStatus  # noqa: E402
-from alpaca.trading.requests import GetOrdersRequest  # noqa: E402
+from alpaca.trading.requests import GetOrdersRequest, GetPortfolioHistoryRequest  # noqa: E402
 
 from live import heartbeat  # noqa: E402
 from live.paper_orb import ET, UTC, EOD_FLAT_TIME, build_clients, load_env  # noqa: E402
@@ -134,6 +134,9 @@ def _gather(tc) -> dict:
         "positions": [],
         "open_orders": [],
         "orb_fills": [],
+        "closed_today": [],
+        "daily_pnl": [],
+        "invested": 0.0,
     }
 
     clock = None
@@ -164,17 +167,22 @@ def _gather(tc) -> dict:
     except Exception as e:
         out["errors"].append(f"account: {e}")
 
+    open_symbols: set[str] = set()
     try:
         for p in tc.get_all_positions():
+            open_symbols.add(p.symbol)
             out["positions"].append({
                 "symbol": p.symbol,
                 "side": str(p.side).rsplit(".", 1)[-1].lower(),
                 "qty": _f(p.qty),
                 "avg_entry": _f(p.avg_entry_price),
                 "current": _f(p.current_price),
+                "cost_basis": _f(p.cost_basis),        # $ invested in this name
                 "market_value": _f(p.market_value),
                 "unrealized_pl": _f(p.unrealized_pl),
+                "unrealized_plpc": _f(p.unrealized_plpc) * 100,
             })
+        out["invested"] = sum(p["cost_basis"] for p in out["positions"])
     except Exception as e:
         out["errors"].append(f"positions: {e}")
 
@@ -207,18 +215,102 @@ def _gather(tc) -> dict:
         except TypeError:
             todays = tc.get_orders(req)
         prefix = f"orb-{today:%Y%m%d}-"
+        # Per-symbol fill aggregation for round-trip realized P&L.
+        agg: dict[str, dict] = {}
         for o in todays:
             coid = getattr(o, "client_order_id", "") or ""
-            if coid.startswith(prefix) and getattr(o, "filled_avg_price", None) is not None:
+            fap = getattr(o, "filled_avg_price", None)
+            fqty = _f(o.filled_qty)
+            if fap is None or fqty <= 0:
+                continue
+            side = str(o.side).rsplit(".", 1)[-1].lower()
+            price = _f(fap)
+            if coid.startswith(prefix):
                 out["orb_fills"].append({
-                    "symbol": o.symbol,
-                    "side": str(o.side).rsplit(".", 1)[-1].lower(),
-                    "qty": _f(o.filled_qty),
-                    "price": _f(o.filled_avg_price),
-                    "coid": coid,
+                    "symbol": o.symbol, "side": side, "qty": fqty,
+                    "price": price, "coid": coid,
                 })
+            d = agg.setdefault(o.symbol, {"buy_q": 0.0, "buy_n": 0.0,
+                                          "sell_q": 0.0, "sell_n": 0.0, "first": None})
+            if side == "buy":
+                d["buy_q"] += fqty
+                d["buy_n"] += fqty * price
+            else:
+                d["sell_q"] += fqty
+                d["sell_n"] += fqty * price
+            ft = getattr(o, "filled_at", None)
+            if ft is not None and (d["first"] is None or ft < d["first"][0]):
+                d["first"] = (ft, side)
+
+        # A symbol is a "closed today" round-trip if it has both buys and sells
+        # today and is now FLAT (not in open positions). Realized = sell proceeds
+        # - buy cost (works for long and short alike when net flat).
+        for sym, d in agg.items():
+            if sym in open_symbols or d["buy_q"] <= 0 or d["sell_q"] <= 0:
+                continue
+            realized = d["sell_n"] - d["buy_n"]
+            opened = d["first"][1] if d["first"] else ("buy" if d["buy_q"] >= d["sell_q"] else "sell")
+            out["closed_today"].append({
+                "symbol": sym,
+                "side": "long" if opened == "buy" else "short",
+                "qty": round(min(d["buy_q"], d["sell_q"]), 4),
+                "entry_avg": d["buy_n"] / d["buy_q"],
+                "exit_avg": d["sell_n"] / d["sell_q"],
+                "realized": realized,
+            })
+        out["closed_today"].sort(key=lambda r: r["realized"])
     except Exception as e:
         out["errors"].append(f"today's orders: {e}")
+
+    # ---- $ invested per day: gross ENTRY (buy) notional filled each ET day.
+    # The strategy is long-only and intraday, so buy notional = capital deployed
+    # that day. Lets each day's P/L be shown as a return on what was actually at
+    # risk, not as a near-zero fraction of the mostly-cash account equity.
+    invested_by_day: dict[str, float] = {}
+    try:
+        win_start = datetime.combine(today - timedelta(days=24), dtime(0, 0, tzinfo=ET)).astimezone(UTC)
+        req = GetOrdersRequest(status=QueryOrderStatus.ALL, after=win_start, limit=500)
+        try:
+            hist = tc.get_orders(filter=req)
+        except TypeError:
+            hist = tc.get_orders(req)
+        for o in hist:
+            fap = getattr(o, "filled_avg_price", None)
+            fqty = _f(o.filled_qty)
+            ft = getattr(o, "filled_at", None)
+            if fap is None or fqty <= 0 or ft is None:
+                continue
+            if str(o.side).rsplit(".", 1)[-1].lower() != "buy":
+                continue
+            d = ft.astimezone(ET).date().isoformat()
+            invested_by_day[d] = invested_by_day.get(d, 0.0) + fqty * _f(fap)
+    except Exception as e:
+        out["errors"].append(f"orders history: {e}")
+
+    # ---- previous days' P&L (account-level, from portfolio history) ----
+    try:
+        ph = tc.get_portfolio_history(
+            GetPortfolioHistoryRequest(period="1M", timeframe="1D"))
+        ts, pl, eq = ph.timestamp, ph.profit_loss, ph.equity
+        rows = []
+        for i in range(len(ts)):
+            d = datetime.fromtimestamp(ts[i], UTC).astimezone(ET).date().isoformat()
+            pnl = _f(pl[i]) if i < len(pl) else 0.0
+            inv = invested_by_day.get(d, 0.0)
+            rows.append({
+                "date": d,
+                "pnl": pnl,
+                "invested": inv,
+                # P/L as a % of capital deployed that day (None if nothing traded).
+                "pnl_pct_inv": (pnl / inv * 100) if inv > 0 else None,
+                "equity": _f(eq[i]) if i < len(eq) else 0.0,
+            })
+        # Drop leading pre-funding days (portfolio history pads them with eq=0),
+        # then show the last 10 real days, newest first.
+        rows = [r for r in rows if r["equity"] > 0]
+        out["daily_pnl"] = list(reversed(rows[-10:]))
+    except Exception as e:
+        out["errors"].append(f"portfolio history: {e}")
 
     out["liveness"] = _liveness(heartbeat.read(), clock, now_et)
     return out
@@ -285,16 +377,27 @@ function render(d){
       <div class="stat"><div class="k">Equity</div><div class="v">${money(a.equity)}</div></div>
       <div class="stat"><div class="k">Day P/L</div><div class="v ${cls(a.day_pnl)}">${sign(a.day_pnl)}<br><small>${a.day_pnl_pct>=0?"+":""}${a.day_pnl_pct.toFixed(2)}%</small></div></div>
       <div class="stat"><div class="k">Cash</div><div class="v">${money(a.cash)}</div></div>
+      <div class="stat"><div class="k">Invested</div><div class="v">${money(d.invested||0)}</div></div>
       <div class="stat"><div class="k">Buying power</div><div class="v">${money(a.buying_power)}</div></div>
     </div>`;
   }
-  // positions
+  // positions — "invested" = cost basis ($ put into the name); "value" = current mkt value
   h+=`<div class="card"><h2>Open positions (${d.positions.length})</h2>`;
   if(d.positions.length){
-    h+=`<table><tr><th>sym</th><th>side</th><th>qty</th><th>avg</th><th>last</th><th>value</th><th>unreal P/L</th></tr>`;
-    for(const p of d.positions) h+=row([{v:p.symbol},{v:p.side},{v:p.qty.toFixed(2)},{v:money(p.avg_entry)},{v:money(p.current)},{v:money(p.market_value)},{v:sign(p.unrealized_pl),cls:cls(p.unrealized_pl)}]);
+    h+=`<table><tr><th>sym</th><th>side</th><th>qty</th><th>avg</th><th>last</th><th>invested</th><th>value</th><th>unreal P/L</th></tr>`;
+    for(const p of d.positions) h+=row([{v:p.symbol},{v:p.side},{v:p.qty.toFixed(2)},{v:money(p.avg_entry)},{v:money(p.current)},{v:money(p.cost_basis)},{v:money(p.market_value)},{v:`${sign(p.unrealized_pl)} <small>(${p.unrealized_plpc>=0?"+":""}${p.unrealized_plpc.toFixed(1)}%)</small>`,cls:cls(p.unrealized_pl)}]);
     h+=`</table>`;
   } else h+=`<div class="empty">flat</div>`;
+  h+=`</div>`;
+  // closed round-trips today (realized P/L)
+  const ct=d.closed_today||[];
+  const ctPnl=ct.reduce((s,c)=>s+c.realized,0);
+  h+=`<div class="card"><h2>Closed today (${ct.length})${ct.length?` &nbsp;·&nbsp; realized <span class="${cls(ctPnl)}">${sign(ctPnl)}</span>`:""}</h2>`;
+  if(ct.length){
+    h+=`<table><tr><th>sym</th><th>side</th><th>qty</th><th>entry</th><th>exit</th><th>realized P/L</th></tr>`;
+    for(const c of ct) h+=row([{v:c.symbol},{v:c.side},{v:c.qty.toFixed(0)},{v:money(c.entry_avg)},{v:money(c.exit_avg)},{v:sign(c.realized),cls:cls(c.realized)}]);
+    h+=`</table>`;
+  } else h+=`<div class="empty">no round-trips closed today</div>`;
   h+=`</div>`;
   // open orders
   h+=`<div class="card"><h2>Open orders (${d.open_orders.length})</h2>`;
@@ -311,6 +414,20 @@ function render(d){
     for(const o of d.orb_fills) h+=row([{v:o.symbol},{v:o.side},{v:o.qty.toFixed(0)},{v:money(o.price)},{v:`<span style="color:#7c8694">${o.coid}</span>`}]);
     h+=`</table>`;
   } else h+=`<div class="empty">no ORB entries filled today</div>`;
+  h+=`</div>`;
+  // previous days' P/L (account-level; newest first, top row is today in-progress)
+  const dp=d.daily_pnl||[];
+  const todayStr=(d.generated||"").slice(0,10);  // "YYYY-MM-DD" of this snapshot (ET)
+  h+=`<div class="card"><h2>Daily P/L (last ${dp.length}) <small style="color:var(--dim)">— % = return on capital invested that day</small></h2>`;
+  if(dp.length){
+    h+=`<table><tr><th>date</th><th>invested</th><th>P/L</th><th>%</th><th>equity</th></tr>`;
+    dp.forEach((r)=>{ const lbl = r.date===todayStr ? `${r.date} <small>(today)</small>` : r.date;
+      const pct = (r.pnl_pct_inv===null||r.pnl_pct_inv===undefined)
+        ? {v:"—"}
+        : {v:`${r.pnl_pct_inv>=0?"+":""}${r.pnl_pct_inv.toFixed(1)}%`,cls:cls(r.pnl_pct_inv)};
+      h+=row([{v:lbl},{v:r.invested>0?money(r.invested):"—"},{v:sign(r.pnl),cls:cls(r.pnl)},pct,{v:money(r.equity)}]); });
+    h+=`</table>`;
+  } else h+=`<div class="empty">no history</div>`;
   h+=`</div>`;
   if(d.errors && d.errors.length) h+=`<div class="err">⚠ ${d.errors.join(" · ")}</div>`;
   h+=`<div class="foot"><span>snapshot ${d.generated}</span><span id="tick"></span></div>`;
