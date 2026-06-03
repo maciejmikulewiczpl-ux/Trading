@@ -2,6 +2,15 @@
 .env
 .env.local
 
+# SSH / private keys — must NEVER be committed (this repo is public).
+# Keys live in ~/.ssh, not here; this is belt-and-suspenders against an accident.
+*.key
+*.pem
+*.ppk
+id_rsa
+id_ed25519
+id_*
+
 # Python
 __pycache__/
 *.pyc
