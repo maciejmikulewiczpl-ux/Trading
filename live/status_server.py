@@ -281,23 +281,42 @@ def _gather(tc, dc=None) -> dict:
     except Exception as e:
         out["errors"].append(f"positions: {e}")
 
+    # Working orders. Bracket exits are quirky on Alpaca: once the entry fills,
+    # the take-profit LIMIT leg is status "new" but the protective STOP leg goes
+    # to status "held" — and a status=OPEN query returns NEITHER the held stop
+    # nor nests it under the (now-filled) parent. So we pull recent orders with
+    # nested=True and keep every still-working leg; that surfaces the stop legs
+    # and their prices for both the table and the per-position risk calc below.
+    WORKING_STATUSES = {"new", "accepted", "partially_filled", "held",
+                        "pending_new", "accepted_for_bidding", "pending_replace"}
     try:
-        req = GetOrdersRequest(status=QueryOrderStatus.OPEN, limit=100)
+        since = (now_et - timedelta(days=7)).astimezone(UTC)
+        req = GetOrdersRequest(status=QueryOrderStatus.ALL, after=since,
+                               limit=500, nested=True)
         try:
             orders = tc.get_orders(filter=req)
         except TypeError:
             orders = tc.get_orders(req)
-        for o in orders:
-            otype = str(getattr(o, "order_type", "") or o.type).rsplit(".", 1)[-1]
-            out["open_orders"].append({
-                "symbol": o.symbol,
-                "side": str(o.side).rsplit(".", 1)[-1].lower(),
-                "type": otype,
-                "qty": _f(o.qty),
-                "limit": _f(getattr(o, "limit_price", None)) or None,
-                "stop": _f(getattr(o, "stop_price", None)) or None,
-                "status": str(o.status).rsplit(".", 1)[-1],
-            })
+        seen: set = set()
+        for parent in orders:
+            for o in (parent, *(getattr(parent, "legs", None) or [])):
+                oid = getattr(o, "id", None)
+                if oid in seen:
+                    continue
+                if str(o.status).rsplit(".", 1)[-1].lower() not in WORKING_STATUSES:
+                    continue
+                seen.add(oid)
+                otype = str(getattr(o, "order_type", "") or o.type).rsplit(".", 1)[-1]
+                out["open_orders"].append({
+                    "symbol": o.symbol,
+                    "side": str(o.side).rsplit(".", 1)[-1].lower(),
+                    "type": otype,
+                    "qty": _f(o.qty),
+                    "limit": _f(getattr(o, "limit_price", None)) or None,
+                    "stop": _f(getattr(o, "stop_price", None)) or None,
+                    "status": str(o.status).rsplit(".", 1)[-1],
+                })
+        out["open_orders"].sort(key=lambda r: (r["symbol"], r["type"]))
     except Exception as e:
         out["errors"].append(f"open orders: {e}")
 
