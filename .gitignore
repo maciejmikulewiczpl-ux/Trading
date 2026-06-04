@@ -50,3 +50,6 @@ backtest/pead_events.csv
 
 # Strategies summary (regenerable via scripts/generate_strategies_summary.py)
 strategies_summary.xlsx
+
+# Claude scheduled-tasks lock (transient harness artifact)
+.claude/scheduled_tasks.lock
