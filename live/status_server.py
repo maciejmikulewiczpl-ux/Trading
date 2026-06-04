@@ -37,11 +37,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from alpaca.data.enums import DataFeed  # noqa: E402
+from alpaca.data.requests import StockBarsRequest  # noqa: E402
+from alpaca.data.timeframe import TimeFrame  # noqa: E402
 from alpaca.trading.enums import QueryOrderStatus  # noqa: E402
 from alpaca.trading.requests import GetOrdersRequest, GetPortfolioHistoryRequest  # noqa: E402
 
 from live import heartbeat  # noqa: E402
-from live.paper_orb import ET, UTC, EOD_FLAT_TIME, build_clients, load_env  # noqa: E402
+from live.paper_orb import (  # noqa: E402
+    ET, UTC, EOD_FLAT_TIME, PARAMS, RTH_OPEN,
+    build_clients, fetch_today_bars, load_env,
+)
 
 BIND = os.environ.get("STATUS_BIND", "127.0.0.1")
 PORT = int(os.environ.get("STATUS_PORT", "8787"))
@@ -122,9 +128,96 @@ def _fmt_ago(seconds: float) -> str:
 
 
 # --------------------------------------------------------------------------
+# Opening-range levels (the "ORB fork") for currently-held symbols.
+# Computed here from Alpaca minute bars rather than the runner's in-memory
+# state, so the page stays self-contained and previewable. Mirrors the runner:
+# OR high/low = max-high / min-low of bars in [09:30, 09:30 + or_minutes).
+# --------------------------------------------------------------------------
+def _or_levels(dc, symbols: list[str], now_et: datetime) -> dict:
+    out: dict = {}
+    if not symbols or dc is None:
+        return out
+    # Nothing to compute before the regular session opens — the minute-bar
+    # window would start after "now". OR is an equities concept; this simply
+    # yields no levels (—) for any symbol with no RTH bars yet (incl. crypto).
+    if now_et.time() < RTH_OPEN:
+        return out
+    today = now_et.date()
+    or_end = (datetime.combine(today, RTH_OPEN, tzinfo=ET)
+              + timedelta(minutes=PARAMS.or_minutes))
+    bars = fetch_today_bars(dc, list(symbols), today)
+    if bars is None or bars.empty:
+        return out
+    syms_in = set(bars.index.get_level_values(0).unique())
+    for sym in symbols:
+        if sym not in syms_in:
+            continue
+        sb = bars.xs(sym, level=0)
+        ob = sb[sb.index < or_end]
+        if ob.empty:
+            continue
+        out[sym] = {"or_high": float(ob["high"].max()),
+                    "or_low": float(ob["low"].min())}
+    return out
+
+
+def _spy_daily_returns(dc, start_utc, end_utc) -> dict:
+    """Map ET date -> SPY close-to-close % change, as a market benchmark."""
+    out: dict = {}
+    if dc is None:
+        return out
+    req = StockBarsRequest(
+        symbol_or_symbols=["SPY"], timeframe=TimeFrame.Day,
+        start=start_utc, end=end_utc, feed=DataFeed.IEX,
+    )
+    df = dc.get_stock_bars(req).df
+    if df is None or df.empty:
+        return out
+    closes = (df.xs("SPY", level=0)["close"]
+              if hasattr(df.index, "levels") else df["close"]).astype(float)
+    prev = None
+    for ts, c in closes.items():
+        d = ts.tz_convert(ET).date().isoformat() if getattr(ts, "tzinfo", None) else ts.date().isoformat()
+        if prev is not None and prev != 0:
+            out[d] = (c / prev - 1.0) * 100.0
+        prev = c
+    return out
+
+
+def _next_session_date(tc, after_iso: str) -> str | None:
+    """ET date of the first trading session strictly after `after_iso`.
+
+    Used to label the live (in-progress / just-closed) P/L row: Alpaca rolls
+    `last_equity` and appends the prior day to portfolio history only at the
+    next market open, so account.day_pnl belongs to the session *after* the
+    last history point — today once it opens, or the just-finished session
+    while the market is shut. Authoritative via the market calendar; falls
+    back to the next weekday (holidays aside) if the calendar call fails.
+    """
+    from datetime import date as _date
+    try:
+        after = _date.fromisoformat(after_iso)
+    except Exception:
+        return None
+    try:
+        from alpaca.trading.requests import GetCalendarRequest
+        cal = tc.get_calendar(GetCalendarRequest(
+            start=after + timedelta(days=1), end=after + timedelta(days=7)))
+        for d in sorted(getattr(c, "date") for c in cal):
+            if d > after:
+                return d.isoformat()
+    except Exception:
+        pass
+    d = after + timedelta(days=1)
+    while d.weekday() >= 5:  # skip Sat/Sun
+        d += timedelta(days=1)
+    return d.isoformat()
+
+
+# --------------------------------------------------------------------------
 # Trade state: authoritative, straight from Alpaca
 # --------------------------------------------------------------------------
-def _gather(tc) -> dict:
+def _gather(tc, dc=None) -> dict:
     now_et = datetime.now(ET)
     out: dict = {
         "generated": now_et.strftime("%Y-%m-%d %H:%M:%S %Z"),
@@ -136,6 +229,8 @@ def _gather(tc) -> dict:
         "orb_fills": [],
         "closed_today": [],
         "daily_pnl": [],
+        "week_pnl": None,
+        "month_pnl": None,
         "invested": 0.0,
     }
 
@@ -206,6 +301,26 @@ def _gather(tc) -> dict:
     except Exception as e:
         out["errors"].append(f"open orders: {e}")
 
+    # ---- annotate open positions: OR "fork" (high/low) + actual $ risk ----
+    # Risk = distance to the live protective stop × shares held. The stop price
+    # comes from the open stop-loss bracket leg (already fetched above), so this
+    # is the real risk on the book, not a re-derived estimate.
+    try:
+        stop_by_sym: dict[str, float] = {}
+        for o in out["open_orders"]:
+            if o.get("stop"):
+                stop_by_sym.setdefault(o["symbol"], o["stop"])
+        or_map = _or_levels(dc, [p["symbol"] for p in out["positions"]], now_et)
+        for p in out["positions"]:
+            lv = or_map.get(p["symbol"], {})
+            p["or_high"] = lv.get("or_high")
+            p["or_low"] = lv.get("or_low")
+            stop = stop_by_sym.get(p["symbol"])
+            p["stop"] = stop
+            p["risk"] = (abs(p["avg_entry"] - stop) * p["qty"]) if stop else None
+    except Exception as e:
+        out["errors"].append(f"position OR/risk: {e}")
+
     try:
         today = now_et.date()
         start = datetime.combine(today, dtime(0, 0, tzinfo=ET)).astimezone(UTC)
@@ -268,7 +383,7 @@ def _gather(tc) -> dict:
     # risk, not as a near-zero fraction of the mostly-cash account equity.
     invested_by_day: dict[str, float] = {}
     try:
-        win_start = datetime.combine(today - timedelta(days=24), dtime(0, 0, tzinfo=ET)).astimezone(UTC)
+        win_start = datetime.combine(today - timedelta(days=370), dtime(0, 0, tzinfo=ET)).astimezone(UTC)
         req = GetOrdersRequest(status=QueryOrderStatus.ALL, after=win_start, limit=500)
         try:
             hist = tc.get_orders(filter=req)
@@ -287,10 +402,18 @@ def _gather(tc) -> dict:
     except Exception as e:
         out["errors"].append(f"orders history: {e}")
 
+    # ---- SPY daily % as a market benchmark for the same window ----
+    spy_ret: dict[str, float] = {}
+    try:
+        spy_start = datetime.combine(today - timedelta(days=372), dtime(0, 0, tzinfo=ET)).astimezone(UTC)
+        spy_ret = _spy_daily_returns(dc, spy_start, now_et.astimezone(UTC))
+    except Exception as e:
+        out["errors"].append(f"SPY benchmark: {e}")
+
     # ---- previous days' P&L (account-level, from portfolio history) ----
     try:
         ph = tc.get_portfolio_history(
-            GetPortfolioHistoryRequest(period="1M", timeframe="1D"))
+            GetPortfolioHistoryRequest(period="1A", timeframe="1D"))
         ts, pl, eq = ph.timestamp, ph.profit_loss, ph.equity
         rows = []
         for i in range(len(ts)):
@@ -303,12 +426,48 @@ def _gather(tc) -> dict:
                 "invested": inv,
                 # P/L as a % of capital deployed that day (None if nothing traded).
                 "pnl_pct_inv": (pnl / inv * 100) if inv > 0 else None,
+                "spy_pct": spy_ret.get(d),
                 "equity": _f(eq[i]) if i < len(eq) else 0.0,
             })
-        # Drop leading pre-funding days (portfolio history pads them with eq=0),
-        # then show the last 10 real days, newest first.
+        # Drop leading pre-funding days (portfolio history pads them with eq=0).
+        # Show every real day since funding, newest first — no cap.
         rows = [r for r in rows if r["equity"] > 0]
-        out["daily_pnl"] = list(reversed(rows[-10:]))
+
+        # Portfolio history lags by a session: account.last_equity (and the
+        # newest 1D point) only roll forward at the next market open. So the
+        # live day_pnl belongs to the session AFTER the last history point —
+        # synthesize that row from the account snapshot so the current/just-
+        # closed day is always present and counted in the roll-ups below.
+        today_iso = today.isoformat()
+        acct = out.get("account") or {}
+        eq_now = acct.get("equity", 0.0)
+        last_hist = rows[-1]["date"] if rows else None
+        live_date = _next_session_date(tc, last_hist) if last_hist else today_iso
+        if (eq_now > 0 and live_date and live_date <= today_iso
+                and not any(r["date"] == live_date for r in rows)):
+            pnl_now = acct.get("day_pnl", 0.0)
+            inv_now = invested_by_day.get(live_date, 0.0)
+            rows.append({
+                "date": live_date,
+                "pnl": pnl_now,
+                "invested": inv_now,
+                "pnl_pct_inv": (pnl_now / inv_now * 100) if inv_now > 0 else None,
+                "spy_pct": spy_ret.get(live_date),
+                "equity": eq_now,
+            })
+
+        # Trailing-window roll-ups for the stat cards (calendar windows incl. today).
+        def _window(days: int) -> dict:
+            cutoff = (today - timedelta(days=days - 1)).isoformat()
+            sel = [r for r in rows if r["date"] >= cutoff]
+            pnl_sum = sum(r["pnl"] for r in sel)
+            inv_sum = sum(r["invested"] for r in sel)
+            return {"pnl": pnl_sum,
+                    "pnl_pct_inv": (pnl_sum / inv_sum * 100) if inv_sum > 0 else None}
+        out["week_pnl"] = _window(7)
+        out["month_pnl"] = _window(30)
+
+        out["daily_pnl"] = list(reversed(rows))
     except Exception as e:
         out["errors"].append(f"portfolio history: {e}")
 
@@ -316,10 +475,10 @@ def _gather(tc) -> dict:
     return out
 
 
-def _status(tc) -> dict:
+def _status(tc, dc=None) -> dict:
     now = _time.time()
     if _cache["data"] is None or now - _cache["ts"] > CACHE_TTL:
-        _cache["data"] = _gather(tc)
+        _cache["data"] = _gather(tc, dc)
         _cache["ts"] = now
     return _cache["data"]
 
@@ -360,6 +519,12 @@ PAGE = """<!doctype html>
   .empty{color:var(--dim);font-style:italic}
   .foot{color:var(--dim);font-size:12px;margin-top:18px;display:flex;justify-content:space-between}
   .err{color:#e0871f;font-size:12px;margin-top:8px}
+  .tabs{display:flex;gap:6px;margin-bottom:10px}
+  .tab{background:#0e1116;color:var(--dim);border:1px solid var(--line);border-radius:7px;
+       padding:5px 12px;font:inherit;font-size:12px;cursor:pointer}
+  .tab:hover{color:var(--txt)}
+  .tab.active{background:#1f2630;color:var(--txt);border-color:#3a4350}
+  .hint{color:var(--dim);font-size:11px;margin-top:8px}
 </style></head>
 <body><div class="wrap" id="root">loading…</div>
 <script>
@@ -367,7 +532,47 @@ const money = v => (v<0?"-$":"$") + Math.abs(v).toLocaleString(undefined,{minimu
 const sign = v => (v>=0?"+":"") + money(v);
 const cls = v => v>=0 ? "pos":"neg";
 function row(cells){ return "<tr>"+cells.map((c,i)=>`<td${c.cls?` class="${c.cls}"`:""}>${c.v}</td>`).join("")+"</tr>"; }
+function pctTxt(v){ return (v>=0?"+":"")+v.toFixed(2)+"%"; }
+function winStat(label, w){
+  if(!w) return `<div class="stat"><div class="k">${label}</div><div class="v">—</div></div>`;
+  const sub = (w.pnl_pct_inv===null||w.pnl_pct_inv===undefined) ? "" : `<br><small>${pctTxt(w.pnl_pct_inv)} on inv.</small>`;
+  return `<div class="stat"><div class="k">${label}</div><div class="v ${cls(w.pnl)}">${sign(w.pnl)}${sub}</div></div>`;
+}
+// Monday (ISO) of the week containing an ISO date string.
+function weekStart(iso){
+  const dt=new Date(iso+"T00:00:00Z");
+  dt.setUTCDate(dt.getUTCDate()-((dt.getUTCDay()+6)%7));
+  return dt.toISOString().slice(0,10);
+}
+// Roll daily rows up into period buckets. keyFn maps a date->bucket key;
+// rows are newest-first, buckets returned newest-first. P/L sums; "invested"
+// is the AVERAGE daily capital deployed over the bucket's trading days (the
+// same money is redeployed each day, so summing it would overstate capital);
+// % = period P/L / that average (return on typical daily capital); S&P 500 %
+// compounds the daily returns; equity = the most recent day's equity.
+function groupRows(rows, keyFn, labelFn){
+  const map=new Map();
+  for(const r of rows.slice().reverse()){            // oldest-first for compounding
+    const k=keyFn(r.date);
+    let g=map.get(k);
+    if(!g){ g={label:labelFn(r.date),pnl:0,investedSum:0,days:0,spyMul:1,hasSpy:false,equity:r.equity}; map.set(k,g); }
+    g.pnl+=r.pnl; g.investedSum+=r.invested; g.days++; g.equity=r.equity;
+    if(r.spy_pct!=null){ g.spyMul*=(1+r.spy_pct/100); g.hasSpy=true; }
+  }
+  return Array.from(map.values()).reverse().map(g=>{
+    const avgInv = g.days>0 ? g.investedSum/g.days : 0;
+    return {
+      label:g.label, pnl:g.pnl, invested:avgInv, equity:g.equity,
+      pnl_pct_inv: avgInv>0 ? g.pnl/avgInv*100 : null,
+      spy_pct: g.hasSpy ? (g.spyMul-1)*100 : null,
+    };
+  });
+}
+let plView="day";
+let lastData=null;
+function setPLView(v){ plView=v; if(lastData) render(lastData); }
 function render(d){
+  lastData=d;
   const L=d.liveness;
   let h=`<div class="banner s-${L.state}"><span class="dot"></span><h1>${L.headline}</h1><p>${L.detail}</p></div>`;
   if(d.market){ h+=`<div class="card"><h2>Market</h2>${d.market.label}</div>`; }
@@ -376,6 +581,8 @@ function render(d){
     h+=`<div class="grid">
       <div class="stat"><div class="k">Equity</div><div class="v">${money(a.equity)}</div></div>
       <div class="stat"><div class="k">Day P/L</div><div class="v ${cls(a.day_pnl)}">${sign(a.day_pnl)}<br><small>${a.day_pnl_pct>=0?"+":""}${a.day_pnl_pct.toFixed(2)}%</small></div></div>
+      ${winStat("Week P/L", d.week_pnl)}
+      ${winStat("Month P/L", d.month_pnl)}
       <div class="stat"><div class="k">Cash</div><div class="v">${money(a.cash)}</div></div>
       <div class="stat"><div class="k">Invested</div><div class="v">${money(d.invested||0)}</div></div>
       <div class="stat"><div class="k">Buying power</div><div class="v">${money(a.buying_power)}</div></div>
@@ -384,8 +591,8 @@ function render(d){
   // positions — "invested" = cost basis ($ put into the name); "value" = current mkt value
   h+=`<div class="card"><h2>Open positions (${d.positions.length})</h2>`;
   if(d.positions.length){
-    h+=`<table><tr><th>sym</th><th>side</th><th>qty</th><th>avg</th><th>last</th><th>invested</th><th>value</th><th>unreal P/L</th></tr>`;
-    for(const p of d.positions) h+=row([{v:p.symbol},{v:p.side},{v:p.qty.toFixed(2)},{v:money(p.avg_entry)},{v:money(p.current)},{v:money(p.cost_basis)},{v:money(p.market_value)},{v:`${sign(p.unrealized_pl)} <small>(${p.unrealized_plpc>=0?"+":""}${p.unrealized_plpc.toFixed(1)}%)</small>`,cls:cls(p.unrealized_pl)}]);
+    h+=`<table><tr><th>sym</th><th>side</th><th>qty</th><th>avg</th><th>last</th><th>OR low</th><th>OR high</th><th>risk $</th><th>invested</th><th>value</th><th>unreal P/L</th></tr>`;
+    for(const p of d.positions) h+=row([{v:p.symbol},{v:p.side},{v:p.qty.toFixed(2)},{v:money(p.avg_entry)},{v:money(p.current)},{v:(p.or_low!=null?money(p.or_low):"—")},{v:(p.or_high!=null?money(p.or_high):"—")},{v:(p.risk!=null?money(p.risk):"—")},{v:money(p.cost_basis)},{v:money(p.market_value)},{v:`${sign(p.unrealized_pl)} <small>(${p.unrealized_plpc>=0?"+":""}${p.unrealized_plpc.toFixed(1)}%)</small>`,cls:cls(p.unrealized_pl)}]);
     h+=`</table>`;
   } else h+=`<div class="empty">flat</div>`;
   h+=`</div>`;
@@ -415,18 +622,34 @@ function render(d){
     h+=`</table>`;
   } else h+=`<div class="empty">no ORB entries filled today</div>`;
   h+=`</div>`;
-  // previous days' P/L (account-level; newest first, top row is today in-progress)
+  // P/L breakdown — account-level, newest first. Day rows come from the server;
+  // Week/Month are aggregated client-side from those same rows via the tabs.
   const dp=d.daily_pnl||[];
   const todayStr=(d.generated||"").slice(0,10);  // "YYYY-MM-DD" of this snapshot (ET)
-  h+=`<div class="card"><h2>Daily P/L (last ${dp.length}) <small style="color:var(--dim)">— % = return on capital invested that day</small></h2>`;
+  h+=`<div class="card"><h2>P/L breakdown</h2>`;
+  h+=`<div class="tabs">`+["day","week","month"].map(v=>
+       `<button class="tab${plView===v?" active":""}" onclick="setPLView('${v}')">${v[0].toUpperCase()+v.slice(1)}</button>`).join("")+`</div>`;
   if(dp.length){
-    h+=`<table><tr><th>date</th><th>invested</th><th>P/L</th><th>%</th><th>equity</th></tr>`;
-    dp.forEach((r)=>{ const lbl = r.date===todayStr ? `${r.date} <small>(today)</small>` : r.date;
+    let rowsV, lblHead, fmtLbl, invHead="invested";
+    if(plView==="week"){
+      rowsV=groupRows(dp, weekStart, dt=>"wk of "+weekStart(dt)); lblHead="week"; invHead="avg invested"; fmtLbl=r=>r.label;
+    } else if(plView==="month"){
+      rowsV=groupRows(dp, dt=>dt.slice(0,7), dt=>dt.slice(0,7)); lblHead="month"; invHead="avg invested"; fmtLbl=r=>r.label;
+    } else {
+      rowsV=dp; lblHead="date";
+      fmtLbl=r=>r.date===todayStr ? `${r.date} <small>(today)</small>` : r.date;
+    }
+    h+=`<table><tr><th>${lblHead}</th><th>${invHead}</th><th>P/L</th><th>%</th><th>S&P 500 %</th><th>equity</th></tr>`;
+    rowsV.forEach((r)=>{
       const pct = (r.pnl_pct_inv===null||r.pnl_pct_inv===undefined)
         ? {v:"—"}
         : {v:`${r.pnl_pct_inv>=0?"+":""}${r.pnl_pct_inv.toFixed(1)}%`,cls:cls(r.pnl_pct_inv)};
-      h+=row([{v:lbl},{v:r.invested>0?money(r.invested):"—"},{v:sign(r.pnl),cls:cls(r.pnl)},pct,{v:money(r.equity)}]); });
+      const spy = (r.spy_pct===null||r.spy_pct===undefined)
+        ? {v:"—"}
+        : {v:`${r.spy_pct>=0?"+":""}${r.spy_pct.toFixed(2)}%`,cls:cls(r.spy_pct)};
+      h+=row([{v:fmtLbl(r)},{v:r.invested>0?money(r.invested):"—"},{v:sign(r.pnl),cls:cls(r.pnl)},pct,spy,{v:money(r.equity)}]); });
     h+=`</table>`;
+    h+=`<div class="hint">% = P/L vs capital invested (avg daily capital for Week/Month) · S&P 500 % = SPY close-to-close (compounded over the period)</div>`;
   } else h+=`<div class="empty">no history</div>`;
   h+=`</div>`;
   if(d.errors && d.errors.length) h+=`<div class="err">⚠ ${d.errors.join(" · ")}</div>`;
@@ -447,6 +670,7 @@ tick(); setInterval(tick, 3000);
 
 class Handler(BaseHTTPRequestHandler):
     tc = None  # set in serve()
+    dc = None  # data client, set in serve()
     timeout = 15  # drop slow/half-open sockets so a thread can't be held hostage
 
     def log_message(self, *a):  # silence per-request stderr spam
@@ -482,7 +706,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/api/status"):
             try:
-                body = json.dumps(_status(self.tc)).encode("utf-8")
+                body = json.dumps(_status(self.tc, self.dc)).encode("utf-8")
                 self._send(200, body, "application/json")
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
@@ -497,11 +721,12 @@ class Handler(BaseHTTPRequestHandler):
 def serve() -> int:
     load_env()
     try:
-        tc, _ = build_clients()
+        tc, dc = build_clients()
     except RuntimeError as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 1
     Handler.tc = tc
+    Handler.dc = dc
     httpd = ThreadingHTTPServer((BIND, PORT), Handler)
     print(f"ORB status server on http://{BIND}:{PORT}  (Ctrl-C to stop)")
     try:
