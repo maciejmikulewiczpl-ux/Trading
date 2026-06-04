@@ -126,9 +126,12 @@ SETTINGS: list[Setting] = [
 
     # ---- Sizing / risk guardrails ----
     Setting(
-        "risk_per_trade", "Risk per trade ($)", "Risk", "float", 100.0,
+        "risk_per_trade", "Risk per trade ($)", "Risk", "float", 50.0,
         "Dollars risked per trade: shares = risk_per_trade / |entry - stop|. The "
-        "core position-sizing knob. $100 is the project default.",
+        "core position-sizing knob. $50 pairs with 16 concurrent positions to hold "
+        "the ~$800/day total risk budget while spreading it wider — diversification "
+        "that ~2x'd Sharpe and cut drawdown ~30% vs the old 8x$100 "
+        "(backtest/compare_capaware.py, 2026-06-04).",
         minv=1.0, maxv=100000.0,
     ),
     Setting(
@@ -151,11 +154,13 @@ SETTINGS: list[Setting] = [
         minv=0.0, maxv=1000000.0,
     ),
     Setting(
-        "max_concurrent_positions", "Max concurrent positions", "Risk", "int", 8,
-        "Cap on how many positions may be open at once. With a broad 55-name "
-        "watchlist many breakouts fire near the open; this stops $100k from being "
-        "over-deployed. universe_portfolio.py: cap=5 had the best Sharpe (1.34), "
-        "cap 8-10 fits $100k cash (8x$10k=$80k). When full, further breakouts are "
+        "max_concurrent_positions", "Max concurrent positions", "Risk", "int", 16,
+        "Cap on how many positions may be open at once. With a broad watchlist many "
+        "breakouts fire near the open; this stops $100k from being over-deployed. "
+        "Raised 8->16 (with risk_per_trade $100->$50, same ~$800/day risk) because "
+        "spreading the SAME risk across more names diversifies: ~2x Sharpe, ~30% less "
+        "drawdown, ~2x PnL (the old cap-8 was throttled by the $10k notional cap) — "
+        "backtest/compare_capaware.py 2026-06-04. When full, further breakouts are "
         "skipped for the day (first-come). 0 = unlimited.",
         minv=0, maxv=100,
     ),
