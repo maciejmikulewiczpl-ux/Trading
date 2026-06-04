@@ -57,7 +57,9 @@ from alpaca.trading.requests import (
     GetOrdersRequest,
     MarketOrderRequest,
     StopLossRequest,
+    StopOrderRequest,
     TakeProfitRequest,
+    TrailingStopOrderRequest,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -88,6 +90,10 @@ MAX_CONCURRENT_POSITIONS = _mcp if _mcp > 0 else None
 TREND_FILTER_ENABLED = bool(_CFG.get("trend_filter_enabled", True))
 TREND_SMA_DAYS = 200
 TREND_RET_DAYS = 20
+# Trailing-stop exit (let winners run): replaces the fixed 2R target with a
+# native Alpaca trailing stop at 1R below the high-water mark. Long-only; OFF by
+# default. See backtest/compare_exits.py.
+TRAILING_EXIT_ENABLED = bool(_CFG.get("trailing_exit_enabled", False))
 
 # Short side (regime-gated). See live/config.py for the validation basis.
 SHORT_ENABLED = bool(_CFG["short_enabled"])
@@ -135,6 +141,10 @@ class SymbolState:
     # observation in poll_exits.
     entry_estimate: Optional[float] = None
     entry_slippage_logged: bool = False
+    # Trailing-stop exit (TRAILING_EXIT_ENABLED): the protective trailing stop is
+    # attached on first-observed entry fill (Alpaca can't trail a bracket leg).
+    trail_amount: Optional[float] = None   # $/share to trail below the peak (= 1R)
+    trail_stop_id: Optional[str] = None    # id of the placed trailing-stop order
 
 
 @dataclass
@@ -728,27 +738,43 @@ def submit_bracket(tc: TradingClient, sym: str, qty: int, entry_est: float,
     is exactly how the caller computes target (< entry) and stop (> entry)."""
     side_name = "BUY" if side == OrderSide.BUY else "SELL"
     coid = f"orb-{today.strftime('%Y%m%d')}-{sym}-entry"
-    req = MarketOrderRequest(
-        symbol=sym,
-        qty=qty,
-        side=side,
-        time_in_force=TimeInForce.DAY,
-        order_class=OrderClass.BRACKET,
-        take_profit=TakeProfitRequest(limit_price=round(target, 2)),
-        stop_loss=StopLossRequest(stop_price=round(stop, 2)),
-        client_order_id=coid,
-    )
+    # Trailing-exit (long only): a trailing stop can't be a bracket leg, so the
+    # entry is a plain market order and the protective trailing stop is attached
+    # on fill in poll_exits. Shorts (if ever enabled) keep the bracket.
+    trailing = TRAILING_EXIT_ENABLED and side == OrderSide.BUY
+    if trailing:
+        req = MarketOrderRequest(
+            symbol=sym, qty=qty, side=side,
+            time_in_force=TimeInForce.DAY, client_order_id=coid,
+        )
+    else:
+        req = MarketOrderRequest(
+            symbol=sym,
+            qty=qty,
+            side=side,
+            time_in_force=TimeInForce.DAY,
+            order_class=OrderClass.BRACKET,
+            take_profit=TakeProfitRequest(limit_price=round(target, 2)),
+            stop_loss=StopLossRequest(stop_price=round(stop, 2)),
+            client_order_id=coid,
+        )
     if dry_run:
-        log.info(f"[DRY-RUN] WOULD SUBMIT bracket {side_name} {qty} {sym} "
-                 f"target=${target:.2f} stop=${stop:.2f} coid={coid}")
+        if trailing:
+            log.info(f"[DRY-RUN] WOULD SUBMIT trailing-entry {side_name} {qty} {sym} "
+                     f"(market entry; trail ${abs(entry_est - stop):.2f}/sh attached on fill) coid={coid}")
+        else:
+            log.info(f"[DRY-RUN] WOULD SUBMIT bracket {side_name} {qty} {sym} "
+                     f"target=${target:.2f} stop=${stop:.2f} coid={coid}")
         return f"dryrun-{coid}"
     try:
         o = tc.submit_order(req)
         log.info(f"SUBMITTED {sym} {side_name}: id={o.id} status={o.status} coid={coid}")
         try:
+            exit_desc = (f"trail ${abs(entry_est - stop):.2f}/sh (init stop ${stop:.2f})"
+                         if trailing else f"stop ${stop:.2f}  target ${target:.2f}")
             notify(
                 f"{side_name} {qty} {sym} @ ~${entry_est:.2f}  "
-                f"stop ${stop:.2f}  target ${target:.2f}  "
+                f"{exit_desc}  "
                 f"risk ${abs(entry_est - stop) * qty:.0f}",
                 title=f"ORB entry: {sym} ({side_name})",
                 tags=["chart_with_upwards_trend"] if side == OrderSide.BUY
@@ -808,9 +834,64 @@ def poll_exits(tc: TradingClient, run: RunState) -> None:
             except Exception as e:
                 log.debug(f"poll_exits: entry slippage log failed for {sym}: {e}")
             st.entry_slippage_logged = True
+        # ---- Trailing exit: attach the protective trailing stop once the entry
+        # has filled (Alpaca can't trail a bracket leg, so it's a standalone order
+        # placed here). Retries each loop until placed; the unprotected window is
+        # at most one poll and the initial trail level ≈ OR_low (the fixed stop). ----
+        if TRAILING_EXIT_ENABLED and st.trail_amount and not st.trail_stop_id and not st.exited:
+            try:
+                fqty = int(getattr(parent, "filled_qty", None) or st.shares or 0)
+                if fqty > 0:
+                    treq = TrailingStopOrderRequest(
+                        symbol=sym, qty=fqty,
+                        side=OrderSide.BUY if is_short else OrderSide.SELL,
+                        time_in_force=TimeInForce.DAY,
+                        trail_price=round(st.trail_amount, 2),
+                    )
+                    to = tc.submit_order(treq)
+                    st.trail_stop_id = str(to.id)
+                    log.info(f"TRAILING stop attached {sym}: trail ${st.trail_amount:.2f}/sh "
+                             f"id={to.id} (initial stop ~${st.stop_price:.2f})")
+            except Exception as e:
+                log.error(f"{sym} trailing-stop placement FAILED: {e}")
+                # Safety net: never leave the position naked. Fall back to a plain
+                # protective stop at OR_low (the old fixed-stop behavior). Tracked
+                # via trail_stop_id so exit detection below handles it identically.
+                try:
+                    fqty = int(getattr(parent, "filled_qty", None) or st.shares or 0)
+                    if fqty > 0 and st.stop_price is not None:
+                        so = tc.submit_order(StopOrderRequest(
+                            symbol=sym, qty=fqty,
+                            side=OrderSide.BUY if is_short else OrderSide.SELL,
+                            time_in_force=TimeInForce.DAY,
+                            stop_price=round(st.stop_price, 2),
+                        ))
+                        st.trail_stop_id = str(so.id)
+                        log.warning(f"{sym} FELL BACK to fixed stop ${st.stop_price:.2f} id={so.id}")
+                except Exception as e2:
+                    log.error(f"{sym} fixed-stop fallback ALSO failed (retry next loop): {e2}")
         # ---- Exit slippage + notify (once per symbol per session) ----
         if st.exit_notified:
             continue
+        # Trailing-exit path: the exit is the trailing-stop fill, not a bracket leg.
+        if TRAILING_EXIT_ENABLED and st.trail_stop_id:
+            try:
+                to = tc.get_order_by_id(st.trail_stop_id)
+                if _status_str(getattr(to, "status", "")) == "FILLED":
+                    exit_fill = float(to.filled_avg_price)
+                    entry_px = float(entry_fill)
+                    qty = int(getattr(to, "filled_qty", None) or st.shares or 0)
+                    pnl = (entry_px - exit_fill) * qty if is_short else (exit_fill - entry_px) * qty
+                    notify(
+                        f"{sym} trail-stop @ ${exit_fill:.2f}  "
+                        f"(entry ${entry_px:.2f}, qty {qty})  PnL ${pnl:+,.0f}",
+                        title=f"ORB exit: {sym} trail",
+                        tags=["octagonal_sign"],
+                    )
+                    st.exit_notified = True
+            except Exception as e:
+                log.warning(f"poll_exits: trailing exit check failed for {sym}: {e}")
+            continue  # don't fall through to bracket-leg detection
         for leg in (getattr(parent, "legs", None) or []):
             if _status_str(getattr(leg, "status", "")) != "FILLED":
                 continue
@@ -1459,7 +1540,12 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
             state.entry_price = entry_estimate
             state.entry_estimate = entry_estimate  # frozen for slippage comparison
             state.stop_price = stop
-            state.target_price = target
+            if TRAILING_EXIT_ENABLED and side == OrderSide.BUY:
+                # No fixed target; trailing stop (= initial risk/share) attached on fill.
+                state.trail_amount = round(abs(entry_estimate - stop), 2)
+                state.target_price = None
+            else:
+                state.target_price = target
             state.shares = qty
 
         # One-time OR-locked summary push (after the OR window has closed and
