@@ -625,11 +625,18 @@ function render(d){
     h+=`</table>`;
   } else h+=`<div class="empty">no round-trips closed today</div>`;
   h+=`</div>`;
-  // open orders
-  h+=`<div class="card"><h2>Open orders (${d.open_orders.length})</h2>`;
-  if(d.open_orders.length){
-    h+=`<table><tr><th>sym</th><th>side</th><th>type</th><th>qty</th><th>limit</th><th>stop</th><th>status</th></tr>`;
-    for(const o of d.open_orders) h+=row([{v:o.symbol},{v:o.side},{v:o.type},{v:o.qty.toFixed(0)},{v:o.limit?money(o.limit):"—"},{v:o.stop?money(o.stop):"—"},{v:o.status}]);
+  // open orders — merge a bracket's two legs (take-profit + stop-loss) into one
+  // row per position so target and stop sit side by side, not on separate rows.
+  const oo=d.open_orders||[];
+  const og=(()=>{ const m=new Map();
+    for(const o of oo){ const k=o.symbol+"|"+o.side+"|"+o.qty;
+      let g=m.get(k); if(!g){ g={symbol:o.symbol,side:o.side,qty:o.qty,limit:null,stop:null,st:new Set()}; m.set(k,g); }
+      if(o.limit!=null) g.limit=o.limit; if(o.stop!=null) g.stop=o.stop; g.st.add(o.status); }
+    return Array.from(m.values()); })();
+  h+=`<div class="card"><h2>Open orders (${og.length})</h2>`;
+  if(og.length){
+    h+=`<table><tr><th>sym</th><th>side</th><th>qty</th><th>target</th><th>stop</th><th>status</th></tr>`;
+    for(const o of og) h+=row([{v:o.symbol},{v:o.side},{v:o.qty.toFixed(0)},{v:o.limit?money(o.limit):"—"},{v:o.stop?money(o.stop):"—"},{v:Array.from(o.st).join("/").toLowerCase()}]);
     h+=`</table>`;
   } else h+=`<div class="empty">none</div>`;
   h+=`</div>`;
