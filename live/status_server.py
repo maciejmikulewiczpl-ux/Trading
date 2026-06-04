@@ -37,6 +37,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+import pandas as pd  # noqa: E402
 from alpaca.data.enums import DataFeed  # noqa: E402
 from alpaca.data.requests import StockBarsRequest  # noqa: E402
 from alpaca.data.timeframe import TimeFrame  # noqa: E402
@@ -161,8 +162,20 @@ def _or_levels(dc, symbols: list[str], now_et: datetime) -> dict:
     return out
 
 
-def _spy_daily_returns(dc, start_utc, end_utc) -> dict:
-    """Map ET date -> SPY close-to-close % change, as a market benchmark."""
+# Volatility-regime ("calm day") definition — mirrors backtest/compare_regime_filter.py.
+# A day is "calm" if SPY's 20d realized vol was BELOW its trailing-126d median as
+# of the PRIOR close. ORB historically does better on calm days (validated 2026-06-04).
+VOL_WIN = 20
+VOL_MED_WIN = 126
+
+
+def _spy_daily(dc, start_utc, end_utc) -> dict:
+    """Map ET date -> {"ret": close-to-close %, "calm": bool|None}.
+
+    ret = SPY % change (market benchmark). calm = vol-regime flag (above), None
+    when there isn't enough history. Lookahead-free: the flag for a day uses only
+    data through the prior session.
+    """
     out: dict = {}
     if dc is None:
         return out
@@ -174,13 +187,18 @@ def _spy_daily_returns(dc, start_utc, end_utc) -> dict:
     if df is None or df.empty:
         return out
     closes = (df.xs("SPY", level=0)["close"]
-              if hasattr(df.index, "levels") else df["close"]).astype(float)
-    prev = None
-    for ts, c in closes.items():
+              if hasattr(df.index, "levels") else df["close"]).astype(float).sort_index()
+    ret = closes.pct_change()
+    vol = ret.rolling(VOL_WIN).std()
+    vol_med = vol.rolling(VOL_MED_WIN, min_periods=40).median()
+    calm = (vol < vol_med).shift(1)  # decide a session from the prior close
+    for ts in closes.index:
         d = ts.tz_convert(ET).date().isoformat() if getattr(ts, "tzinfo", None) else ts.date().isoformat()
-        if prev is not None and prev != 0:
-            out[d] = (c / prev - 1.0) * 100.0
-        prev = c
+        r, cf = ret.get(ts), calm.get(ts)
+        out[d] = {
+            "ret": (float(r) * 100.0) if pd.notna(r) else None,
+            "calm": (bool(cf) if pd.notna(cf) else None),
+        }
     return out
 
 
@@ -421,11 +439,11 @@ def _gather(tc, dc=None) -> dict:
     except Exception as e:
         out["errors"].append(f"orders history: {e}")
 
-    # ---- SPY daily % as a market benchmark for the same window ----
-    spy_ret: dict[str, float] = {}
+    # ---- SPY daily % (benchmark) + calm-day vol-regime flag for the same window ----
+    spy_info: dict = {}
     try:
         spy_start = datetime.combine(today - timedelta(days=372), dtime(0, 0, tzinfo=ET)).astimezone(UTC)
-        spy_ret = _spy_daily_returns(dc, spy_start, now_et.astimezone(UTC))
+        spy_info = _spy_daily(dc, spy_start, now_et.astimezone(UTC))
     except Exception as e:
         out["errors"].append(f"SPY benchmark: {e}")
 
@@ -445,7 +463,8 @@ def _gather(tc, dc=None) -> dict:
                 "invested": inv,
                 # P/L as a % of capital deployed that day (None if nothing traded).
                 "pnl_pct_inv": (pnl / inv * 100) if inv > 0 else None,
-                "spy_pct": spy_ret.get(d),
+                "spy_pct": (spy_info.get(d) or {}).get("ret"),
+                "calm": (spy_info.get(d) or {}).get("calm"),
                 "equity": _f(eq[i]) if i < len(eq) else 0.0,
             })
         # Drop leading pre-funding days (portfolio history pads them with eq=0).
@@ -471,7 +490,8 @@ def _gather(tc, dc=None) -> dict:
                 "pnl": pnl_now,
                 "invested": inv_now,
                 "pnl_pct_inv": (pnl_now / inv_now * 100) if inv_now > 0 else None,
-                "spy_pct": spy_ret.get(live_date),
+                "spy_pct": (spy_info.get(live_date) or {}).get("ret"),
+                "calm": (spy_info.get(live_date) or {}).get("calm"),
                 "equity": eq_now,
             })
 
@@ -543,14 +563,17 @@ PAGE = """<!doctype html>
        padding:5px 12px;font:inherit;font-size:12px;cursor:pointer}
   .tab:hover{color:var(--txt)}
   .tab.active{background:#1f2630;color:var(--txt);border-color:#3a4350}
+  .tab.toggle.active{background:#10231a;color:#3fbf72;border-color:#1d4d2e}
   .hint{color:var(--dim);font-size:11px;margin-top:8px}
+  tr.dim td{opacity:.4}
+  .hivol{color:var(--orange);font-size:10px;margin-left:6px;white-space:nowrap}
 </style></head>
 <body><div class="wrap" id="root">loading…</div>
 <script>
 const money = v => (v<0?"-$":"$") + Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 const sign = v => (v>=0?"+":"") + money(v);
 const cls = v => v>=0 ? "pos":"neg";
-function row(cells){ return "<tr>"+cells.map((c,i)=>`<td${c.cls?` class="${c.cls}"`:""}>${c.v}</td>`).join("")+"</tr>"; }
+function row(cells, trCls){ return `<tr${trCls?` class="${trCls}"`:""}>`+cells.map((c,i)=>`<td${c.cls?` class="${c.cls}"`:""}>${c.v}</td>`).join("")+"</tr>"; }
 function pctTxt(v){ return (v>=0?"+":"")+v.toFixed(2)+"%"; }
 function winStat(label, w){
   if(!w) return `<div class="stat"><div class="k">${label}</div><div class="v">—</div></div>`;
@@ -588,8 +611,10 @@ function groupRows(rows, keyFn, labelFn){
   });
 }
 let plView="day";
+let calmOnly=false;
 let lastData=null;
 function setPLView(v){ plView=v; if(lastData) render(lastData); }
+function setCalm(){ calmOnly=!calmOnly; if(lastData) render(lastData); }
 function render(d){
   lastData=d;
   const L=d.liveness;
@@ -652,18 +677,29 @@ function render(d){
   // Week/Month are aggregated client-side from those same rows via the tabs.
   const dp=d.daily_pnl||[];
   const todayStr=(d.generated||"").slice(0,10);  // "YYYY-MM-DD" of this snapshot (ET)
+  // Calm-day vol filter: "calm" days are low-volatility sessions (SPY 20d vol below
+  // its trailing median) where ORB historically does better. The toggle shows the
+  // counterfactual — your P/L counting ONLY calm days — without changing live trading.
+  const calmKnown=dp.some(r=>r.calm!=null);
+  const dpView = calmOnly ? dp.filter(r=>r.calm===true) : dp;
   h+=`<div class="card"><h2>P/L breakdown</h2>`;
   h+=`<div class="tabs">`+["day","week","month"].map(v=>
-       `<button class="tab${plView===v?" active":""}" onclick="setPLView('${v}')">${v[0].toUpperCase()+v.slice(1)}</button>`).join("")+`</div>`;
-  if(dp.length){
+       `<button class="tab${plView===v?" active":""}" onclick="setPLView('${v}')">${v[0].toUpperCase()+v.slice(1)}</button>`).join("")
+     +(calmKnown?`<button class="tab toggle${calmOnly?" active":""}" onclick="setCalm()" title="Count only low-volatility (calm) days — where ORB does better. Does not change live trading.">Calm days only</button>`:``)+`</div>`;
+  if(calmKnown){
+    const calmRows=dp.filter(r=>r.calm===true);
+    const tAll=dp.reduce((s,r)=>s+r.pnl,0), tCalm=calmRows.reduce((s,r)=>s+r.pnl,0);
+    h+=`<div class="hint">vol filter: <b>${calmRows.length}/${dp.length}</b> days calm · P/L calm-only <span class="${cls(tCalm)}">${sign(tCalm)}</span> vs all-days <span class="${cls(tAll)}">${sign(tAll)}</span> &nbsp;(high-vol days marked <span class="hivol">hi-vol</span>)</div>`;
+  }
+  if(dpView.length){
     let rowsV, lblHead, fmtLbl, invHead="invested";
     if(plView==="week"){
-      rowsV=groupRows(dp, weekStart, dt=>"wk of "+weekStart(dt)); lblHead="week"; invHead="avg invested"; fmtLbl=r=>r.label;
+      rowsV=groupRows(dpView, weekStart, dt=>"wk of "+weekStart(dt)); lblHead="week"; invHead="avg invested"; fmtLbl=r=>r.label;
     } else if(plView==="month"){
-      rowsV=groupRows(dp, dt=>dt.slice(0,7), dt=>dt.slice(0,7)); lblHead="month"; invHead="avg invested"; fmtLbl=r=>r.label;
+      rowsV=groupRows(dpView, dt=>dt.slice(0,7), dt=>dt.slice(0,7)); lblHead="month"; invHead="avg invested"; fmtLbl=r=>r.label;
     } else {
-      rowsV=dp; lblHead="date";
-      fmtLbl=r=>r.date===todayStr ? `${r.date} <small>(today)</small>` : r.date;
+      rowsV=dpView; lblHead="date";
+      fmtLbl=r=>(r.date===todayStr?`${r.date} <small>(today)</small>`:r.date)+(r.calm===false?` <span class="hivol">hi-vol</span>`:``);
     }
     h+=`<table><tr><th>${lblHead}</th><th>${invHead}</th><th>P/L</th><th>%</th><th>S&P 500 %</th><th>equity</th></tr>`;
     rowsV.forEach((r)=>{
@@ -673,10 +709,11 @@ function render(d){
       const spy = (r.spy_pct===null||r.spy_pct===undefined)
         ? {v:"—"}
         : {v:`${r.spy_pct>=0?"+":""}${r.spy_pct.toFixed(2)}%`,cls:cls(r.spy_pct)};
-      h+=row([{v:fmtLbl(r)},{v:r.invested>0?money(r.invested):"—"},{v:sign(r.pnl),cls:cls(r.pnl)},pct,spy,{v:money(r.equity)}]); });
+      const trCls=(plView==="day" && !calmOnly && r.calm===false)?"dim":"";
+      h+=row([{v:fmtLbl(r)},{v:r.invested>0?money(r.invested):"—"},{v:sign(r.pnl),cls:cls(r.pnl)},pct,spy,{v:money(r.equity)}], trCls); });
     h+=`</table>`;
-    h+=`<div class="hint">% = P/L vs capital invested (avg daily capital for Week/Month) · S&P 500 % = SPY close-to-close (compounded over the period)</div>`;
-  } else h+=`<div class="empty">no history</div>`;
+    h+=`<div class="hint">% = P/L vs capital invested (avg daily capital for Week/Month) · S&P 500 % = SPY close-to-close (compounded) · calm = SPY 20d vol below its trailing median</div>`;
+  } else h+=`<div class="empty">${calmOnly?"no calm days in range":"no history"}</div>`;
   h+=`</div>`;
   if(d.errors && d.errors.length) h+=`<div class="err">⚠ ${d.errors.join(" · ")}</div>`;
   h+=`<div class="foot"><span>snapshot ${d.generated}</span><span id="tick"></span></div>`;
