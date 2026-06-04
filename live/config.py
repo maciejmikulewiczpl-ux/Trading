@@ -165,15 +165,17 @@ SETTINGS: list[Setting] = [
         minv=0, maxv=100,
     ),
     Setting(
-        "trailing_exit_enabled", "Trailing-stop exit (let winners run)", "Risk", "bool", False,
+        "trailing_exit_enabled", "Trailing-stop exit (let winners run)", "Risk", "bool", True,
         "Replace the fixed 2R take-profit target with a TRAILING stop: enter on a "
         "plain market order, then attach an Alpaca native trailing stop that trails "
         "1R (the initial entry-to-stop distance) below the high-water mark, with no "
         "fixed target — so trend-day winners run past 2R. backtest/compare_exits.py "
         "(+ compare_exits_slippage.py): ~2x avgR/Sharpe/PnL and ~half the drawdown "
-        "vs fixed 2R, and the only net-positive config after measured slippage. OFF "
-        "by default (it changes live exit execution); enable deliberately, watch the "
-        "first session. Long-only; with shorts on it falls back to the bracket.",
+        "vs fixed 2R, and the only net-positive config after measured slippage. "
+        "ENABLED 2026-06-04 after the Alpaca trailing-stop mechanism was verified "
+        "live (initial stop = entry-1R, trails up as expected). Long-only; with "
+        "shorts on it falls back to the bracket; on placement failure falls back "
+        "to a fixed protective stop at OR_low (never naked).",
     ),
     Setting(
         "min_risk_per_share", "Min risk/share ($)", "Risk", "float", 0.05,
