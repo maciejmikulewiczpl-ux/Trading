@@ -180,16 +180,17 @@ def build_clients() -> tuple[TradingClient, StockHistoricalDataClient]:
     secret = os.environ.get("ALPACA_SECRET_KEY")
     if not api_key or not secret:
         raise RuntimeError("ALPACA_API_KEY / ALPACA_SECRET_KEY missing from .env")
-    # Paper vs LIVE is env-gated with a SAFE default: PAPER unless ALPACA_PAPER is
-    # explicitly set falsy. Going to real money is then a deliberate .env change
-    # (ALPACA_PAPER=false + live keys), never an accidental code edit. Note: live
-    # keys won't authenticate against the paper endpoint and vice-versa, so a
-    # mismatched flag/keys fails safe (errors) rather than trading the wrong way.
-    paper = os.environ.get("ALPACA_PAPER", "true").strip().lower() not in ("false", "0", "no", "off")
+    # Paper vs LIVE is env-gated with a SAFE default: PAPER unless ALPACA_PAPER_TRADE
+    # is explicitly set falsy. This REUSES the same var the Alpaca MCP server reads,
+    # so one toggle controls both — no confusing near-duplicate. Going to real money
+    # is then a deliberate .env change (ALPACA_PAPER_TRADE=false + live keys), never
+    # an accidental code edit. Live keys won't authenticate against the paper
+    # endpoint (and vice-versa), so a mismatched flag/keys fails safe (errors).
+    paper = os.environ.get("ALPACA_PAPER_TRADE", "true").strip().lower() not in ("false", "0", "no", "off")
     if paper:
-        log.info("Alpaca: PAPER trading (set ALPACA_PAPER=false + live keys for real money).")
+        log.info("Alpaca: PAPER trading (set ALPACA_PAPER_TRADE=false + live keys for real money).")
     else:
-        log.warning("*** Alpaca: LIVE / REAL-MONEY TRADING (ALPACA_PAPER=false). REAL FUNDS AT RISK. ***")
+        log.warning("*** Alpaca: LIVE / REAL-MONEY TRADING (ALPACA_PAPER_TRADE=false). REAL FUNDS AT RISK. ***")
     return (
         TradingClient(api_key, secret, paper=paper),
         StockHistoricalDataClient(api_key, secret),
