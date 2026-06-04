@@ -738,6 +738,19 @@ def submit_bracket(tc: TradingClient, sym: str, qty: int, entry_est: float,
     is exactly how the caller computes target (< entry) and stop (> entry)."""
     side_name = "BUY" if side == OrderSide.BUY else "SELL"
     coid = f"orb-{today.strftime('%Y%m%d')}-{sym}-entry"
+    # TODO (cost-side improvement, deferred 2026-06-04): entries are MARKET orders
+    # and pay the full spread. Measured incremental entry slippage ~0.020R (median
+    # 0.014R), with a fat tail on high-priced / tight-stop names. A marketable-LIMIT
+    # entry (limit a few cents above the breakout) would cap the worst fills and
+    # could lift the thin net edge (~+0.039R after costs). TRADE-OFF: a limit can
+    # MISS the trade if price runs past it before filling — and the runaway
+    # breakouts are exactly the trend-day winners the trailing exit lives on, so a
+    # too-tight limit systematically skips the best trades. Hard to backtest (needs
+    # a fill-PROBABILITY model, not just a fill price; 1-min bars are coarse for it).
+    # Plan: implement behind a config flag like trailing_exit_enabled, paper-first,
+    # AFTER accumulating real fill/slippage data from live trailing sessions. See
+    # backtest/compare_exits_slippage.py + the 2026-06-04 slippage measurement.
+    #
     # Trailing-exit (long only): a trailing stop can't be a bracket leg, so the
     # entry is a plain market order and the protective trailing stop is attached
     # on fill in poll_exits. Shorts (if ever enabled) keep the bracket.
