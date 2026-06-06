@@ -191,8 +191,12 @@ SETTINGS: list[Setting] = [
     Setting(
         "vol_regime_risk_mult", "  ^ risk multiplier on high-vol days", "Risk", "float", 0.5,
         "When the vol-regime filter flags a high-vol day, risk_per_trade is scaled "
-        "by this (0.5 = half size; 0.0 = full pause). 0.5 keeps more upside than a "
-        "full pause for ~the same risk-adjusted gain (compare_volpause.py).",
+        "by this (0.5 = half size; 0.0 = full pause). 0.5 keeps trading every day at "
+        "half size (chosen for PAPER, so daily monitoring continues + the website "
+        "'Calm days only' toggle previews the full-pause result). >>> REAL MONEY: set "
+        "to 0.0 (FULL PAUSE) — the 2022 bear test showed pause is far more robust in a "
+        "sustained bear (cuts the loss ~70% vs ~35% for half). compare_volpause.py / "
+        "compare_volpause_bear.py.",
         minv=0.0, maxv=1.0,
     ),
     Setting(
