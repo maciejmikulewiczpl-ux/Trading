@@ -94,6 +94,12 @@ TREND_RET_DAYS = 20
 # native Alpaca trailing stop at 1R below the high-water mark. Long-only; OFF by
 # default. See backtest/compare_exits.py.
 TRAILING_EXIT_ENABLED = bool(_CFG.get("trailing_exit_enabled", False))
+# Vol-regime risk dial: halve (or pause) risk in high-vol regimes. Reactive — sits
+# out the turbulent aftermath of a shock. See backtest/compare_volpause.py.
+VOL_REGIME_FILTER_ENABLED = bool(_CFG.get("vol_regime_filter_enabled", False))
+VOL_REGIME_RISK_MULT = float(_CFG.get("vol_regime_risk_mult", 0.5))
+VOL_WIN = 20          # SPY realized-vol lookback (trading days)
+VOL_MED_WIN = 126     # trailing window for the vol threshold
 
 # Short side (regime-gated). See live/config.py for the validation basis.
 SHORT_ENABLED = bool(_CFG["short_enabled"])
@@ -156,6 +162,7 @@ class RunState:
     or_lock_notified: bool = False
     shorts_enabled: bool = False       # set once at session start from the regime gate
     regime_note: str = ""              # human-readable explanation of the gate decision
+    risk_mult: float = 1.0             # vol-regime risk dial (1.0 normal, <1 in high-vol)
     # Trend filter (multi-timeframe): symbols eligible for LONG entries today.
     # Computed once at session start from prior daily closes. None = filter
     # disabled or unavailable (fail-open, every name eligible).
@@ -284,6 +291,41 @@ def compute_trend_eligibility(dc: StockHistoricalDataClient,
         more = f" ... (+{len(filtered) - 25} more)" if len(filtered) > 25 else ""
         log.info(f"  filtered: {preview}{more}")
     return eligible
+
+
+def compute_vol_regime(dc: StockHistoricalDataClient, today: date) -> Optional[bool]:
+    """True if SPY's 20d realized vol (as of the PRIOR close) is above its
+    trailing-126d median — a 'high-vol regime' where we dial risk down. None on
+    any error (caller fails safe to full risk). Lookahead-free: only closes
+    strictly before `today`. Mirrors backtest/compare_volpause.py.
+    """
+    try:
+        end = combine_et(today, RTH_OPEN)        # pre-open today
+        start = end - timedelta(days=400)        # ~270 trading days; need 146+
+        req = StockBarsRequest(
+            symbol_or_symbols=["SPY"], timeframe=TimeFrame.Day,
+            start=start.astimezone(UTC), end=end.astimezone(UTC),
+            feed=DataFeed.IEX, adjustment=Adjustment.ALL,
+        )
+        df = dc.get_stock_bars(req).df
+        if df.empty:
+            return None
+        closes = (df.xs("SPY", level=0)["close"] if isinstance(df.index, pd.MultiIndex)
+                  else df["close"]).astype(float).sort_index()
+        # belt-and-braces: drop any bar dated today or later (no lookahead)
+        keep = [(ts.tz_convert(ET).date() if getattr(ts, "tzinfo", None) else ts.date()) < today
+                for ts in closes.index]
+        closes = closes[keep]
+        vol = closes.pct_change().rolling(VOL_WIN).std()
+        med = vol.rolling(VOL_MED_WIN, min_periods=40).median()
+        v, m = vol.iloc[-1], med.iloc[-1]
+        if pd.isna(v) or pd.isna(m):
+            log.info("Vol regime: insufficient history; full risk.")
+            return None
+        return bool(v > m)
+    except Exception as e:
+        log.warning(f"Vol regime check failed ({e}); FAIL-SAFE to full risk.")
+        return None
 
 
 def wait_for_network(tc: TradingClient, max_attempts: int = 5,
@@ -707,18 +749,20 @@ def compute_short_regime(dc: StockHistoricalDataClient, today: date) -> tuple[bo
 
 
 # ---------- sizing / guardrails ----------
-def size_position(entry: float, stop: float, equity: float) -> tuple[int, str]:
+def size_position(entry: float, stop: float, equity: float,
+                  risk_mult: float = 1.0) -> tuple[int, str]:
     """Returns (shares, reason). shares==0 means reject; reason explains.
 
     Direction-agnostic: risk per share is |entry - stop| (stop is below entry
-    for longs, above for shorts).
+    for longs, above for shorts). risk_mult scales risk_per_trade for the
+    vol-regime dial (1.0 normal, 0.5 in high-vol).
     """
     risk_per_share = abs(entry - stop)
     if risk_per_share < MIN_RISK_PER_SHARE:
         return 0, f"risk_per_share ${risk_per_share:.4f} < min ${MIN_RISK_PER_SHARE}"
     if risk_per_share > MAX_RISK_PER_SHARE:
         return 0, f"risk_per_share ${risk_per_share:.2f} > max ${MAX_RISK_PER_SHARE}"
-    shares_by_risk = math.floor(PARAMS.risk_per_trade / risk_per_share)
+    shares_by_risk = math.floor(PARAMS.risk_per_trade * risk_mult / risk_per_share)
     cap_dollars = equity * PARAMS.max_position_pct
     if PARAMS.max_position_dollars is not None:
         cap_dollars = min(cap_dollars, PARAMS.max_position_dollars)
@@ -1308,6 +1352,22 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
         log.info("Trend filter: DISABLED in config.")
         run.trend_eligible = None
 
+    # Vol-regime risk dial: in a high-vol regime, scale risk down for the whole
+    # session (reactive — sits out the turbulent aftermath; see compare_volpause.py).
+    run.risk_mult = 1.0
+    vol_line = ""
+    if VOL_REGIME_FILTER_ENABLED:
+        high_vol = compute_vol_regime(dc, today)
+        if high_vol:
+            run.risk_mult = VOL_REGIME_RISK_MULT
+            eff = PARAMS.risk_per_trade * VOL_REGIME_RISK_MULT
+            log.warning(f"Vol regime: HIGH-VOL -> risk dialed to {VOL_REGIME_RISK_MULT:.0%} "
+                        f"(${eff:.0f}/trade this session).")
+            vol_line = f"\nVol regime: HIGH — risk dialed to {VOL_REGIME_RISK_MULT:.0%} (${eff:.0f}/trade)."
+        else:
+            state_txt = "unknown (fail-safe)" if high_vol is None else "calm"
+            log.info(f"Vol regime: {state_txt} -> full risk.")
+
     open_dt = combine_et(today, RTH_OPEN)
     or_end_dt = open_dt + timedelta(minutes=PARAMS.or_minutes)
     eod_dt = combine_et(today, EOD_FLAT_TIME)
@@ -1328,7 +1388,7 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                    if run.shorts_enabled else "Shorts OFF (regime not bearish)")
     notify(
         f"Account ${run.starting_equity:,.0f}. Waiting for 09:30 ET market open. "
-        f"Watchlist: {', '.join(watchlist)}.\n{shorts_line}.",
+        f"Watchlist: {', '.join(watchlist)}.\n{shorts_line}.{vol_line}",
         title=f"ORB started ({today.isoformat()})",
         tags=["green_circle"],
     )
@@ -1535,7 +1595,7 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                     continue
 
             equity = float(tc.get_account().equity)
-            qty, reason = size_position(entry_estimate, stop, equity)
+            qty, reason = size_position(entry_estimate, stop, equity, run.risk_mult)
 
             log.info(f"BREAKOUT {sym} {side_name.upper()}: close=${last_close:.2f} {arrow} "
                      f"{ref_label}=${ref_val:.2f}  -> entry~=${entry_estimate:.2f} "

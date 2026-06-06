@@ -178,6 +178,24 @@ SETTINGS: list[Setting] = [
         "to a fixed protective stop at OR_low (never naked).",
     ),
     Setting(
+        "vol_regime_filter_enabled", "Vol-regime risk dial (turbulent markets)", "Risk", "bool", True,
+        "Dial position risk DOWN in high-volatility regimes. Pre-open, compares "
+        "SPY's 20-day realized vol (as of yesterday's close) to its trailing 126-day "
+        "median; if above, multiplies risk_per_trade by vol_regime_risk_mult for the "
+        "whole session. REACTIVE by design — it sits out the turbulent AFTERMATH of a "
+        "shock (when ORB longs whipsaw), not the surprise day itself (a same-day gate "
+        "BACKFIRES — see backtest/compare_volpause.py). Half-risk: ~same PnL, Sharpe "
+        "1.48->1.70, drawdown cut ~30%. OFF by default; long-side risk only. "
+        "Lookahead-free; fails safe to full risk if the SPY fetch fails.",
+    ),
+    Setting(
+        "vol_regime_risk_mult", "  ^ risk multiplier on high-vol days", "Risk", "float", 0.5,
+        "When the vol-regime filter flags a high-vol day, risk_per_trade is scaled "
+        "by this (0.5 = half size; 0.0 = full pause). 0.5 keeps more upside than a "
+        "full pause for ~the same risk-adjusted gain (compare_volpause.py).",
+        minv=0.0, maxv=1.0,
+    ),
+    Setting(
         "min_risk_per_share", "Min risk/share ($)", "Risk", "float", 0.05,
         "Reject a setup if entry-to-stop is tighter than this — too tight means "
         "oversized share counts and noise-driven stops.",
