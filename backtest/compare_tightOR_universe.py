@@ -1,20 +1,21 @@
 """Dig #2: does EXPANDING the universe add profitable tight-OR volume (net of worse fills)?
 
 The cap doesn't bind and the cutoff can't extend, so more tight-OR trades can only come
-from more NAMES. This concatenates the ~120 tier-2 names (fetch_universe_expanded.py) onto
-the live ~100, re-backtests tight-OR (<=0.5%, trailing), and charges the NEW names HIGHER
-slippage (they're less liquid) via a tiered cents model. The honest question: do the extra
-trades earn their (worse) keep, and does the cap start binding (room to scale)?
+from more NAMES. Memory-frugal (7.9GB-safe): tier-2 trailing trades are pre-built in
+batches by build_tier2_trades.py; here we just MERGE them with tier-1 at the trade level
+(no big-bar concat) and price the new names at HIGHER slippage (they're less liquid).
 
-Tier-1 (live names): base cents (median trade = 0.042R). Tier-2 (new names): TIER2_MULT x
-base. Real $10k cap, vol-half, both windows + OOS. Expansion 'wins' if the full universe
-beats the live-only universe on PnL while holding Sharpe, in both windows.
+Tier-1 (live names): base cents (median tight trade = 0.042R). Tier-2 (new names):
+TIER2_MULT x base. Real $10k cap, vol-half, both windows + OOS. Expansion 'wins' if the
+full universe beats live-only on PnL while holding Sharpe in both windows, and higher caps
+keep adding PnL (the cap now binds = room to scale).
 
-Run (needs EXP caches from fetch_universe_expanded.py; re-backtests ~220 names — heavy):
+Run AFTER build_tier2_trades.py:
     .venv/Scripts/python.exe backtest/compare_tightOR_universe.py
 """
 from __future__ import annotations
 
+import gc
 import math
 import pickle
 import statistics
@@ -23,8 +24,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from strategies.orb import Params  # noqa: E402
-from backtest.run_orb import run_backtest, STARTING_EQUITY  # noqa: E402
 from backtest.universe_portfolio import portfolio  # noqa: E402
 from backtest.compare_selection import _tday  # noqa: E402
 from backtest.compare_norefill_trend import trend_eligibility, apply_filter  # noqa: E402
@@ -38,10 +37,8 @@ WINDOWS = [730, 180]
 TIGHT = 0.5
 TARGET_MEDIAN_R = 0.042
 NOTIONAL_CAP = 10_000.0
-TIER2_MULT = 2.0          # new names slip ~2x the liquid tier (conservative)
+TIER2_MULT = 2.0
 CAPS = [16, 24, 32]
-PARAMS = Params(or_minutes=15, target_r=2.0, risk_per_trade=100.0, max_position_pct=0.25,
-                max_position_dollars=10_000.0, no_entry_after_time=__import__("datetime").time(11, 30))
 
 
 def tight(trades):
@@ -63,37 +60,30 @@ HEAD = f"{'config':<26}{'names':>6}{'trades':>7}{'PnL$':>9}{'Sharpe':>8}{'maxDD$
 
 
 def run_window(w):
-    all_bars, days, present, cached15, closes = load(w)
-    tier1 = set(present)
-    # bolt on the expansion caches
-    exp_min = pickle.load(open(ROOT / "backtest" / f".bars_cache_univ_EXP_{w}d.pkl", "rb"))["bars"]
-    exp_day = pickle.load(open(ROOT / "backtest" / f".bars_cache_daily_EXP_{w}d.pkl", "rb"))
-    full_bars = pd.concat([all_bars, exp_min]).sort_index()
-    full_present = sorted(full_bars.index.get_level_values(0).unique())
-    full_closes = closes.join(exp_day[[c for c in exp_day.columns if c not in closes.columns]], how="outer")
-    tier2 = set(full_present) - tier1
-
-    buckets = bucket(full_bars, full_present)
-    tz = full_bars.index.get_level_values(1).tz
+    # tier-1 trailing trades from the existing cache (loads big bars once, then freed)
+    all_bars, days, present, trades, closes = load(w)
+    elig = trend_eligibility(closes, present, days)
+    buckets = bucket(all_bars, present)
+    tz = all_bars.index.get_level_values(1).tz
     eod_ns = {d: pd.Timestamp.combine(d, EOD).tz_localize(tz).value for d in days}
+    tier1_trail = apply_filter([t for t in reexit(trades, buckets, POLICIES["trail_1R"], eod_ns)
+                                if t.side == "long"], elig)
     mid = sorted(days)[len(days) // 2]
-    prior = prior_vol_flags(full_closes, days)
+    prior = prior_vol_flags(closes, days)
     half = {d: (0.5 if prior[d] else 1.0) for d in days}
+    tier1_names = set(present)
+    del all_bars, buckets, trades; gc.collect()
 
-    def trail_for(bars, pres, cl):
-        raw, _ = run_backtest(bars, days, pres, PARAMS, STARTING_EQUITY)
-        elig = trend_eligibility(cl, pres, days)
-        return apply_filter([t for t in reexit(raw, buckets, POLICIES["trail_1R"], eod_ns)
-                             if t.side == "long"], elig)
+    tier2_trail = pickle.load(open(ROOT / "backtest" / f".tier2_trail_{w}d.pkl", "rb"))
+    tier2_names = {t.symbol for t in tier2_trail}
+    full_trail = tier1_trail + tier2_trail
 
-    live_trail = trail_for(all_bars, present, closes)        # live universe only
-    full_trail = trail_for(full_bars, full_present, full_closes)
-    base_cents = TARGET_MEDIAN_R * statistics.median(risk_ps(t) for t in tight(live_trail)) / 2.0
-    cents_of = lambda sym: base_cents * (TIER2_MULT if sym in tier2 else 1.0)
+    base_cents = TARGET_MEDIAN_R * statistics.median(risk_ps(t) for t in tight(tier1_trail)) / 2.0
+    cents_of = lambda sym: base_cents * (TIER2_MULT if sym in tier2_names else 1.0)
+    n_t2 = sum(1 for t in tight(full_trail) if t.symbol in tier2_names)
 
-    n_t2_trades = sum(1 for t in tight(full_trail) if t.symbol in tier2)
     print(f"\n========== {w}d  (tight-OR<= {TIGHT}%, trailing, tiered $ tier2={TIER2_MULT}x, OOS {mid}) ==========")
-    print(f"  tier1 {len(tier1)} names, tier2 {len(tier2)} names | tight trades from tier2: {n_t2_trades}")
+    print(f"  tier1 {len(tier1_names)} names, tier2 {len(tier2_names)} names | tight trades from tier2: {n_t2}")
     print(HEAD); print("  " + "-" * (len(HEAD) - 2))
 
     def emit(label, trail, nm, cap):
@@ -103,17 +93,18 @@ def run_window(w):
         f = perf(s)
         print(f"  {label:<26}{nm:>6}{len(taken):>7}{f['pnl']:>+9,.0f}{f['sharpe']:>8.2f}{f['maxdd']:>9,.0f}   {h1:>+8,.0f}{h2:>+8,.0f}")
 
-    emit("live univ (cap16)", live_trail, len(tier1), 16)
+    emit("live univ (cap16)", tier1_trail, len(tier1_names), 16)
     for c in CAPS:
-        emit(f"expanded (cap{c})", full_trail, len(full_present), c)
+        emit(f"expanded (cap{c})", full_trail, len(tier1_names) + len(tier2_names), c)
 
 
 def main():
     for w in WINDOWS:
         run_window(w)
-    print("\nReads: expansion wins if 'expanded' beats 'live univ' on PnL while holding Sharpe, in")
-    print("BOTH windows — and if higher caps keep adding PnL (the cap now binds = room to scale).")
-    print("If tier-2's 2x slippage eats the extra trades (Sharpe drops), the liquid-only universe wins.")
+    print("\nReads: expansion wins if 'expanded' beats 'live univ' on PnL while holding Sharpe in")
+    print("BOTH windows, and higher caps keep adding PnL. If tier-2's 2x slippage eats the extra")
+    print("trades (Sharpe drops), the liquid-only universe wins. (Note: live 10s poll-cycle limits")
+    print("how many names the runner can actually watch — a deployment constraint, flagged separately.)")
     return 0
 
 
