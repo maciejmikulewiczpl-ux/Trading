@@ -100,6 +100,18 @@ TREND_FILTER_ENABLED = (
 )
 TREND_SMA_DAYS = 200
 TREND_RET_DAYS = 20
+# Tight-OR filter: only take breakouts whose opening range is narrow (<= TIGHT_OR_MAX_PCT
+# of entry price). The biggest validated edge (see memory tightOR_finding / backtest/
+# compare_or_range_*.py): tight ranges + the trailing exit give the asymmetric payoff.
+# Config default ON, overridable off per-run via ORB_TIGHT_OR=false (the news-edge bot
+# sets it off so the catalyst, not OR width, selects its names).
+_to_env = os.environ.get("ORB_TIGHT_OR")
+TIGHT_OR_FILTER_ENABLED = (
+    _to_env.strip().lower() not in ("false", "0", "no", "off")
+    if _to_env is not None and _to_env.strip() != ""
+    else bool(_CFG.get("tight_or_filter_enabled", True))
+)
+TIGHT_OR_MAX_PCT = float(_CFG.get("tight_or_max_pct", 0.5))
 # Trailing-stop exit (let winners run): replaces the fixed 2R target with a
 # native Alpaca trailing stop at 1R below the high-water mark. Long-only; OFF by
 # default. See backtest/compare_exits.py.
@@ -1574,6 +1586,21 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
             else:
                 continue
 
+            # Tight-OR filter: skip breakouts whose opening range is too WIDE relative
+            # to price (> TIGHT_OR_MAX_PCT). Wide-OR = far stop, weak follow-through,
+            # unreliable edge; the validated edge lives in tight ranges + the trailing
+            # exit (biggest single win, 2026-06-09). Direction-agnostic (OR width is).
+            if TIGHT_OR_FILTER_ENABLED and state.or_high is not None and state.or_low is not None:
+                or_width_pct = ((state.or_high - state.or_low) / entry_estimate * 100.0
+                                if entry_estimate else 0.0)
+                if or_width_pct > TIGHT_OR_MAX_PCT:
+                    log.info(f"{sym} {side_name} breakout SKIPPED: OR width {or_width_pct:.2f}% "
+                             f"> {TIGHT_OR_MAX_PCT:.2f}% (tight-OR filter).")
+                    state.entered = True
+                    state.side = side_name
+                    state.reject_reason = "OR too wide"
+                    continue
+
             # Trend filter (longs only): skip names that didn't pass the daily
             # SMA + relative-strength check at session start. run.trend_eligible
             # is None when the filter is off or the daily fetch failed
@@ -1702,6 +1729,8 @@ def main() -> int:
                  f"symbols={sorted(SHORT_SYMBOLS)}, flips=0")
     else:
         log.info("Shorts: DISABLED (SHORT_ENABLED=False)")
+    log.info(f"Tight-OR filter: {'ON (max OR ' + format(TIGHT_OR_MAX_PCT, '.2f') + '% of price)' if TIGHT_OR_FILTER_ENABLED else 'OFF'}"
+             f"  |  Trend filter: {'ON' if TREND_FILTER_ENABLED else 'OFF'}")
 
     load_env()
     try:

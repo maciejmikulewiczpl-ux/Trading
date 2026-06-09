@@ -124,6 +124,26 @@ SETTINGS: list[Setting] = [
         "if the daily fetch fails so it can never silently disable trading.",
     ),
 
+    Setting(
+        "tight_or_filter_enabled", "Tight-OR filter (OR-width screen)", "Strategy", "bool", True,
+        "Only take breakouts whose opening range is NARROW — (OR_high - OR_low) <= "
+        "tight_or_max_pct of entry price. Tight ranges = tiny risk/share, so with the "
+        "trailing exit a winner runs to a large R-multiple while losers cost little; "
+        "wide-OR breakouts have a far stop, weak follow-through, and an unreliable edge. "
+        "VALIDATED 2026-06-09 (backtest/compare_or_range_*.py): on the trailing exit, "
+        "cap-aware real-$ Sharpe -0.34 -> 1.80 (730d), drawdown -$10k -> -$0.9k; survives "
+        "2x slippage, both OOS halves, and turns the 2022 bear positive. Biggest single "
+        "edge found. Default ON; overridable off per-run via env ORB_TIGHT_OR=false "
+        "(the news-edge bot uses that — catalyst, not OR width, selects its names).",
+    ),
+    Setting(
+        "tight_or_max_pct", "  ^ max OR width (% of price)", "Strategy", "float", 0.5,
+        "Width threshold for the tight-OR filter, as a percent of entry price. 0.5 = "
+        "skip any breakout whose opening range exceeds 0.5% of price. Smooth optimum "
+        "~0.4-0.5%; 0.5 is the robust sweet spot (~5 trades/day over 2yr).",
+        minv=0.1, maxv=5.0,
+    ),
+
     # ---- Sizing / risk guardrails ----
     Setting(
         "risk_per_trade", "Risk per trade ($)", "Risk", "float", 50.0,

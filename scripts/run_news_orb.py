@@ -41,7 +41,9 @@ def _load_news_env() -> None:
         if line and not line.startswith("#") and "=" in line:
             k, v = line.split("=", 1)
             os.environ[k.strip()] = v.strip().strip('"').strip("'")   # override (this IS the news account)
-    os.environ["ORB_TREND_FILTER"] = "false"   # catalyst selects the names, not a technical screen
+    # Catalyst selects the names — turn OFF both technical screens (trend + tight-OR width).
+    os.environ["ORB_TREND_FILTER"] = "false"
+    os.environ["ORB_TIGHT_OR"] = "false"
 
 
 def _todays_positive_picks(date_str: str) -> list[str]:
