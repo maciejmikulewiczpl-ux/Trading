@@ -87,7 +87,17 @@ MAX_RISK_PER_SHARE = float(_CFG["max_risk_per_share"])
 # Max simultaneously-open positions (broad-watchlist guardrail). 0 = unlimited.
 _mcp = int(_CFG.get("max_concurrent_positions", 0))
 MAX_CONCURRENT_POSITIONS = _mcp if _mcp > 0 else None
-TREND_FILTER_ENABLED = bool(_CFG.get("trend_filter_enabled", True))
+# Default from config, but overridable per-run via the ORB_TREND_FILTER env var so a
+# second instance (the news-edge bot) can run with NO technical screen — letting the
+# morning news catalyst, not a trend test, select the names. Read at import, so the
+# launcher must set it in the environment BEFORE python starts. Baseline VM bot never
+# sets it -> uses the config default, behaviour unchanged.
+_tf_env = os.environ.get("ORB_TREND_FILTER")
+TREND_FILTER_ENABLED = (
+    _tf_env.strip().lower() not in ("false", "0", "no", "off")
+    if _tf_env is not None and _tf_env.strip() != ""
+    else bool(_CFG.get("trend_filter_enabled", True))
+)
 TREND_SMA_DAYS = 200
 TREND_RET_DAYS = 20
 # Trailing-stop exit (let winners run): replaces the fixed 2R target with a

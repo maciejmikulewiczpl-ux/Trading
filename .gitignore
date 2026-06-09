@@ -1,6 +1,7 @@
 # Secrets — Alpaca API keys etc.
 .env
 .env.local
+.env.*
 
 # SSH / private keys — must NEVER be committed (this repo is public).
 # Keys live in ~/.ssh, not here; this is belt-and-suspenders against an accident.
