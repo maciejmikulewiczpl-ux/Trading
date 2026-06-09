@@ -1,0 +1,108 @@
+{
+  "date": "2026-06-09",
+  "logged_at": "2026-06-09T09:39:56-04:00",
+  "picks": [
+    {
+      "symbol": "INTC",
+      "signal": 1,
+      "confidence": 0.7,
+      "reason": "Reports of large Google AI chip/foundry order + Nvidia packaging tests; ~10% surge on the chip-rebound tape.",
+      "sources": [
+        "benzinga",
+        "websearch"
+      ],
+      "source_signals": {}
+    },
+    {
+      "symbol": "MU",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Memory/chip rebound; HBM theme lifted by NVIDIA-SK Hynix Rubin deal; ~+5% premarket.",
+      "sources": [
+        "benzinga",
+        "thestreet"
+      ],
+      "source_signals": {}
+    },
+    {
+      "symbol": "NVDA",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Korea AI partnerships (SK Hynix/Samsung HBM for Rubin); CNBC Final-Trades top pick; broad AI strength.",
+      "sources": [
+        "benzinga"
+      ],
+      "source_signals": {}
+    },
+    {
+      "symbol": "TXRH",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "+5.5% premarket, liquid; momentum (NOT earnings - Q1 was May); specific catalyst unconfirmed.",
+      "sources": [
+        "websearch"
+      ],
+      "source_signals": {}
+    },
+    {
+      "symbol": "WWD",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "+7.8% premarket, liquid industrial; momentum, catalyst unconfirmed (Q2 was April).",
+      "sources": [
+        "websearch"
+      ],
+      "source_signals": {}
+    },
+    {
+      "symbol": "AVO",
+      "signal": -1,
+      "confidence": 0.6,
+      "reason": "Mission Produce downbeat Q2 earnings; shares lower premarket.",
+      "sources": [
+        "benzinga"
+      ],
+      "source_signals": {}
+    },
+    {
+      "symbol": "MTN",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Vail Resorts -4.2% premarket.",
+      "sources": [
+        "websearch"
+      ],
+      "source_signals": {}
+    },
+    {
+      "symbol": "RDW",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Redwire launches $500M ATM equity offering (dilution); shares falling.",
+      "sources": [
+        "benzinga"
+      ],
+      "source_signals": {}
+    },
+    {
+      "symbol": "PRGO",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Perrigo moving lower premarket.",
+      "sources": [
+        "benzinga"
+      ],
+      "source_signals": {}
+    },
+    {
+      "symbol": "UEC",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Uranium Energy Q3 wider EPS loss; shares slide.",
+      "sources": [
+        "benzinga"
+      ],
+      "source_signals": {}
+    }
+  ]
+}
