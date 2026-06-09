@@ -30,4 +30,7 @@ if (-not (Test-Path $claude)) { $claude = 'claude' }   # fall back to PATH
 # git push is gated for the headless AGENT (outward-facing), so the WRAPPER does it —
 # a plain deterministic command, no agent approval. This is what gets the picks to the VM.
 & git -C $ROOT push origin main *>> $log 2>&1
+# Phone push with today's picks summary (deterministic helper, not the agent) so you get
+# the morning's frontrunner/avoid list on your phone wherever you are.
+& (Join-Path $ROOT '.venv\Scripts\python.exe') (Join-Path $ROOT 'experiments\news_edge\notify_picks.py') *>> $log 2>&1
 "=== headless news scan END (push exit $LASTEXITCODE) $((Get-Date).ToString('o')) ===" | Add-Content -Path $log -Encoding utf8
