@@ -39,13 +39,14 @@ from backtest.compare_or_range_realcost import or_pct, risk_ps  # noqa: E402
 
 import pandas as pd  # noqa: E402
 
-WINDOWS = [730, 180]
+import os
+WINDOWS = [int(x) for x in os.environ.get("ORB_WINDOWS", "730,180").split(",")]
 TIGHT = 0.5
 TARGET_MEDIAN_R = 0.042
 NOTIONAL_CAP = 10_000.0
 CUTOFF = dtime(11, 30)
-OR_LENGTHS = [5, 10, 15, 30]
-STOP_OFFSETS = [0.0, 0.10, 0.25, 0.50]
+OR_LENGTHS = [int(x) for x in os.environ.get("ORB_ORLEN", "5,10,15,30").split(",")]
+STOP_OFFSETS = [float(x) for x in os.environ.get("ORB_OFFSETS", "0.0,0.10,0.25,0.50").split(",")]
 
 
 def tight(trades):

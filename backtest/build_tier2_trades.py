@@ -22,18 +22,33 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from strategies.orb import Params  # noqa: E402
-from backtest.run_orb import run_backtest, load_env, STARTING_EQUITY  # noqa: E402
+from backtest.run_orb import run_backtest, load_env, to_et, STARTING_EQUITY  # noqa: E402
 from backtest.universe_scan import UNIVERSE, fetch_chunked  # noqa: E402
 from backtest.compare_norefill_trend import fetch_daily_closes, trend_eligibility, apply_filter, DAILY_BUFFER_DAYS  # noqa: E402
 from backtest.compare_exits import bucket, reexit, POLICIES, EOD  # noqa: E402
 from backtest.fetch_universe_expanded import EXPANSION  # noqa: E402
 
+import time as _t  # noqa: E402
+
 import pandas as pd  # noqa: E402
 from alpaca.data.historical import StockHistoricalDataClient  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
-WINDOWS = [730, 180]
-BATCH = 30
+
+
+def _retry(fn, what, tries=4, wait=10):
+    """Run a network fetch with retries — Alpaca/IEX drops connections intermittently."""
+    for i in range(tries):
+        try:
+            return fn()
+        except Exception as e:
+            if i == tries - 1:
+                raise
+            print(f"   {what} error ({type(e).__name__}); retry {i+1}/{tries-1} in {wait}s...", flush=True)
+            _t.sleep(wait)
+import os
+WINDOWS = [int(x) for x in os.environ.get("ORB_WINDOWS", "730,180").split(",")]
+BATCH = int(os.environ.get("ORB_BATCH", "15"))
 PARAMS = Params(or_minutes=15, target_r=2.0, risk_per_trade=100.0, max_position_pct=0.25,
                 max_position_dollars=10_000.0, no_entry_after_time=time(11, 30))
 
@@ -61,11 +76,12 @@ def main():
         for i in range(0, len(new), BATCH):
             grp = new[i:i + BATCH]
             print(f"{w}d batch {i//BATCH + 1}: names {i+1}-{i+len(grp)} of {len(new)} — fetch...", flush=True)
-            bars = fetch_chunked(dc, grp, start, end)
+            bars = _retry(lambda: fetch_chunked(dc, grp, start, end), "minute fetch")
             if bars.empty:
                 continue
+            bars = to_et(bars)   # UTC -> ET so run_backtest's RTH/OR window is correct
             pres = sorted(bars.index.get_level_values(0).unique())
-            closes = fetch_daily_closes(grp, dstart, dend).join(spy_daily, how="outer")
+            closes = _retry(lambda: fetch_daily_closes(grp, dstart, dend), "daily fetch").join(spy_daily, how="outer")
             raw, _ = run_backtest(bars, days, pres, PARAMS, STARTING_EQUITY)
             bk = bucket(bars, pres)
             tz = bars.index.get_level_values(1).tz
