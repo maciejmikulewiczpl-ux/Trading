@@ -62,8 +62,9 @@ def main() -> int:
     lines.append(f"MY edge (+ vs -): {ms:+.2f}%" if ms is not None else "MY edge: n/a")
     lines.append(f"CROWD edge: {cs:+.2f}%" if cs is not None else "CROWD edge: n/a")
     msg = "\n".join(lines)
-    notify(msg, title=f"News-edge {date} scored", priority=3, tags=["bar_chart"])
+    ok = notify(msg, title=f"News-edge {date} scored", priority=3, tags=["bar_chart"])
     print(msg)
+    print("ntfy push sent" if ok else "ntfy NOT sent (NTFY_TOPIC unset?)")
     return 0
 
 
