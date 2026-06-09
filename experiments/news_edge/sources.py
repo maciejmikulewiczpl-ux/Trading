@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta
@@ -68,13 +69,69 @@ def av_sentiment(tickers: list[str], hours_back: int = 20) -> dict:
     return out
 
 
+# ---- StockTwits: free, no key, real-time. Trending tickers + retail crowd sentiment ----
+ST_TREND = "https://api.stocktwits.com/api/2/trending/symbols.json"
+ST_STREAM = "https://api.stocktwits.com/api/2/streams/symbol/{}.json"
+_UA = {"User-Agent": "Mozilla/5.0 (news-edge research)"}
+
+
+def _st_get(url: str):
+    req = urllib.request.Request(url, headers=_UA)
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return json.load(r)
+
+
+def st_trending(limit: int = 30) -> list:
+    """Tickers retail is actively trading right now (broad candidate net). Free, real-time."""
+    try:
+        d = _st_get(ST_TREND)
+    except Exception as e:
+        return [f"_error: {e}"]
+    return [s.get("symbol") for s in d.get("symbols", []) if s.get("symbol")][:limit]
+
+
+def st_sentiment(tickers: list) -> dict:
+    """Per-ticker retail crowd sentiment from the last ~30 messages: bull/bear ratio -> +1/0/-1.
+    NOTE: crowd sentiment is noisy/contrarian — a complementary signal, judged by the head-to-head."""
+    out = {}
+    for t in [x.upper() for x in tickers]:
+        try:
+            d = _st_get(ST_STREAM.format(t))
+            bull = bear = 0
+            for m in d.get("messages", []):
+                s = (((m.get("entities") or {}).get("sentiment")) or {}).get("basic")
+                if s == "Bullish":
+                    bull += 1
+                elif s == "Bearish":
+                    bear += 1
+            tot = bull + bear
+            if tot < 3:   # too few tagged msgs to mean anything
+                out[t] = {"signal": None, "bull": bull, "bear": bear, "n": tot}
+            else:
+                ratio = bull / tot
+                out[t] = {"signal": (1 if ratio > 0.6 else -1 if ratio < 0.4 else 0),
+                          "bull_pct": round(ratio * 100), "bull": bull, "bear": bear, "n": tot}
+        except Exception as e:
+            out[t] = {"signal": None, "error": str(e)[:60]}
+        time.sleep(0.3)   # polite to the public API
+    return out
+
+
 def main(argv) -> int:
-    if len(argv) < 3 or argv[1].lower() != "av":
-        print(__doc__)
-        return 1
-    tickers = [t.strip().upper() for t in argv[2].split(",") if t.strip()]
-    print(json.dumps(av_sentiment(tickers), indent=2))
-    return 0
+    cmd = argv[1].lower() if len(argv) > 1 else ""
+    if cmd == "av" and len(argv) >= 3:
+        tickers = [t.strip().upper() for t in argv[2].split(",") if t.strip()]
+        print(json.dumps(av_sentiment(tickers), indent=2))
+        return 0
+    if cmd == "st-trending":
+        print(json.dumps(st_trending(int(argv[2]) if len(argv) > 2 else 30), indent=2))
+        return 0
+    if cmd == "st-sentiment" and len(argv) >= 3:
+        tickers = [t.strip().upper() for t in argv[2].split(",") if t.strip()]
+        print(json.dumps(st_sentiment(tickers), indent=2))
+        return 0
+    print(__doc__)
+    return 1
 
 
 if __name__ == "__main__":
