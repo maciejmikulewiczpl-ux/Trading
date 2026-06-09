@@ -15,7 +15,7 @@ STEPS (in order):
 4) LOG: write the picks to a temp JSON file (a list; each item: symbol, signal, confidence, reason, sources, source_signals) and run:
    `.venv/Scripts/python.exe experiments/news_edge/newsedge.py log <that.json>`
    then delete the temp file. (newsedge writes experiments/news_edge/picks/<today-ET>.json and refuses to overwrite — if it says already exists, that day is done; stop.)
-5) COMMIT + PUSH (critical — the VM pulls this): `git add experiments/news_edge/picks` then `git commit -m "news-edge picks <date>"` then `git push origin main`. Confirm the push reached origin/main.
-6) SUMMARY: print the picks table (symbol, my signal, stocktwits signal) and confirm the push reached origin.
+5) COMMIT (the wrapper pushes — do NOT push yourself): `git add experiments/news_edge/picks` then `git commit -m "news-edge picks <date>"`. Do NOT run `git push` (it's blocked in headless mode); the wrapper script runs `git push origin main` automatically after you exit. Just make sure your commit exists.
+6) SUMMARY: print the picks table (symbol, my signal, stocktwits signal) and confirm the commit was created (the wrapper will push it).
 
 If the US market is CLOSED today (weekend/holiday), do nothing and say so. If a step fails, log it and continue where sensible; the push in step 5 is the most important outcome.

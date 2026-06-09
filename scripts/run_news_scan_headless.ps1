@@ -26,4 +26,8 @@ if (-not (Test-Path $claude)) { $claude = 'claude' }   # fall back to PATH
   --allowedTools WebSearch WebFetch Bash Read Write Edit Glob Grep `
   "mcp__alpaca__get_clock" "mcp__alpaca__get_market_movers" "mcp__alpaca__get_most_active_stocks" "mcp__alpaca__get_news" `
   *>> $log
-"=== headless news scan END (exit $LASTEXITCODE) $((Get-Date).ToString('o')) ===" | Add-Content -Path $log -Encoding utf8
+"=== agent done (exit $LASTEXITCODE); wrapper pushing to origin ===" | Add-Content -Path $log -Encoding utf8
+# git push is gated for the headless AGENT (outward-facing), so the WRAPPER does it —
+# a plain deterministic command, no agent approval. This is what gets the picks to the VM.
+& git -C $ROOT push origin main *>> $log 2>&1
+"=== headless news scan END (push exit $LASTEXITCODE) $((Get-Date).ToString('o')) ===" | Add-Content -Path $log -Encoding utf8
