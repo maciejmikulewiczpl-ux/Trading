@@ -514,6 +514,55 @@ def _gather(tc, dc=None) -> dict:
     return out
 
 
+NEWS_PICKS_DIR = ROOT / "experiments" / "news_edge" / "picks"
+
+
+def _newsedge() -> dict:
+    """Summarize the news-edge forward-test picks for the web tab (read-only).
+
+    Reads experiments/news_edge/picks/*.json (written by newsedge.py). No Alpaca
+    calls — outcomes are already baked into the files by the `outcomes` command,
+    so this just tallies them: per-day picks + the running (+)-vs-(-) separation.
+    """
+    out = {"generated": datetime.now(ET).strftime("%Y-%m-%d %H:%M:%S %Z"), "days": [], "overall": {}}
+    if not NEWS_PICKS_DIR.exists():
+        return out
+    avg = lambda xs: (sum(xs) / len(xs)) if xs else None
+    all_pos: list[float] = []
+    all_neg: list[float] = []
+    days = []
+    for f in sorted(NEWS_PICKS_DIR.glob("*.json")):
+        try:
+            rec = json.load(open(f))
+        except Exception:
+            continue
+        picks = rec.get("picks", [])
+        scored = [p for p in picks if p.get("ret_945_close") is not None]
+        pos = [p["ret_945_close"] for p in scored if p.get("signal", 0) > 0]
+        neg = [p["ret_945_close"] for p in scored if p.get("signal", 0) < 0]
+        all_pos += pos
+        all_neg += neg
+        days.append({
+            "date": rec.get("date", f.stem),
+            "logged_at": rec.get("logged_at"),
+            "n": len(picks),
+            "n_scored": len(scored),
+            "avg_pos": avg(pos), "avg_neg": avg(neg),
+            "sep": (avg(pos) - avg(neg)) if pos and neg else None,
+            "picks": picks,
+        })
+    days.sort(key=lambda d: d["date"], reverse=True)
+    out["days"] = days
+    out["overall"] = {
+        "n_days": len(days),
+        "n_scored": len(all_pos) + len(all_neg),
+        "avg_pos": avg(all_pos), "avg_neg": avg(all_neg),
+        "win_pos": (sum(1 for r in all_pos if r > 0) / len(all_pos) * 100) if all_pos else None,
+        "sep": (avg(all_pos) - avg(all_neg)) if all_pos and all_neg else None,
+    }
+    return out
+
+
 def _status(tc, dc=None) -> dict:
     now = _time.time()
     if _cache["data"] is None or now - _cache["ts"] > CACHE_TTL:
@@ -613,12 +662,60 @@ function groupRows(rows, keyFn, labelFn){
 let plView="day";
 let calmOnly=false;
 let lastData=null;
+let topView="trading";
+let lastNews=null;
 function setPLView(v){ plView=v; if(lastData) render(lastData); }
 function setCalm(){ calmOnly=!calmOnly; if(lastData) render(lastData); }
+function topNav(active){
+  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"]].map(
+    ([k,l])=>`<button class="tab${active===k?" active":""}" onclick="setTopView('${k}')">${l}</button>`).join("")+`</div>`;
+}
+function setTopView(v){
+  topView=v;
+  if(v==="news") fetchNews();
+  else if(lastData) render(lastData);
+}
+async function fetchNews(){
+  try{ const r=await fetch("/api/newsedge",{cache:"no-store"}); lastNews=await r.json(); renderNews(lastNews); }
+  catch(e){ document.getElementById("root").innerHTML=topNav("news")+`<div class="card empty">news-edge data unavailable</div>`; }
+}
+function renderNews(nd){
+  const o=nd.overall||{};
+  const sepC=v=>(v>=0?"pos":"neg");
+  let h=topNav("news");
+  h+=`<div class="banner s-idle"><h1>News-Edge — forward test</h1><p>Manual prototype: does my morning read of the news predict the day's move? Logs only — never trades, never touches the ORB bot.</p></div>`;
+  h+=`<div class="grid">
+    <div class="stat"><div class="k">Days logged</div><div class="v">${o.n_days||0}</div></div>
+    <div class="stat"><div class="k">Scored picks</div><div class="v">${o.n_scored||0}</div></div>
+    <div class="stat"><div class="k">(+) avg move</div><div class="v ${o.avg_pos==null?'':sepC(o.avg_pos)}">${o.avg_pos==null?'—':pctTxt(o.avg_pos)}</div></div>
+    <div class="stat"><div class="k">(−) avg move</div><div class="v ${o.avg_neg==null?'':sepC(o.avg_neg)}">${o.avg_neg==null?'—':pctTxt(o.avg_neg)}</div></div>
+    <div class="stat"><div class="k">(+)−(−) edge</div><div class="v ${o.sep==null?'':sepC(o.sep)}">${o.sep==null?'—':pctTxt(o.sep)}</div></div>
+  </div>`;
+  const days=nd.days||[];
+  if(!days.length){ h+=`<div class="card"><div class="empty">No picks logged yet — the first scan happens live near the open (9:30–9:45 ET).</div></div>`; }
+  for(const day of days){
+    const sb = day.sep==null ? "" : ` &nbsp;·&nbsp; edge <span class="${sepC(day.sep)}">${pctTxt(day.sep)}</span>`;
+    h+=`<div class="card"><h2>${day.date} &nbsp;·&nbsp; ${day.n} picks${sb}</h2>`;
+    h+=`<table><tr><th>sym</th><th>signal</th><th>conf</th><th>9:45→close</th><th>hit</th><th>reason</th></tr>`;
+    for(const p of (day.picks||[])){
+      const sig = p.signal>0?`<span class="pos">▲ long</span>`:p.signal<0?`<span class="neg">▼ avoid</span>`:`<span style="color:#7c8694">– neutral</span>`;
+      const ret=p.ret_945_close;
+      const retCell = ret==null?"—":`<span class="${sepC(ret)}">${pctTxt(ret)}</span>`;
+      let hit="";
+      if(ret!=null && p.signal!==0){ const ok=(p.signal>0&&ret>0)||(p.signal<0&&ret<0); hit=ok?`<span class="pos">✓</span>`:`<span class="neg">✗</span>`; }
+      const reason=(p.reason||"").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+      h+=`<tr><td>${p.symbol}</td><td style="text-align:right">${sig}</td><td>${Math.round((p.confidence||0)*100)}%</td><td>${retCell}</td><td>${hit}</td><td style="text-align:left;color:#9aa6b4">${reason}</td></tr>`;
+    }
+    h+=`</table></div>`;
+  }
+  h+=`<div class="hint">edge = avg move of (+) picks minus avg move of (−) picks. Positive and growing with the sample = a real signal worth automating. One good week is noise.</div>`;
+  h+=`<div class="foot"><span>news-edge · ${nd.generated||''}</span><span></span></div>`;
+  document.getElementById("root").innerHTML=h;
+}
 function render(d){
   lastData=d;
   const L=d.liveness;
-  let h=`<div class="banner s-${L.state}"><span class="dot"></span><h1>${L.headline}</h1><p>${L.detail}</p></div>`;
+  let h=topNav("trading")+`<div class="banner s-${L.state}"><span class="dot"></span><h1>${L.headline}</h1><p>${L.detail}</p></div>`;
   if(d.market){ h+=`<div class="card"><h2>Market</h2>${d.market.label}</div>`; }
   const a=d.account;
   if(a){
@@ -721,10 +818,12 @@ function render(d){
 }
 let fails=0;
 async function tick(){
-  try{ const r=await fetch("/api/status",{cache:"no-store"}); render(await r.json()); fails=0;
-       document.getElementById("tick").textContent="live ●"; }
+  try{ const r=await fetch("/api/status",{cache:"no-store"}); const d=await r.json(); lastData=d; fails=0;
+       if(topView==="trading") render(d);
+       const t=document.getElementById("tick"); if(t) t.textContent="live ●"; }
   catch(e){ fails++; const t=document.getElementById("tick");
        if(t) t.textContent=`page offline (${fails}) — is the SSH tunnel up?`; }
+  if(topView==="news") fetchNews();
 }
 tick(); setInterval(tick, 3000);
 </script>
@@ -770,6 +869,12 @@ class Handler(BaseHTTPRequestHandler):
         if self.path.startswith("/api/status"):
             try:
                 body = json.dumps(_status(self.tc, self.dc)).encode("utf-8")
+                self._send(200, body, "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
+        elif self.path.startswith("/api/newsedge"):
+            try:
+                body = json.dumps(_newsedge()).encode("utf-8")
                 self._send(200, body, "application/json")
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")

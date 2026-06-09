@@ -1,0 +1,10 @@
+{
+  "date": "2026-06-05",
+  "logged_at": "2026-06-05T09:44:00-04:00",
+  "picks": [
+    {"symbol": "NVDA", "signal": 1, "confidence": 0.7, "reason": "SAMPLE — upgrade + strong pre-mkt vol", "sources": ["sample"], "ret_945_close": 1.8},
+    {"symbol": "TSLA", "signal": -1, "confidence": 0.6, "reason": "SAMPLE — delivery miss chatter", "sources": ["sample"], "ret_945_close": -1.2},
+    {"symbol": "AAPL", "signal": 0, "confidence": 0.4, "reason": "SAMPLE — no clear catalyst", "sources": ["sample"], "ret_945_close": 0.3}
+  ],
+  "outcomes_at": "2026-06-05T16:05:00-04:00"
+}
