@@ -39,8 +39,10 @@ sys.path.insert(0, str(ROOT))
 
 import pandas as pd  # noqa: E402
 from alpaca.data.enums import DataFeed  # noqa: E402
+from alpaca.data.historical import StockHistoricalDataClient  # noqa: E402
 from alpaca.data.requests import StockBarsRequest  # noqa: E402
 from alpaca.data.timeframe import TimeFrame  # noqa: E402
+from alpaca.trading.client import TradingClient  # noqa: E402
 from alpaca.trading.enums import QueryOrderStatus  # noqa: E402
 from alpaca.trading.requests import GetOrdersRequest, GetPortfolioHistoryRequest  # noqa: E402
 
@@ -516,6 +518,49 @@ def _gather(tc, dc=None) -> dict:
 
 NEWS_PICKS_DIR = ROOT / "experiments" / "news_edge" / "picks"
 
+# Read-only clients for the 2nd paper account (the news-edge bot). Lazily built once
+# from .env.news; (None, None) if the file/keys aren't present (e.g. not on the VM yet),
+# in which case the tab just shows picks without the bot's account.
+_NEWS = {"built": False, "tc": None, "dc": None}
+_news_cache = {"ts": 0.0, "data": None}
+
+
+def _news_clients():
+    if not _NEWS["built"]:
+        _NEWS["built"] = True
+        f = ROOT / ".env.news"
+        if f.exists():
+            vals = {}
+            for line in f.read_text().splitlines():
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    vals[k.strip()] = v.strip().strip('"').strip("'")
+            key, sec = vals.get("ALPACA_API_KEY"), vals.get("ALPACA_SECRET_KEY")
+            if key and sec:
+                try:
+                    _NEWS["tc"] = TradingClient(key, sec, paper=True)
+                    _NEWS["dc"] = StockHistoricalDataClient(key, sec)
+                except Exception:
+                    _NEWS["tc"] = _NEWS["dc"] = None
+    return _NEWS["tc"], _NEWS["dc"]
+
+
+def _news_status() -> dict | None:
+    """Same rich trade-state snapshot as the main account, but for the news bot's
+    2nd account — so the tab can show its money next to the picks. Separate 4s cache."""
+    tc, dc = _news_clients()
+    if tc is None:
+        return None
+    now = _time.time()
+    if _news_cache["data"] is None or now - _news_cache["ts"] > CACHE_TTL:
+        try:
+            _news_cache["data"] = _gather(tc, dc)
+        except Exception as e:
+            _news_cache["data"] = {"errors": [f"news account: {e}"]}
+        _news_cache["ts"] = now
+    return _news_cache["data"]
+
 
 def _newsedge() -> dict:
     """Summarize the news-edge forward-test picks for the web tab (read-only).
@@ -560,6 +605,9 @@ def _newsedge() -> dict:
         "win_pos": (sum(1 for r in all_pos if r > 0) / len(all_pos) * 100) if all_pos else None,
         "sep": (avg(all_pos) - avg(all_neg)) if all_pos and all_neg else None,
     }
+    bot = _news_status()
+    if bot is not None:
+        out["bot"] = bot
     return out
 
 
@@ -683,14 +731,50 @@ function renderNews(nd){
   const o=nd.overall||{};
   const sepC=v=>(v>=0?"pos":"neg");
   let h=topNav("news");
-  h+=`<div class="banner s-idle"><h1>News-Edge — forward test</h1><p>Manual prototype: does my morning read of the news predict the day's move? Logs only — never trades, never touches the ORB bot.</p></div>`;
+  h+=`<div class="banner s-idle"><h1>News-Edge — catalyst-selected ORB</h1><p>A separate paper bot trades the morning's <b>positive</b> news picks (same ORB engine, no trend filter) on its own account — run alongside the baseline for a money-to-money comparison. Plus the daily signal measurement below. Never touches the baseline bot.</p></div>`;
+  // --- the bot's live account (money — the whole point of the comparison) ---
+  if(nd.bot){
+    const b=nd.bot, a=b.account;
+    h+=`<div class="card"><h2>News bot — live paper account${a&&a.number?` &nbsp;·&nbsp; #${a.number}`:''}</h2>`;
+    if(a){
+      h+=`<div class="grid">
+        <div class="stat"><div class="k">Equity</div><div class="v">${money(a.equity)}</div></div>
+        <div class="stat"><div class="k">Day P/L</div><div class="v ${cls(a.day_pnl)}">${sign(a.day_pnl)}<br><small>${a.day_pnl_pct>=0?"+":""}${a.day_pnl_pct.toFixed(2)}%</small></div></div>
+        ${winStat("Week P/L", b.week_pnl)}
+        ${winStat("Month P/L", b.month_pnl)}
+        <div class="stat"><div class="k">Cash</div><div class="v">${money(a.cash)}</div></div>
+        <div class="stat"><div class="k">Invested</div><div class="v">${money(b.invested||0)}</div></div>
+      </div>`;
+    }
+    const bp=b.positions||[];
+    h+=`<div style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:6px 0 6px">Open positions (${bp.length})</div>`;
+    if(bp.length){
+      h+=`<table><tr><th>sym</th><th>side</th><th>qty</th><th>avg</th><th>last</th><th>invested</th><th>unreal P/L</th></tr>`;
+      for(const p of bp) h+=row([{v:p.symbol},{v:p.side},{v:p.qty.toFixed(0)},{v:money(p.avg_entry)},{v:money(p.current)},{v:money(p.cost_basis)},{v:`${sign(p.unrealized_pl)} <small>(${p.unrealized_plpc>=0?"+":""}${p.unrealized_plpc.toFixed(1)}%)</small>`,cls:cls(p.unrealized_pl)}]);
+      h+=`</table>`;
+    } else h+=`<div class="empty">flat</div>`;
+    const bct=b.closed_today||[];
+    const bpnl=bct.reduce((s,c)=>s+c.realized,0);
+    h+=`<div style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px">Closed today (${bct.length})${bct.length?` &nbsp;·&nbsp; realized <span class="${cls(bpnl)}">${sign(bpnl)}</span> &nbsp;·&nbsp; <span>${money(bpnl/bct.length)}/trade</span>`:""}</div>`;
+    if(bct.length){
+      h+=`<table><tr><th>sym</th><th>side</th><th>qty</th><th>entry</th><th>exit</th><th>realized</th></tr>`;
+      for(const c of bct) h+=row([{v:c.symbol},{v:c.side},{v:c.qty.toFixed(0)},{v:money(c.entry_avg)},{v:money(c.exit_avg)},{v:sign(c.realized),cls:cls(c.realized)}]);
+      h+=`</table>`;
+    } else h+=`<div class="empty">no round-trips closed today</div>`;
+    if(b.errors&&b.errors.length) h+=`<div class="err">⚠ ${b.errors.join(" · ")}</div>`;
+    h+=`</div>`;
+  } else {
+    h+=`<div class="card"><div class="empty">News bot account not visible here yet (needs .env.news where the status server runs). Picks measurement below still works.</div></div>`;
+  }
+  // --- the daily signal measurement (does my read predict the day?) ---
+  h+=`<div class="card"><h2>Signal measurement — do (+) picks outrun (−)?</h2>`;
   h+=`<div class="grid">
     <div class="stat"><div class="k">Days logged</div><div class="v">${o.n_days||0}</div></div>
     <div class="stat"><div class="k">Scored picks</div><div class="v">${o.n_scored||0}</div></div>
     <div class="stat"><div class="k">(+) avg move</div><div class="v ${o.avg_pos==null?'':sepC(o.avg_pos)}">${o.avg_pos==null?'—':pctTxt(o.avg_pos)}</div></div>
     <div class="stat"><div class="k">(−) avg move</div><div class="v ${o.avg_neg==null?'':sepC(o.avg_neg)}">${o.avg_neg==null?'—':pctTxt(o.avg_neg)}</div></div>
     <div class="stat"><div class="k">(+)−(−) edge</div><div class="v ${o.sep==null?'':sepC(o.sep)}">${o.sep==null?'—':pctTxt(o.sep)}</div></div>
-  </div>`;
+  </div></div>`;
   const days=nd.days||[];
   if(!days.length){ h+=`<div class="card"><div class="empty">No picks logged yet — the first scan happens live near the open (9:30–9:45 ET).</div></div>`; }
   for(const day of days){
