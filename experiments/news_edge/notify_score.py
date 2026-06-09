@@ -1,6 +1,6 @@
 """After the close: score today's news-edge picks (9:45->close) and push the head-to-head
 (my read vs the StockTwits crowd) to your phone via ntfy. Run by the NewsEdgeScore task
-~13:20 PT (after the 13:00 PT close, with a buffer for the data to settle).
+~13:05 PT (just after the 12:55 PT measurement close = 15:55 ET; small buffer for the free IEX minute feed to settle).
 
 Run:
     .venv/Scripts/python.exe experiments/news_edge/notify_score.py [YYYY-MM-DD]

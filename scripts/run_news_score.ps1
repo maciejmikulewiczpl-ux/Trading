@@ -1,5 +1,5 @@
-# After-close scorer — launched by the Windows task "NewsEdgeScore" ~13:20 PT weekdays
-# (after the 13:00 PT / 16:00 ET close). Scores today's news-edge picks (9:45->close) and
+# After-close scorer — launched by the Windows task "NewsEdgeScore" ~13:05 PT weekdays
+# (just after the 12:55 PT / 15:55 ET measurement close). Scores today's news-edge picks and
 # pushes the head-to-head (my read vs the StockTwits crowd) to your phone via ntfy.
 # Plain python (no agent), deterministic. Output -> logs/news_score_<date>.log.
 $ErrorActionPreference = 'Continue'
