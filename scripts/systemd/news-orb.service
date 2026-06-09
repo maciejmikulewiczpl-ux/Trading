@@ -1,0 +1,21 @@
+[Unit]
+Description=News-edge catalyst-ORB runner (2nd paper account, watchlist from the laptop morning scan)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Long-running: pulls today's news picks, waits for them, then runs the session to
+# ~16:05 ET. Exits 0 idle on days with no picks (laptop off / no scan) or market closed.
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/trading
+# run_news_orb.py loads .env.news itself (2nd-account keys); no EnvironmentFile here.
+ExecStart=/home/ubuntu/trading/scripts/launch_news_orb.sh
+Restart=no
+# SIGINT (not SIGTERM) so `systemctl stop` triggers paper_orb's KeyboardInterrupt ->
+# flatten_all, never leaving the 2nd account's positions exposed.
+KillSignal=SIGINT
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

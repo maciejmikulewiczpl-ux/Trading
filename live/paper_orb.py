@@ -130,7 +130,7 @@ REGIME_REF_SYMBOL = str(_CFG["regime_ref_symbol"])
 REGIME_SMA_WINDOW = int(_CFG["regime_sma_window"])
 REGIME_CONFIRM_DAYS = int(_CFG["regime_confirm_days"])
 
-LATE_START_CUTOFF_MINUTES = 10  # if script starts > N min after OR window closes, halt new entries
+LATE_START_CUTOFF_MINUTES = int(os.environ.get("ORB_LATE_START_CUTOFF") or 10)  # halt NEW entries if started > N min after OR close. News bot starts later (after the scan) -> raises it.
 POLL_SECONDS = 10
 RTH_OPEN = time(9, 30)
 RTH_CLOSE = time(16, 0)
@@ -229,7 +229,8 @@ def build_clients() -> tuple[TradingClient, StockHistoricalDataClient]:
 # ---------- logging ----------
 def setup_logging(dry_run: bool) -> None:
     today = datetime.now(ET).strftime("%Y-%m-%d")
-    log_path = LOG_DIR / f"orb_{today}{'_dryrun' if dry_run else ''}.log"
+    tag = os.environ.get("ORB_LOG_TAG", "")   # e.g. "news_" so the 2nd runner logs separately
+    log_path = LOG_DIR / f"orb_{tag}{today}{'_dryrun' if dry_run else ''}.log"
     fmt = logging.Formatter("%(asctime)s %(levelname)-7s %(message)s", "%Y-%m-%d %H:%M:%S")
     log.setLevel(logging.INFO)
     sh = logging.StreamHandler(sys.stdout)

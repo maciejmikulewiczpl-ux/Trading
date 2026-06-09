@@ -44,6 +44,12 @@ def _load_news_env() -> None:
     # Catalyst selects the names — turn OFF both technical screens (trend + tight-OR width).
     os.environ["ORB_TREND_FILTER"] = "false"
     os.environ["ORB_TIGHT_OR"] = "false"
+    # Isolation when sharing a machine with the baseline bot (the VM): separate heartbeat +
+    # log file so we don't clobber its liveness/logs. And a later late-start cutoff because
+    # we start after the morning scan (~9:43 ET) — give entries room to ~10:10 ET.
+    os.environ.setdefault("ORB_HEARTBEAT_FILE", str(ROOT / "logs" / "heartbeat_news.json"))
+    os.environ.setdefault("ORB_LOG_TAG", "news_")
+    os.environ.setdefault("ORB_LATE_START_CUTOFF", "25")
 
 
 def _todays_positive_picks(date_str: str) -> list[str]:

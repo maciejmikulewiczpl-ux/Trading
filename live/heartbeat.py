@@ -26,7 +26,10 @@ from pathlib import Path
 from typing import Any, Optional
 
 ROOT = Path(__file__).resolve().parents[1]
-HEARTBEAT_PATH = ROOT / "logs" / "heartbeat.json"
+# Default logs/heartbeat.json, overridable via ORB_HEARTBEAT_FILE so a 2nd runner on the
+# same machine (the news-edge bot on the VM) writes its OWN beat and doesn't clobber the
+# baseline bot's liveness. Baseline never sets it -> unchanged.
+HEARTBEAT_PATH = Path(os.environ.get("ORB_HEARTBEAT_FILE") or (ROOT / "logs" / "heartbeat.json"))
 
 _HOST = socket.gethostname()
 _PID = os.getpid()

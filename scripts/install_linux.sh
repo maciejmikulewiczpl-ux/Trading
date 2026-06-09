@@ -79,12 +79,12 @@ fi
 
 # ----- 4. logs dir + executable bits -----
 mkdir -p "$ROOT/logs"
-chmod +x "$ROOT/scripts/launch_orb.sh" "$ROOT/scripts/launch_dualmom.sh"
+chmod +x "$ROOT/scripts/launch_orb.sh" "$ROOT/scripts/launch_dualmom.sh" "$ROOT/scripts/launch_news_orb.sh"
 
 # ----- 5. systemd units -----
 echo "==> Installing systemd units (sudo)"
 SYS_DIR="/etc/systemd/system"
-for unit in orb.service orb.timer dualmom.service dualmom.timer status.service; do
+for unit in orb.service orb.timer dualmom.service dualmom.timer status.service news-orb.service news-orb.timer; do
   src="$ROOT/scripts/systemd/$unit"
   dst="$SYS_DIR/$unit"
   # Substitute user + path if they don't match the unit's hardcoded defaults
@@ -96,10 +96,10 @@ done
 sudo systemctl daemon-reload
 
 # Stop any currently-running timers so we re-apply cleanly on re-install
-sudo systemctl stop orb.timer dualmom.timer 2>/dev/null || true
+sudo systemctl stop orb.timer dualmom.timer news-orb.timer 2>/dev/null || true
 
 echo "==> Enabling + starting timers"
-sudo systemctl enable --now orb.timer dualmom.timer
+sudo systemctl enable --now orb.timer dualmom.timer news-orb.timer
 
 # Always-on status web page. enable --now won't restart an already-running
 # instance, so restart explicitly to pick up code changes on re-install.

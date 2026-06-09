@@ -1,0 +1,17 @@
+[Unit]
+Description=Fire the news-edge catalyst-ORB at 09:40 ET on US weekdays
+# Fires AFTER the laptop morning scan (~09:33 ET) so today's picks are (about to be)
+# pushed. The wrapper then waits/pulls for them. The runner's own preflight no-ops on
+# US-equity holidays, so a blanket Mon..Fri timer is safe.
+
+[Timer]
+# 09:40 ET: ~7 min after the scan starts, ~5 min before the 09:45 OR close. The wrapper
+# waits up to ~12 min for the picks, and run_news_orb sets a 25-min late-start cutoff, so
+# a slightly-slow scan still gets entries (prebuild_or reconstructs the 09:30-09:45 range).
+OnCalendar=Mon..Fri *-*-* 09:40:00 America/New_York
+# If the VM was off at fire time, don't fire late into the day — a stale start past the
+# cutoff would just idle anyway. (No Persistent=true, unlike the baseline.)
+Unit=news-orb.service
+
+[Install]
+WantedBy=timers.target
