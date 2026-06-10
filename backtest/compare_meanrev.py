@@ -108,6 +108,26 @@ def _mk(sym, day, entry, stop, exitp, et, xt, risk):
 EOD_NS = None
 
 
+def efficiency_ratio(closes, days, n=10):
+    """Kaufman Efficiency Ratio on SPY per trading day (lookahead-free: uses closes
+    STRICTLY before the day). ER = |net move over n| / sum(|daily moves|). Low ER (<0.30)
+    = choppy/ranging market (mean-reversion's home); high ER = trending."""
+    spy = closes["SPY"].dropna().sort_index()
+    vals = list(spy.values)
+    dts = [pd.Timestamp(ts).date() for ts in spy.index]
+    out = {}
+    for d in days:
+        prior = [v for v, dd in zip(vals, dts) if dd < d]
+        if len(prior) < n + 1:
+            out[d] = None
+            continue
+        seg = prior[-(n + 1):]
+        net = abs(seg[-1] - seg[0])
+        path = sum(abs(seg[k] - seg[k - 1]) for k in range(1, len(seg)))
+        out[d] = (net / path) if path > 0 else None
+    return out
+
+
 def build_arrays(all_bars, present):
     out = {}
     for sym in present:
@@ -191,6 +211,36 @@ def run_window(w):
     print(f"    {'ORB + MR':<16}{fc['pnl']:>+10,.0f}{fc['sharpe']:>8.2f}{fc['maxdd']:>10,.0f}")
     verdict = ("PASS" if (corr <= 0.35 and fm["sharpe"] > 0.5 and fc["sharpe"] > fo["sharpe"]) else "FAIL")
     print(f"    VERDICT: {verdict}  (combined Sharpe {fc['sharpe']:.2f} vs ORB-alone {fo['sharpe']:.2f})")
+
+    # ---- TIER-1 REGIME TEST: restrict MR to RANGE days (SPY ER < 0.30) ----
+    er = efficiency_ratio(closes, days)
+    ervals = [er[d] for d in days if er.get(d) is not None]
+    ranging = {d: (er.get(d) is not None and er[d] < 0.30) for d in days}
+    n_range = sum(1 for d in days if ranging[d])
+    # diagnostic: avgR of trend-filtered MR by ER tercile (is the regime axis monotone?)
+    tv = sorted(ervals)
+    lo_c, hi_c = tv[len(tv) // 3], tv[2 * len(tv) // 3]
+    terc = {"low-ER (range)": [], "mid": [], "high-ER (trend)": []}
+    for t in mr_tf:
+        e = er.get(_tday(t))
+        if e is None:
+            continue
+        (terc["low-ER (range)"] if e <= lo_c else terc["high-ER (trend)"] if e > hi_c else terc["mid"]).append(t.pnl_r)
+    print(f"\n  --- TIER-1: regime-conditioned MR (SPY ER<0.30 = range; {n_range}/{len(days)} days) ---")
+    print(f"    ER terciles cut at {lo_c:.2f}/{hi_c:.2f}; MR avgR by regime (diagnostic):")
+    for k, rs in terc.items():
+        if rs:
+            print(f"      {k:<18} n={len(rs):>4}  avgR {statistics.mean(rs):>+6.3f}  win {100*sum(1 for r in rs if r>0)/len(rs):.0f}%")
+    mr_range = portfolio([t for t in mr_tf if ranging.get(_tday(t))], CAP)
+    mrr_s = daily_dollars(mr_range, days, mult, mr_cents)
+    comb_r = (orb_s + mrr_s)
+    fmr, fcr = perf(mrr_s), perf(comb_r)
+    corr_r = pd.concat([orb_s.rename("o"), mrr_s.rename("m")], axis=1).fillna(0.0).corr().iloc[0, 1]
+    print(f"    range-day MR standalone: PnL ${fmr['pnl']:>+7,.0f}  Sharpe {fmr['sharpe']:>5.2f}  maxDD ${fmr['maxdd']:>+7,.0f}")
+    print(f"    correlation w/ ORB: {corr_r:+.3f}   combined Sharpe {fcr['sharpe']:.2f} vs ORB-alone {fo['sharpe']:.2f}")
+    gate = (fmr["sharpe"] > 0.5 and corr_r <= 0.35 and fcr["sharpe"] > fo["sharpe"])
+    print(f"    >>> PRE-REGISTERED GATE: {'PASS' if gate else 'FAIL'}  "
+          f"(need Sharpe>0.5 [{fmr['sharpe']:.2f}], corr<=0.35 [{corr_r:.2f}], combined>{fo['sharpe']:.2f} [{fcr['sharpe']:.2f}])")
 
 
 def main():
