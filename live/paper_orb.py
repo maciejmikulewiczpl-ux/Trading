@@ -713,7 +713,15 @@ def fetch_today_bars(dc: StockHistoricalDataClient, symbols: list[str], today: d
         end=end_et.astimezone(UTC),
         feed=DataFeed.IEX,
     )
+    _t0 = time_mod.perf_counter()
     bars = dc.get_stock_bars(req).df
+    _dt = time_mod.perf_counter() - _t0
+    # Capacity watch for the 122-name watchlist (2026-06-10 expansion): the poll
+    # cycle is 10s, so a slow full-session fetch late in the day is the constraint.
+    # Warn only when it matters — if this fires repeatedly, trim the expansion names.
+    if _dt > 5.0:
+        log.warning(f"fetch_today_bars slow: {_dt:.1f}s for {len(symbols)} symbols "
+                    f"(>5s; 10s poll cycle — trim watchlist if persistent)")
     if bars.empty:
         return bars
     sym = bars.index.get_level_values(0)

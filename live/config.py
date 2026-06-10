@@ -62,15 +62,29 @@ SETTINGS: list[Setting] = [
             "T", "VZ", "TMUS", "CMCSA", "NEE",
             # Higher-beta / high-volume (4)
             "PLTR", "COIN", "UBER", "BABA",
+            # High-vol expansion (22) — SHIPPED 2026-06-10 (backtest/pit_expand.py,
+            # single-names arm): mechanical rule = PIT top-100 by trailing dollar
+            # volume this month AND 20d realized vol >= 1.4% AND single name (no
+            # ETF/leveraged/crypto). +27% PnL at Sharpe 1.57->1.87 vs the 100-name
+            # list; +47% under 1.5x stress slip; STRENGTHENS the weak recent half.
+            # The vol insight: the tight-OR edge needs names that EXPAND after a
+            # tight OR (pit_vol_split.py). REFRESH monthly-to-quarterly via
+            # backtest/pit_snapshot.py (PIT membership churns ~18%/mo).
+            "APH", "APP", "ARM", "ASML", "BE", "BSX", "COHR", "DELL", "GEV",
+            "GLW", "GOOG", "KLAC", "LITE", "MRVL", "NBIS", "NOK", "SNDK",
+            "SPOT", "STX", "TSM", "VRT", "WDC",
         ],
         "Symbols the bot trades for LONG breakouts. Comma-separated. Broad ~100 "
         "liquid US large-caps (roughly S&P-100 + a few momentum/high-volume "
-        "names + 4 ETFs). universe_scan.py validated the breadth thesis (the "
-        "ORB edge is OOS-robust only when averaged over many names; per-name "
-        "selection is noise). Pair with the trend filter (200d SMA + RS) and "
-        "the concurrency cap so the filter has many candidates to pick the "
-        "strongest setups from. ~100 names is the practical ceiling before "
-        "intraday fetches stretch past the 10s poll cycle.",
+        "names + 4 ETFs), PLUS a ~22-name high-vol expansion (2026-06-10; see "
+        "inline comment — mechanical PIT top-100-by-$vol + vol>=1.4% single "
+        "names, +27% PnL at better Sharpe, refresh via backtest/pit_snapshot.py). "
+        "universe_scan.py validated the breadth thesis (the ORB edge is "
+        "OOS-robust only when averaged over many names; per-name selection is "
+        "noise). Pair with the trend filter (200d SMA + RS) and the concurrency "
+        "cap. ~122 names: full-session fetch measured ~2s mid-morning, projected "
+        "~5s late-day — inside the 10s poll cycle (fetch>5s is logged by the "
+        "runner; trim the expansion if it degrades).",
     ),
 
     # ---- Opening range / long entries ----
