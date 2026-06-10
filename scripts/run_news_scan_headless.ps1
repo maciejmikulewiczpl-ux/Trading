@@ -22,7 +22,11 @@ if (-not (Test-Path $claude)) { $claude = 'claude' }   # fall back to PATH
 # Scoped allow-list: ONLY the tools the scan needs (web, shell for python/git, file r/w,
 # Alpaca read tools). The permission system stays ON — anything outside this list is denied,
 # not auto-run. Not a blanket bypass.
-& $claude -p $prompt --max-turns 60 `
+# Model PINNED to Opus (2026-06-10): without --model the scan inherits the GLOBAL default
+# (settings.json), which changes whenever /model is used interactively — on 2026-06-10 that
+# left it pointing at fable-1M/high-effort, the most expensive possible config for this job.
+# Opus = capable analyst (user's call: intelligence matters for picks), deterministic cost.
+& $claude -p $prompt --max-turns 60 --model claude-opus-4-8 `
   --allowedTools WebSearch WebFetch Bash Read Write Edit Glob Grep `
   "mcp__alpaca__get_clock" "mcp__alpaca__get_market_movers" "mcp__alpaca__get_most_active_stocks" "mcp__alpaca__get_news" `
   *>> $log
