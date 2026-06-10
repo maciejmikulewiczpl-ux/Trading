@@ -117,6 +117,155 @@ def st_sentiment(tickers: list) -> dict:
     return out
 
 
+# ---- SEC EDGAR: free, official, real-time primary-source catalysts (no key) ----
+# Recent material filings mapped to tickers — 8-Ks (material events), 424B5/S-1
+# (offerings/dilution), Form 4 (insider). EDGAR requires a descriptive User-Agent
+# with contact info per its fair-access policy. CIK->ticker via company_tickers.json.
+EDGAR_CURRENT = ("https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type={typ}"
+                 "&company=&dateb=&owner=include&count=100&output=atom")
+EDGAR_TICKERS = "https://www.sec.gov/files/company_tickers.json"
+_SEC_UA = {"User-Agent": "news-edge research maciej.mikulewicz@gmail.com"}
+_CIK2TICK: dict | None = None
+
+
+def _cik_to_ticker() -> dict:
+    global _CIK2TICK
+    if _CIK2TICK is not None:
+        return _CIK2TICK
+    try:
+        req = urllib.request.Request(EDGAR_TICKERS, headers=_SEC_UA)
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = json.load(r)
+        _CIK2TICK = {int(v["cik_str"]): v["ticker"] for v in data.values()}
+    except Exception:
+        _CIK2TICK = {}
+    return _CIK2TICK
+
+
+def edgar_filings(hours_back: int = 16, forms: tuple = ("8-K", "424B5")) -> dict:
+    """Recent EDGAR filings of `forms` in the last `hours_back`, mapped to tickers.
+    Returns {ticker: [{form, time, title}]}. Catalysts BEFORE the aggregators rewrite them:
+    8-K = material event, 424B5/S-1 = offering/dilution. (Form 4 insider filings are noisy
+    for a morning scan; pass forms=("4",) explicitly if you want them.) Filings with no
+    ticker mapping (private/foreign) are dropped. The reported `form` is parsed from the
+    filing title (the requested type can prefix-match, e.g. type=4 also returns 425s)."""
+    import re as _re
+    import re
+    from email.utils import parsedate_to_datetime
+    c2t = _cik_to_ticker()
+    cutoff = datetime.now(ET) - timedelta(hours=hours_back)
+    out: dict[str, list] = {}
+    for typ in forms:
+        try:
+            req = urllib.request.Request(EDGAR_CURRENT.format(typ=urllib.parse.quote(typ)),
+                                         headers=_SEC_UA)
+            with urllib.request.urlopen(req, timeout=25) as r:
+                xml = r.read().decode("utf-8", "replace")
+        except Exception:
+            continue
+        # crude Atom parse (no lxml dependency): split on <entry>
+        for ent in re.findall(r"<entry>(.*?)</entry>", xml, re.S):
+            title = (re.search(r"<title>(.*?)</title>", ent, re.S) or [None, ""])[1].strip()
+            upd = (re.search(r"<updated>(.*?)</updated>", ent, re.S) or [None, ""])[1].strip()
+            cikm = re.search(r"\((\d{4,10})\)", title) or re.search(r"CIK=(\d+)", ent)
+            if not cikm:
+                continue
+            tick = c2t.get(int(cikm.group(1)))
+            if not tick:
+                continue
+            try:
+                when = datetime.fromisoformat(upd.replace("Z", "+00:00")).astimezone(ET)
+            except Exception:
+                try:
+                    when = parsedate_to_datetime(upd).astimezone(ET)
+                except Exception:
+                    continue
+            if when < cutoff:
+                continue
+            # actual form is the title prefix ("8-K - COMPANY ..."), not the requested type
+            fm = _re.match(r"\s*([\w/.-]+)\s*-", title)
+            actual_form = fm.group(1) if fm else typ
+            out.setdefault(tick, []).append(
+                {"form": actual_form, "time": when.strftime("%Y-%m-%d %H:%M"),
+                 "title": re.sub(r"\s+", " ", title)[:120]})
+    return out
+
+
+# ---- Alpaca premarket: relative volume + gap (filter + mechanical control basket) ----
+def _alpaca_dc():
+    from alpaca.data.historical import StockHistoricalDataClient
+    load_env()
+    return StockHistoricalDataClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"])
+
+
+def pm_rvol(tickers: list[str], lookback_days: int = 20) -> dict:
+    """Premarket (04:00-09:30 ET) dollar-volume today vs the trailing `lookback_days`
+    average premarket $-vol, per ticker. >1 = abnormal participation (the filter on a story).
+    {ticker: {"pm_rvol": float, "pm_dollar_vol": float, "n_days": int}}."""
+    from datetime import time as dtime
+    from alpaca.data.requests import StockBarsRequest
+    from alpaca.data.timeframe import TimeFrame
+    from alpaca.data.enums import DataFeed
+    dc = _alpaca_dc()
+    end = datetime.now(ET)
+    start = end - timedelta(days=lookback_days + 5)
+    out = {}
+    PM_S, PM_E = dtime(4, 0), dtime(9, 30)
+    try:
+        req = StockBarsRequest(symbol_or_symbols=[t.upper() for t in tickers],
+                               timeframe=TimeFrame.Minute, start=start, end=end, feed=DataFeed.IEX)
+        df = dc.get_stock_bars(req).df
+    except Exception as e:
+        return {"_error": f"alpaca fetch failed: {e}"}
+    today = end.date()
+    for t in [x.upper() for x in tickers]:
+        try:
+            sb = df.xs(t, level=0).copy()
+            idx = sb.index.tz_convert(ET)
+            sb["dv"] = sb["close"] * sb["volume"]
+            tt = idx.time
+            pm = sb[(tt >= PM_S) & (tt < PM_E)]
+            by_day = pm.groupby(idx[(tt >= PM_S) & (tt < PM_E)].date)["dv"].sum()
+            today_pm = float(by_day.get(today, 0.0))
+            hist = by_day[[d for d in by_day.index if d < today]]
+            avg = float(hist.tail(lookback_days).mean()) if len(hist) else 0.0
+            out[t] = {"pm_rvol": round(today_pm / avg, 2) if avg > 0 else None,
+                      "pm_dollar_vol": round(today_pm), "n_days": int(len(hist))}
+        except Exception:
+            out[t] = {"pm_rvol": None, "pm_dollar_vol": 0, "n_days": 0}
+    return out
+
+
+def pm_gappers(min_gap_pct: float = 3.0, limit: int = 40) -> list:
+    """Mechanical control basket: liquid names gapping >= min_gap_pct premarket (vs prior
+    close), no judgment. Drawn from StockTwits-trending + most-active as the candidate net,
+    so it overlaps the analyst's universe. Returns [{symbol, gap_pct, last}] for scoring as
+    a signal=0 control — the analyst's (+) picks must beat THIS to earn their keep."""
+    from alpaca.data.requests import StockSnapshotRequest
+    from alpaca.data.enums import DataFeed
+    cand = [s for s in st_trending(40) if isinstance(s, str) and s.isalpha()]
+    if not cand:
+        return []
+    dc = _alpaca_dc()
+    try:
+        from alpaca.data.requests import StockSnapshotRequest as SSR
+        snaps = dc.get_stock_snapshot(SSR(symbol_or_symbols=cand, feed=DataFeed.IEX))
+    except Exception as e:
+        return [{"_error": f"snapshot failed: {e}"}]
+    out = []
+    for sym, sn in (snaps or {}).items():
+        try:
+            prev_c = float(sn.previous_daily_bar.close)
+            last = float((sn.minute_bar or sn.daily_bar).close)
+            gap = (last / prev_c - 1.0) * 100
+            if abs(gap) >= min_gap_pct:
+                out.append({"symbol": sym, "gap_pct": round(gap, 2), "last": round(last, 2)})
+        except Exception:
+            continue
+    out.sort(key=lambda x: -abs(x["gap_pct"]))
+    return out[:limit]
+
+
 def main(argv) -> int:
     cmd = argv[1].lower() if len(argv) > 1 else ""
     if cmd == "av" and len(argv) >= 3:
@@ -129,6 +278,16 @@ def main(argv) -> int:
     if cmd == "st-sentiment" and len(argv) >= 3:
         tickers = [t.strip().upper() for t in argv[2].split(",") if t.strip()]
         print(json.dumps(st_sentiment(tickers), indent=2))
+        return 0
+    if cmd == "edgar":
+        print(json.dumps(edgar_filings(int(argv[2]) if len(argv) > 2 else 16), indent=2))
+        return 0
+    if cmd == "pm-rvol" and len(argv) >= 3:
+        tickers = [t.strip().upper() for t in argv[2].split(",") if t.strip()]
+        print(json.dumps(pm_rvol(tickers), indent=2))
+        return 0
+    if cmd == "pm-gappers":
+        print(json.dumps(pm_gappers(float(argv[2]) if len(argv) > 2 else 3.0), indent=2))
         return 0
     print(__doc__)
     return 1

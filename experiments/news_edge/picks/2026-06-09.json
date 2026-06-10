@@ -14,7 +14,8 @@
       "source_signals": {
         "stocktwits": 1
       },
-      "ret_945_close": -4.549
+      "ret_945_close": -4.549,
+      "gap_pct": 2.219
     },
     {
       "symbol": "MU",
@@ -28,7 +29,8 @@
       "source_signals": {
         "stocktwits": 1
       },
-      "ret_945_close": -6.447
+      "ret_945_close": -6.447,
+      "gap_pct": 4.13
     },
     {
       "symbol": "NVDA",
@@ -41,7 +43,8 @@
       "source_signals": {
         "stocktwits": 0
       },
-      "ret_945_close": -1.316
+      "ret_945_close": -1.316,
+      "gap_pct": 0.997
     },
     {
       "symbol": "TXRH",
@@ -54,7 +57,8 @@
       "source_signals": {
         "stocktwits": 1
       },
-      "ret_945_close": -2.381
+      "ret_945_close": -2.381,
+      "gap_pct": -0.104
     },
     {
       "symbol": "WWD",
@@ -67,7 +71,8 @@
       "source_signals": {
         "stocktwits": 1
       },
-      "ret_945_close": 2.261
+      "ret_945_close": 2.261,
+      "gap_pct": 1.64
     },
     {
       "symbol": "AVO",
@@ -80,7 +85,8 @@
       "source_signals": {
         "stocktwits": 1
       },
-      "ret_945_close": -0.772
+      "ret_945_close": -0.772,
+      "gap_pct": 1.286
     },
     {
       "symbol": "MTN",
@@ -93,7 +99,8 @@
       "source_signals": {
         "stocktwits": -1
       },
-      "ret_945_close": 2.822
+      "ret_945_close": 2.822,
+      "gap_pct": -4.079
     },
     {
       "symbol": "RDW",
@@ -106,7 +113,8 @@
       "source_signals": {
         "stocktwits": 1
       },
-      "ret_945_close": -8.165
+      "ret_945_close": -8.165,
+      "gap_pct": -8.161
     },
     {
       "symbol": "PRGO",
@@ -119,7 +127,8 @@
       "source_signals": {
         "stocktwits": 1
       },
-      "ret_945_close": 1.48
+      "ret_945_close": 1.48,
+      "gap_pct": -4.174
     },
     {
       "symbol": "UEC",
@@ -132,8 +141,9 @@
       "source_signals": {
         "stocktwits": 1
       },
-      "ret_945_close": -7.049
+      "ret_945_close": -7.049,
+      "gap_pct": -4.243
     }
   ],
-  "outcomes_at": "2026-06-09T16:18:41-04:00"
+  "outcomes_at": "2026-06-10T06:47:22-04:00"
 }

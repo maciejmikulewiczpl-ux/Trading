@@ -35,6 +35,7 @@ logs/
 backtest/orb_trades.csv
 backtest/.bars_cache_*.pkl
 backtest/.tier2_trail_*.pkl
+backtest/.pit_*.pkl
 backtest/OVERNIGHT_RESULTS.md
 backtest/overnight.sh
 experiments/news_edge/wake_log.txt

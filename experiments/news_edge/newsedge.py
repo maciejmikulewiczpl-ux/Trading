@@ -48,17 +48,60 @@ def cmd_log(picks_path: str) -> int:
     if out.exists():
         print(f"refusing to overwrite existing {out.name} (immutable record). Edit by hand if needed.")
         return 1
+    def _opt(p, k):
+        v = p.get(k)
+        return None if v is None else v
+
     rec = {"date": today, "logged_at": datetime.now(ET).isoformat(timespec="seconds"),
            "picks": [{"symbol": p["symbol"].upper(), "signal": int(p["signal"]),
                       "confidence": float(p.get("confidence", 0.5)),
                       "reason": p.get("reason", ""), "sources": p.get("sources", []),
                       # per-source signals for the head-to-head (e.g. {"stocktitan": 1}).
                       # "claude" = my own `signal` above; sources here are compared against it.
-                      "source_signals": {k: int(v) for k, v in (p.get("source_signals") or {}).items()}}
+                      "source_signals": {k: int(v) for k, v in (p.get("source_signals") or {}).items()},
+                      # additive context (all optional; old files omit them). gap_pct is filled
+                      # retroactively by `outcomes` if absent. control=True marks the mechanical
+                      # >3%-gapper basket (signal 0) the analyst's (+) picks must beat.
+                      "premarket_rvol": _opt(p, "premarket_rvol"),
+                      "earnings_day": bool(p.get("earnings_day", False)),
+                      "theme": _opt(p, "theme"),
+                      "control": bool(p.get("control", False)),
+                      **({"gap_pct": float(p["gap_pct"])} if p.get("gap_pct") is not None else {})}
                      for p in picks]}
     json.dump(rec, open(out, "w"), indent=2)
     print(f"logged {len(rec['picks'])} picks -> {out}")
     return 0
+
+
+def _gap_pcts(dc, syms, d) -> dict:
+    """{symbol: gap_pct} where gap = (day-d open - prior trading-day close)/prior close * 100.
+    Lookahead-free (open is known at the bell). Returns {} on any failure (gap stays None)."""
+    from alpaca.data.requests import StockBarsRequest
+    from alpaca.data.timeframe import TimeFrame
+    from alpaca.data.enums import DataFeed
+    try:
+        req = StockBarsRequest(symbol_or_symbols=syms, timeframe=TimeFrame.Day,
+                               start=datetime.combine(d - timedelta(days=8), time(0, 0), ET).astimezone(UTC),
+                               end=datetime.combine(d, time(23, 59), ET).astimezone(UTC), feed=DataFeed.IEX)
+        df = dc.get_stock_bars(req).df
+    except Exception:
+        return {}
+    out = {}
+    for sym in syms:
+        try:
+            sb = df.xs(sym, level=0)
+            dates = [ts.tz_convert(ET).date() for ts in sb.index]
+            if d not in dates:
+                continue
+            i = dates.index(d)
+            if i == 0:
+                continue
+            open_d = float(sb["open"].iloc[i])
+            prior_c = float(sb["close"].iloc[i - 1])
+            out[sym] = round((open_d / prior_c - 1.0) * 100, 3) if prior_c else None
+        except Exception:
+            continue
+    return out
 
 
 def cmd_outcomes(date_str: str) -> int:
@@ -75,6 +118,8 @@ def cmd_outcomes(date_str: str) -> int:
     req = StockBarsRequest(symbol_or_symbols=syms, timeframe=TimeFrame.Minute,
                            start=start.astimezone(UTC), end=end.astimezone(UTC), feed=DataFeed.IEX)
     df = dc.get_stock_bars(req).df
+    # Daily bars around the date -> retroactive gap_pct = (today open - prior close)/prior close.
+    gap_by_sym = _gap_pcts(dc, syms, d)
     for p in rec["picks"]:
         try:
             sb = df.xs(p["symbol"], level=0)
@@ -85,6 +130,8 @@ def cmd_outcomes(date_str: str) -> int:
         except Exception as e:
             p["ret_945_close"] = None
             p["outcome_error"] = str(e)[:80]
+        if p.get("gap_pct") is None and gap_by_sym.get(p["symbol"]) is not None:
+            p["gap_pct"] = gap_by_sym[p["symbol"]]   # backfill if the scan didn't log it
     rec["outcomes_at"] = datetime.now(ET).isoformat(timespec="seconds")
     json.dump(rec, open(f, "w"), indent=2)
     got = [p for p in rec["picks"] if p.get("ret_945_close") is not None]
@@ -95,8 +142,12 @@ def cmd_outcomes(date_str: str) -> int:
 
 def cmd_analyze() -> int:
     # Per-source (signal, ret) pairs. "claude" = my own pick `signal`; other keys come
-    # from each pick's source_signals (e.g. "stocktitan"). Lets us rank sources head-to-head.
+    # from each pick's source_signals. CONTROL picks (mechanical >3% gappers, signal 0,
+    # control=True) are held OUT of the source ranking and scored separately — the analyst's
+    # (+) picks must beat the control basket to earn their keep, not just beat the (-) bucket.
     by_source: dict[str, list] = {}
+    analyst_picks: list = []     # non-control picks (for splits)
+    control_rets: list = []      # control-basket returns
     n_days = 0
     for f in sorted(PICKS_DIR.glob("*.json")):
         n_days += 1
@@ -105,6 +156,10 @@ def cmd_analyze() -> int:
             ret = p.get("ret_945_close")
             if ret is None:
                 continue
+            if p.get("control"):
+                control_rets.append(ret)
+                continue
+            analyst_picks.append(p)
             by_source.setdefault("claude", []).append((int(p["signal"]), ret))
             for src, sig in (p.get("source_signals") or {}).items():
                 by_source.setdefault(src, []).append((int(sig), ret))
@@ -115,7 +170,7 @@ def cmd_analyze() -> int:
     def stats(sel):
         if not sel:
             return "n=  0"
-        r = [x[1] for x in sel]
+        r = [x[1] if isinstance(x, tuple) else x for x in sel]
         wins = sum(1 for x in r if x > 0)
         return f"n={len(r):>3}  avg {sum(r)/len(r):+.2f}%  win {wins/len(r)*100:.0f}%"
 
@@ -134,8 +189,36 @@ def cmd_analyze() -> int:
         print(f"    (+) {stats(pos)}")
         print(f"    ( ) {stats(neu)}")
         print(f"    (-) {stats(neg)}")
-    print("\n  Separation = avg move of (+) picks minus avg move of (-). Positive AND growing with n = a")
-    print("  real edge. Compare 'claude' (my read) vs each source — best separation wins. Needs dozens of days.")
+
+    # --- THE control comparison: do analyst (+) picks beat the mechanical gapper basket? ---
+    claude_pos = [p["ret_945_close"] for p in analyst_picks if int(p["signal"]) > 0]
+    print(f"\n  === claude (+) vs CONTROL (mechanical >3% gappers) ===")
+    print(f"    claude (+) : {stats(claude_pos)}")
+    print(f"    control    : {stats(control_rets)}")
+    if claude_pos and control_rets:
+        edge = sum(claude_pos) / len(claude_pos) - sum(control_rets) / len(control_rets)
+        print(f"    EDGE over control: {edge:+.2f}%/name  "
+              f"({'analyst adds value' if edge > 0 else 'no edge over a mechanical screen'})")
+
+    # --- splits on the analyst's picks (signed return = signal * ret, so + reads as 'right') ---
+    def signed(p):
+        return int(p["signal"]) * p["ret_945_close"] if int(p["signal"]) != 0 else None
+
+    def split(name, pred):
+        rr = [signed(p) for p in analyst_picks if int(p["signal"]) != 0 and pred(p) and signed(p) is not None]
+        print(f"    {name:<22}{stats(rr)}")
+
+    print(f"\n  === splits (signed return: signal x move; + = pick was right) ===")
+    split("confidence >= 0.6", lambda p: float(p.get("confidence", 0.5)) >= 0.6)
+    split("confidence < 0.6", lambda p: float(p.get("confidence", 0.5)) < 0.6)
+    split("earnings day", lambda p: p.get("earnings_day"))
+    split("non-earnings", lambda p: not p.get("earnings_day"))
+    split("|gap| >= 3%", lambda p: p.get("gap_pct") is not None and abs(p["gap_pct"]) >= 3)
+    split("|gap| < 3%", lambda p: p.get("gap_pct") is not None and abs(p["gap_pct"]) < 3)
+
+    print("\n  Separation = avg move of (+) minus (-). The CONTROL comparison is the real bar: if claude (+)")
+    print("  doesn't beat the mechanical gapper basket, the analyst adds nothing. Pre-registered prediction:")
+    print("  edge lives in |gap|<3% fresh-news names, not big gappers. Needs dozens of days.")
     return 0
 
 
