@@ -213,3 +213,42 @@ Pre-registered gate: Sharpe AND PnL >= base, maxDD <= base, h2 not worse,
 in BOTH windows at 1.0x; ordering must hold at 1.5x. Otherwise reject.
 
 # rerun finished Wed Jun 10 15:44:16 PDT 2026
+
+## 4. retest entry + same-direction re-entry (practitioner round)
+
+=== 730d: 502 sessions, OOS split 2025-06-05  (2487 tight-OR trades) ===
+
+  -- slippage 1.0x --
+  arm              trades  fill%      PnL$  Sharpe   maxDD$      h1 PnL   h2 PnL
+  ------------------------------------------------------------------------------
+  base               2469   100%    +9,527    2.52     -737      +7,428   +2,099
+  retest_ORhigh      1860    75%    +4,234    1.78     -622      +3,347     +887
+  reenter_1x         2559   100%    +9,954    2.59     -807      +7,807   +2,147
+
+  -- slippage 1.5x --
+  arm              trades  fill%      PnL$  Sharpe   maxDD$      h1 PnL   h2 PnL
+  ------------------------------------------------------------------------------
+  base               2469   100%    +6,932    1.84     -916      +5,912   +1,020
+  retest_ORhigh      1860    75%    +2,112    0.89   -1,311      +2,114       -3
+  reenter_1x         2559   100%    +7,290    1.91     -955      +6,247   +1,043
+
+=== 180d: 123 sessions, OOS split 2026-03-09  (300 tight-OR trades) ===
+
+  -- slippage 1.0x --
+  arm              trades  fill%      PnL$  Sharpe   maxDD$      h1 PnL   h2 PnL
+  ------------------------------------------------------------------------------
+  base                299   100%    +1,060    1.60     -609        +296     +764
+  retest_ORhigh       251    84%      +836    1.55     -415        +187     +648
+  reenter_1x          311   100%    +1,088    1.63     -620        +363     +725
+
+  -- slippage 1.5x --
+  arm              trades  fill%      PnL$  Sharpe   maxDD$      h1 PnL   h2 PnL
+  ------------------------------------------------------------------------------
+  base                299   100%      +780    1.19     -644         +88     +693
+  retest_ORhigh       251    84%      +594    1.11     -449          +6     +588
+  reenter_1x          311   100%      +798    1.21     -657        +149     +649
+
+Gates: retest needs Sharpe AND PnL >= base (both windows, both slips).
+reenter needs PnL >= base, Sharpe >= base-0.05, maxDD <= 1.15x base.
+
+# round-2 finished Wed Jun 10 16:05:40 PDT 2026
