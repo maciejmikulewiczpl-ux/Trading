@@ -220,9 +220,16 @@ SETTINGS: list[Setting] = [
         minv=0.0, maxv=1.0,
     ),
     Setting(
-        "min_risk_per_share", "Min risk/share ($)", "Risk", "float", 0.05,
+        "min_risk_per_share", "Min risk/share ($)", "Risk", "float", 0.25,
         "Reject a setup if entry-to-stop is tighter than this — too tight means "
-        "oversized share counts and noise-driven stops.",
+        "oversized share counts and noise-driven stops. RAISED 0.05->0.25 on 2026-06-10 "
+        "(backtest/compare_tightOR_pricefloor.py): a constant cents/share slippage is a huge "
+        "R-haircut on tiny-risk names, so the entire tight-OR edge lives in higher-risk/share "
+        "names (>=$0.8/sh bucket; everything <$0.4 is a net bleeder). The 0.25 floor lifts "
+        "730d Sharpe 1.80->2.14 (1.0x slip) / 0.75->1.36 (1.5x stress), cuts maxDD "
+        "-$2,654->-$1,381, and FLIPS the weak recent OOS half −$731->+$314 under stress; "
+        "180d neutral (few low-risk trades to cut). Chosen 0.25 (vs 0.15) for max robustness "
+        "given the edge's front-loaded/regime-decay profile.",
         minv=0.0, maxv=100.0,
     ),
     Setting(
