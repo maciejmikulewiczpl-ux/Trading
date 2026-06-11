@@ -756,9 +756,9 @@ function renderRegime(rd){
     document.getElementById("root").innerHTML=h+`<div class="card empty">${rd.error}</div>`;
     return;
   }
-  const sc=rd.score;
-  const bcls = sc>=5?"s-alive":sc>=1?"s-idle":sc>=-4?"s-warning":"s-down";
-  h+=`<div class="banner ${bcls}"><span class="dot"></span><h1>${rd.verdict}</h1><p>weight of evidence <b>${sc>=0?"+":""}${sc}</b> of ±10 · daily closes through ${rd.asof} · refreshes ~15 min</p></div>`;
+  const bcls = {good:"s-alive",caution:"s-warning",bad:"s-down",neutral:"s-idle"}[rd.tone]||"s-idle";
+  const ss=rd.struct_score, ms=rd.mom_score;
+  h+=`<div class="banner ${bcls}"><span class="dot"></span><h1>${rd.verdict}</h1><p>structure <b>${ss>=0?"+":""}${ss}</b>/±7 (${rd.struct_state}) · momentum <b>${ms>=0?"+":""}${ms}</b>/±6 (${rd.mom_state}) · daily closes through ${rd.asof} · refreshes ~15 min</p></div>`;
   // dip read — the question the tab exists to answer
   const d=rd.dip||{};
   h+=`<div class="card"><h2>Buy-the-dip read</h2>
@@ -784,13 +784,17 @@ function renderRegime(rd){
     <div class="stat"><div class="k">Above 200d MA</div><div class="v ${br.pct200>55?"pos":br.pct200<45?"neg":""}">${(br.pct200||0).toFixed(0)}%</div></div>
     <div class="stat"><div class="k">Above 50d MA</div><div class="v ${br.pct50>55?"pos":br.pct50<45?"neg":""}">${(br.pct50||0).toFixed(0)}%</div></div>
   </div><div class="hint">breadth leads the index at turns — indexes can be held up by a few mega-caps while the average stock is already in a downtrend</div></div>`;
-  // votes
-  h+=`<div class="card"><h2>Weight of evidence (SPY + breadth)</h2><table><tr><th>pts</th><th style="text-align:left">component</th><th style="text-align:left">reading</th></tr>`;
-  for(const v of (rd.votes||[])){
-    const p=v.pts>0?`+${v.pts}`:`${v.pts}`;
-    h+=`<tr><td class="${v.pts>0?"pos":v.pts<0?"neg":""}">${p}</td><td style="text-align:left">${v.name}</td><td style="text-align:left;color:#9aa6b4">${v.detail}</td></tr>`;
+  // votes — two groups: slow structure axis, fast momentum axis
+  for(const [grp,lim,score,state] of [["structure",7,ss,rd.struct_state],["momentum",6,ms,rd.mom_state]]){
+    const sCls = score>=(grp==="structure"?3:2)?"pos":score<=-(grp==="structure"?3:2)?"neg":"";
+    h+=`<div class="card"><h2>${grp} — <span class="${sCls}">${score>=0?"+":""}${score}</span> of ±${lim} (${state})</h2><table><tr><th>pts</th><th style="text-align:left">component</th><th style="text-align:left">reading</th></tr>`;
+    for(const v of (rd.votes||[])){
+      if(v.grp!==grp) continue;
+      const p=v.pts>0?`+${v.pts}`:`${v.pts}`;
+      h+=`<tr><td class="${v.pts>0?"pos":v.pts<0?"neg":""}">${p}</td><td style="text-align:left">${v.name}</td><td style="text-align:left;color:#9aa6b4">${v.detail}</td></tr>`;
+    }
+    h+=`</table></div>`;
   }
-  h+=`</table></div>`;
   // turn checklist
   h+=`<div class="card"><h2>Downtrend-ending checklist — ${rd.n_turn_on}/6 markers on${rd.n_turn_on>=4?" · turn forming":rd.n_turn_on<=2?" · no confirmed turn":""}</h2><table>`;
   for(const c of (rd.turn||[])){

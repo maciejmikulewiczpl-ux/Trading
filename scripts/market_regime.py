@@ -101,6 +101,7 @@ def analyze(close: pd.Series) -> dict:
     vol, vol_hot = vol_regime(close)
     return {
         "px": px,
+        "ret5": (px / float(close.iloc[-6]) - 1.0) * 100 if len(close) > 6 else 0.0,
         "ma": {n: float(ma[n].iloc[-1]) for n in MA_WINDOWS},
         "ma200_rising": bool(ma[200].iloc[-1] > ma[200].iloc[-21]),
         "ma50_rising": bool(ma[50].iloc[-1] > ma[50].iloc[-11]),
@@ -135,51 +136,72 @@ def breadth(watch: dict[str, pd.Series]) -> dict:
 
 
 # ---------- verdict ----------
-def composite(spy: dict, br: dict) -> tuple[int, list[dict]]:
-    """Weight-of-evidence score in ~[-10, +10]; votes = [{pts, name, detail}].
-    Long-term structure and breadth carry double weight; oscillators single."""
+# TWO-AXIS verdict (reworked 2026-06-11 after the v1 label failure: with SPY -4.5%
+# in 4 sessions the single blended score still said "BULLISH" because long-term
+# structure outvoted a sharp short-term fall). STRUCTURE (where price is vs the
+# slow averages + breadth, +/-7) and MOMENTUM (which way it's moving right now,
+# +/-6) are scored separately and BOTH are shown — "uptrend under pressure" and
+# "bullish" are different states and the label must say which one we're in.
+def composite(spy: dict, br: dict) -> dict:
+    """{votes, struct_score, mom_score, struct_state, mom_state}.
+    votes = [{pts, grp: structure|momentum, name, detail}]."""
     votes: list[dict] = []
-    score = 0
+    scores = {"structure": 0, "momentum": 0}
 
-    def vote(cond_pos, cond_neg, w, name, detail):
-        nonlocal score
+    def vote(grp, cond_pos, cond_neg, w, name, detail):
         s = w if cond_pos else (-w if cond_neg else 0)
-        score += s
-        votes.append({"pts": s, "name": name, "detail": detail})
+        scores[grp] += s
+        votes.append({"pts": s, "grp": grp, "name": name, "detail": detail})
 
-    vote(spy["px"] > spy["ma"][200], spy["px"] <= spy["ma"][200], 2,
+    # STRUCTURE — the slow axis (+/-7)
+    vote("structure", spy["px"] > spy["ma"][200], spy["px"] <= spy["ma"][200], 2,
          "price vs 200d MA", f"{spy['px']:.0f} vs {spy['ma'][200]:.0f}")
-    vote(spy["ma200_rising"], not spy["ma200_rising"], 1,
+    vote("structure", spy["ma200_rising"], not spy["ma200_rising"], 1,
          "200d MA slope (1mo)", "rising" if spy["ma200_rising"] else "falling")
-    vote(spy["golden"], not spy["golden"], 1,
+    vote("structure", spy["golden"], not spy["golden"], 1,
          "50d vs 200d MA", "golden cross" if spy["golden"] else "death cross")
-    vote(spy["px"] > spy["ma"][50], spy["px"] <= spy["ma"][50], 1,
+    vote("structure", br["pct200"] > 55, br["pct200"] < 45, 2,
+         "breadth >200d MA", f"{br['pct200']:.0f}% of {br['n']} watchlist names")
+    vote("structure", spy["dd52"] > -5, spy["dd52"] < -15, 1,
+         "off 52-week high", f"{spy['dd52']:+.1f}%")
+
+    # MOMENTUM — the fast axis (+/-6)
+    vote("momentum", spy["ret5"] > 1.0, spy["ret5"] < -1.0, 1,
+         "5-day return", f"{spy['ret5']:+.1f}%")
+    vote("momentum", spy["px"] > spy["ma"][50], spy["px"] <= spy["ma"][50], 1,
          "price vs 50d MA", f"{spy['px']:.0f} vs {spy['ma'][50]:.0f}")
-    vote(spy["macd_above_sig"] and spy["macd_hist"] > 0,
+    vote("momentum", spy["macd_above_sig"] and spy["macd_hist"] > 0,
          not spy["macd_above_sig"] and spy["macd_hist"] < 0, 1,
          "MACD (12-26-9)", f"hist {spy['macd_hist']:+.2f}")
-    vote(spy["rsi"] > 55, spy["rsi"] < 45, 1, "RSI-14 zone", f"{spy['rsi']:.0f}")
-    vote(not spy["vol_hot"], spy["vol_hot"], 1,
+    vote("momentum", spy["rsi"] > 55, spy["rsi"] < 45, 1,
+         "RSI-14 zone", f"{spy['rsi']:.0f}")
+    vote("momentum", not spy["vol_hot"], spy["vol_hot"], 1,
          "vol regime (live dial)", f"20d {spy['vol20_ann']:.0f}% ann, "
          f"{'> 126d median (ELEVATED)' if spy['vol_hot'] else '<= median (calm)'}")
-    vote(br["pct200"] > 55, br["pct200"] < 45, 2,
-         "breadth >200d MA", f"{br['pct200']:.0f}% of {br['n']} watchlist names")
-    vote(spy["dd52"] > -5, spy["dd52"] < -15, 1,
-         "off 52-week high", f"{spy['dd52']:+.1f}%")
-    return score, votes
+    vote("momentum", br["pct50"] > 55, br["pct50"] < 45, 1,
+         "breadth >50d MA", f"{br['pct50']:.0f}% of watchlist names")
+
+    ss, ms = scores["structure"], scores["momentum"]
+    return {"votes": votes, "struct_score": ss, "mom_score": ms,
+            "struct_state": "UP" if ss >= 3 else "BROKEN" if ss <= -3 else "MIXED",
+            "mom_state": "RISING" if ms >= 2 else "FALLING" if ms <= -2 else "FLAT"}
 
 
-def label(score: int) -> str:
-    if score >= 5:
-        return "BULLISH — uptrend in force"
-    if score >= 1:
-        return "STABLE / mildly bullish"
-    if score >= -4:
-        return "WEAKENING / correction zone"
-    return "BEARISH — downtrend"
+# (structure, momentum) -> (verdict label, tone for the banner color)
+VERDICTS = {
+    ("UP", "RISING"):     ("BULLISH — uptrend with momentum", "good"),
+    ("UP", "FLAT"):       ("BULLISH — uptrend, momentum cooling", "good"),
+    ("UP", "FALLING"):    ("UPTREND UNDER PRESSURE — correction in progress", "caution"),
+    ("MIXED", "RISING"):  ("REPAIRING — structure mixed, momentum improving", "neutral"),
+    ("MIXED", "FLAT"):    ("NEUTRAL / range-bound", "neutral"),
+    ("MIXED", "FALLING"): ("WEAKENING — structure cracking, momentum down", "caution"),
+    ("BROKEN", "RISING"): ("DOWNTREND BOUNCE — watch the turn checklist", "caution"),
+    ("BROKEN", "FLAT"):   ("BEARISH — downtrend", "bad"),
+    ("BROKEN", "FALLING"): ("BEARISH — downtrend in force", "bad"),
+}
 
 
-def dip_assess(spy: dict) -> dict:
+def dip_assess(spy: dict, mom_state: str) -> dict:
     """{structure, oversold, verdict, note} — the buy-the-dip read."""
     structure = spy["px"] > spy["ma"][200] and (spy["ma200_rising"] or spy["golden"])
     oversold = spy["rsi"] < 35 or (spy["px"] < spy["ma"][50] and -12 < spy["dd52"] < -3)
@@ -187,6 +209,12 @@ def dip_assess(spy: dict) -> dict:
         verdict, note = "BUYABLE-DIP ZONE", \
             ("Pullback inside an intact uptrend — the kind that has historically "
              "resolved up. (Not a validated signal; size accordingly.)")
+    elif structure and mom_state == "FALLING":
+        verdict, note = "DIP FORMING — not at trigger yet", \
+            (f"Correction inside an intact uptrend, but not yet at the classic dip "
+             f"triggers (RSI<35 — now {spy['rsi']:.0f} — or below the 50d MA with a "
+             f"3-12% drawdown — now {spy['dd52']:+.1f}%). Falling momentum says don't "
+             f"front-run it; let it reach a trigger or stabilize.")
     elif structure:
         verdict, note = "NO DIP ON OFFER", \
             "Trend intact and not stretched. Nothing to time."
@@ -223,17 +251,18 @@ def snapshot() -> dict:
     idx = {sym: analyze(closes[sym]) for sym in INDEXES}
     br = breadth({s: c for s, c in closes.items() if s in watchlist})
     spy = idx["SPY"]
-    score, votes = composite(spy, br)
+    comp = composite(spy, br)
+    verdict, tone = VERDICTS[(comp["struct_state"], comp["mom_state"])]
     checks = turn_checks(spy, br)
     return {
         "generated": datetime.now(ET).strftime("%Y-%m-%d %H:%M:%S %Z"),
         "asof": closes["SPY"].index[-1].date().isoformat(),
         "indexes": idx,
         "breadth": br,
-        "score": score,
-        "votes": votes,
-        "verdict": label(score),
-        "dip": dip_assess(spy),
+        **comp,                      # votes, struct_score, mom_score, *_state
+        "verdict": verdict,
+        "tone": tone,
+        "dip": dip_assess(spy, comp["mom_state"]),
         "turn": checks,
         "n_turn_on": sum(1 for c in checks if c["on"]),
     }
@@ -260,10 +289,15 @@ def main() -> int:
     print(f"\nBREADTH (our {br['n']}-name watchlist): {br['pct200']:.0f}% above 200d MA, "
           f"{br['pct50']:.0f}% above 50d MA")
 
-    print(f"\nWEIGHT OF EVIDENCE (SPY + breadth) — score {snap['score']:+d} of +/-10:")
-    for v in snap["votes"]:
-        pts = f"+{v['pts']}" if v["pts"] > 0 else (str(v["pts"]) if v["pts"] < 0 else " 0")
-        print(f"  {pts:>3}  {v['name']:<26} {v['detail']}")
+    for grp, score, lim, state in [
+            ("structure", snap["struct_score"], 7, snap["struct_state"]),
+            ("momentum", snap["mom_score"], 6, snap["mom_state"])]:
+        print(f"\n{grp.upper()} — score {score:+d} of +/-{lim} -> {state}:")
+        for v in snap["votes"]:
+            if v["grp"] != grp:
+                continue
+            pts = f"+{v['pts']}" if v["pts"] > 0 else (str(v["pts"]) if v["pts"] < 0 else " 0")
+            print(f"  {pts:>3}  {v['name']:<26} {v['detail']}")
     print(f"\nVERDICT: {snap['verdict']}")
 
     d = snap["dip"]
