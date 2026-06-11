@@ -562,6 +562,77 @@ def _news_status() -> dict | None:
     return _news_cache["data"]
 
 
+_news_live_cache: dict = {"ts": 0.0, "data": None}
+
+
+def _news_live(symbols: list[str]) -> dict:
+    """Live intraday behavior for today's news picks — bought or not. Per symbol:
+    last, gap%, day%, day hi/lo, 15-min OR levels (what the news bot trades), and
+    the 9:45 reference price the after-close scorer measures from. 30s cache —
+    the OR-level fetch pulls today's minute bars, no need to do that every poll."""
+    dc = Handler.dc or _news_clients()[1]
+    if dc is None or not symbols:
+        return {}
+    now = _time.time()
+    if _news_live_cache["data"] is not None and now - _news_live_cache["ts"] < 30.0:
+        return _news_live_cache["data"]
+    now_et = datetime.now(ET)
+    snaps = {}
+    try:
+        from alpaca.data.requests import StockSnapshotRequest
+        snaps = dc.get_stock_snapshot(
+            StockSnapshotRequest(symbol_or_symbols=list(symbols), feed=DataFeed.IEX)) or {}
+    except Exception:
+        pass
+    # 9:45 ET reference = open of the 09:45 minute bar (the scorer's entry point)
+    px945: dict = {}
+    try:
+        ref_t = datetime.combine(now_et.date(), dtime(9, 45), tzinfo=ET)
+        if now_et >= ref_t:
+            req = StockBarsRequest(symbol_or_symbols=list(symbols), timeframe=TimeFrame.Minute,
+                                   start=ref_t.astimezone(UTC),
+                                   end=(ref_t + timedelta(minutes=1)).astimezone(UTC),
+                                   feed=DataFeed.IEX)
+            bars = dc.get_stock_bars(req).df
+            if bars is not None and not bars.empty:
+                for sym in set(bars.index.get_level_values(0)):
+                    px945[sym] = float(bars.xs(sym, level=0)["open"].iloc[0])
+    except Exception:
+        pass
+    try:
+        or_map = _or_levels(dc, list(symbols), now_et)
+    except Exception:
+        or_map = {}
+    out: dict = {}
+    for sym in symbols:
+        sn = snaps.get(sym)
+        if sn is None:
+            continue
+        try:
+            prev_c = float(sn.previous_daily_bar.close) if sn.previous_daily_bar else None
+            db = sn.daily_bar
+            last = (float(sn.latest_trade.price) if sn.latest_trade
+                    else (float(db.close) if db else None))
+            o = float(db.open) if db else None
+            p945 = px945.get(sym)
+            out[sym] = {
+                "last": last,
+                "gap_pct": ((o / prev_c - 1) * 100) if (o and prev_c) else None,
+                "day_pct": ((last / prev_c - 1) * 100) if (last and prev_c) else None,
+                "hi": float(db.high) if db else None,
+                "lo": float(db.low) if db else None,
+                "px945": p945,
+                "since945_pct": ((last / p945 - 1) * 100) if (last and p945) else None,
+                "or_high": (or_map.get(sym) or {}).get("or_high"),
+                "or_low": (or_map.get(sym) or {}).get("or_low"),
+            }
+        except Exception:
+            continue
+    _news_live_cache["data"] = out
+    _news_live_cache["ts"] = now
+    return out
+
+
 def _newsedge() -> dict:
     """Summarize the news-edge forward-test picks for the web tab (read-only).
 
@@ -608,6 +679,15 @@ def _newsedge() -> dict:
     bot = _news_status()
     if bot is not None:
         out["bot"] = bot
+    # live behavior of TODAY's picks (bought or not) for the live table
+    today_iso = datetime.now(ET).date().isoformat()
+    tday = next((d for d in days if d["date"] == today_iso), None)
+    if tday:
+        try:
+            out["live"] = _news_live([p["symbol"] for p in tday["picks"]])
+            out["live_date"] = today_iso
+        except Exception:
+            pass
     return out
 
 
@@ -1027,6 +1107,30 @@ function renderNews(nd){
     h+=`</div>`;
   } else {
     h+=`<div class="card"><div class="empty">News bot account not visible here yet (needs .env.news where the status server runs). Picks measurement below still works.</div></div>`;
+  }
+  // --- live behavior of today's picks (bought or not) ---
+  if(nd.live && Object.keys(nd.live).length){
+    const held=new Set(((nd.bot||{}).positions||[]).map(p=>p.symbol));
+    const today=(nd.days||[]).find(d=>d.date===nd.live_date)||{picks:[]};
+    const sigOrd=p=>p.control?2:(p.signal>0?0:p.signal<0?3:1);
+    h+=`<div class="card"><h2>Today's picks — live behavior (${nd.live_date})</h2>`;
+    h+=`<table><tr><th>sym</th><th>signal</th><th>held</th><th>last</th><th>gap%</th><th>day%</th><th>OR low</th><th>OR high</th><th>vs OR</th><th>9:45 px</th><th>since 9:45</th></tr>`;
+    for(const p of today.picks.slice().sort((a,b)=>sigOrd(a)-sigOrd(b))){
+      const L=nd.live[p.symbol]; if(!L) continue;
+      const sig=p.control?`<span style="color:#7c8694">ctrl</span>`
+        :p.signal>0?`<span class="pos">▲ +1</span>`
+        :p.signal<0?`<span class="neg">▼ −1</span>`:`<span style="color:#7c8694">0</span>`;
+      const pc=v=>v==null?{v:"—"}:{v:pctTxt(v),cls:cls(v)};
+      let vsOR="—";
+      if(L.last!=null&&L.or_high!=null)
+        vsOR=L.last>L.or_high?`<span class="pos">above OR-high</span>`
+          :(L.or_low!=null&&L.last<L.or_low)?`<span class="neg">below OR-low</span>`:`inside`;
+      h+=row([{v:p.symbol},{v:sig},{v:held.has(p.symbol)?`<span class="pos">✓</span>`:""},
+              {v:L.last!=null?money(L.last):"—"},pc(L.gap_pct),pc(L.day_pct),
+              {v:L.or_low!=null?money(L.or_low):"—"},{v:L.or_high!=null?money(L.or_high):"—"},
+              {v:vsOR},{v:L.px945!=null?money(L.px945):"—"},pc(L.since945_pct)]);
+    }
+    h+=`</table><div class="hint">every pick tracked live whether or not the bot bought it · "since 9:45" is the exact reference the after-close scorer uses (the no-ORB buy-and-hold arm) · OR low/high = the 15-min opening range the news bot trades · "held" = currently in the news bot's book</div></div>`;
   }
   // --- the daily signal measurement (does my read predict the day?) ---
   h+=`<div class="card"><h2>Signal measurement — do (+) picks outrun (−)?</h2>`;
