@@ -19,7 +19,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "m&a",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.964,
+      "gap_pct": -6.444
     },
     {
       "symbol": "ETN",
@@ -38,7 +40,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "m&a",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.682,
+      "gap_pct": 1.907
     },
     {
       "symbol": "ORCL",
@@ -58,7 +62,9 @@
       "reddit_rank": 2,
       "earnings_day": true,
       "theme": "ai-capex",
-      "control": false
+      "control": false,
+      "ret_945_close": 4.455,
+      "gap_pct": -11.258
     },
     {
       "symbol": "STTK",
@@ -76,7 +82,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "dilution",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.119,
+      "gap_pct": -0.121
     },
     {
       "symbol": "VRA",
@@ -95,7 +103,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 2.679,
+      "gap_pct": 10.798
     },
     {
       "symbol": "LOVE",
@@ -115,7 +125,9 @@
       "reddit_rank": 47,
       "earnings_day": true,
       "theme": "earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.673,
+      "gap_pct": -4.506
     },
     {
       "symbol": "DBI",
@@ -131,7 +143,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "retail-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -5.305,
+      "gap_pct": -0.286
     },
     {
       "symbol": "AVGO",
@@ -149,7 +163,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "ai-chips",
-      "control": false
+      "control": false,
+      "ret_945_close": 2.01,
+      "gap_pct": 0.234
     },
     {
       "symbol": "INTC",
@@ -167,7 +183,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "ai-chips",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.034,
+      "gap_pct": 5.973
     },
     {
       "symbol": "PLUG",
@@ -185,7 +203,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "hydrogen",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.703,
+      "gap_pct": 0.351
     },
     {
       "symbol": "SCVL",
@@ -203,7 +223,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "corp-action",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.24,
+      "gap_pct": 0.93
     },
     {
       "symbol": "VELO",
@@ -219,7 +241,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 13.81
+      "gap_pct": 13.81,
+      "ret_945_close": 14.663
     },
     {
       "symbol": "SNXX",
@@ -235,7 +258,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 9.76
+      "gap_pct": 9.76,
+      "ret_945_close": 20.037
     },
     {
       "symbol": "CRWV",
@@ -251,7 +275,9 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -4.03
+      "gap_pct": -4.03,
+      "ret_945_close": 3.373
     }
-  ]
+  ],
+  "outcomes_at": "2026-06-11T16:05:08-04:00"
 }
