@@ -735,6 +735,13 @@ PAGE = """<!doctype html>
   .tab.active{background:#1f2630;color:var(--txt);border-color:#3a4350}
   .tab.toggle.active{background:#10231a;color:#3fbf72;border-color:#1d4d2e}
   .hint{color:var(--dim);font-size:11px;margin-top:8px}
+  details.explain summary{cursor:pointer;color:var(--txt);font-size:13px;list-style:none}
+  details.explain summary::before{content:"▸ ";color:var(--dim)}
+  details.explain[open] summary::before{content:"▾ "}
+  details.explain .ex{margin:10px 0 4px;color:#b6c0cc;font-size:12.5px;line-height:1.55}
+  details.explain .ex b{color:var(--txt)}
+  details.explain .ex .pts{color:var(--dim);font-size:11px}
+  details.explain h3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin:14px 0 2px}
   tr.dim td{opacity:.4}
   .hivol{color:var(--orange);font-size:10px;margin-left:6px;white-space:nowrap}
 </style></head>
@@ -826,6 +833,52 @@ function spark(series, opts){
 function chartLabel(parts){
   return `<div class="hint" style="margin:10px 0 2px">`+parts.map(([t,c])=>`<span style="color:${c}">● ${t}</span>`).join(" &nbsp; ")+`</div>`;
 }
+// Plain-language basis of the analysis — static text, one entry per vote.
+const REGIME_EXPLAIN = `
+<div class="card"><details class="explain"><summary><b>How to read this page</b> — every parameter explained in plain language</summary>
+<div class="ex">No single number decides anything here. Each indicator below casts a small <b>vote</b> (its points are shown next to it in the tables above), and the votes add up into two separate scores. Think of it like a doctor reading vitals: one bad reading is a note, several together are a diagnosis.</div>
+
+<h3>Why two scores?</h3>
+<div class="ex"><b>STRUCTURE</b> (±7) answers "what kind of market has this been for months?" — it moves slowly and ignores any single bad week. <b>MOMENTUM</b> (±6) answers "which way is it moving right now?" — it reacts within days. They often disagree, and the disagreement IS the information: a falling week inside a healthy year is a pullback; a rising week inside a broken year is a bounce. The headline verdict is just the combination of the two.</div>
+
+<h3>Structure votes (the slow axis)</h3>
+<div class="ex"><b>Price vs 200-day moving average</b> <span class="pts">(±2 — the heavyweight)</span><br>
+The 200d MA is simply the average closing price of the last ~10 months — the most-watched line in all of markets. Price above it = the long-term trend is up; below it = broken. It gets double weight because history is unambiguous: most of the stock market's gains happen above this line, and most disasters happen below it. Our live bot's trend filter uses the same line.</div>
+<div class="ex"><b>200d MA slope</b> <span class="pts">(±1)</span><br>
+Whether that 10-month average itself is rising or falling. Price can pop above a still-falling average in a bear-market rally — the slope catches that trick.</div>
+<div class="ex"><b>50d vs 200d MA ("golden/death cross")</b> <span class="pts">(±1)</span><br>
+The 10-week average above the 10-month average = "golden cross" (the recent past is stronger than the distant past — healthy). Below = "death cross." Slow but famously hard to fake.</div>
+<div class="ex"><b>Breadth above 200d MA</b> <span class="pts">(±2 — the other heavyweight)</span><br>
+The % of our own 122 tradable names that sit above their own 200d line. This is the honesty check on the index: SPY can be held up by five mega-caps while the average stock quietly breaks down. Above 55% = broad health; below 45% = the average stock is already in a downtrend regardless of what the index says.</div>
+<div class="ex"><b>Distance from the 52-week high</b> <span class="pts">(±1)</span><br>
+Within 5% of the 1-year high = near the highs (healthy). More than 15% below = serious damage. (Trader vocabulary: 5–10% down = "pullback/correction," 20%+ = "bear market.")</div>
+
+<h3>Momentum votes (the fast axis)</h3>
+<div class="ex"><b>5-day return</b> <span class="pts">(±1)</span><br>
+Literally just the last week, with a ±1% dead zone so ordinary wiggle doesn't vote. The bluntest, fastest input.</div>
+<div class="ex"><b>Price vs 50-day MA</b> <span class="pts">(±1)</span><br>
+The ~10-week average — the medium-term line trend traders defend. Holding above it during a slide means the dip is still orderly; losing it is the first real crack.</div>
+<div class="ex"><b>MACD (12-26-9)</b> <span class="pts">(±1)</span><br>
+Compares a fast (12-day) average of price against a slow (26-day) one. When the fast falls below the slow, recent buying has weakened — momentum turned down. The "histogram" number is how hard it's leaning; its direction day to day shows the move accelerating or fading.</div>
+<div class="ex"><b>RSI-14</b> <span class="pts">(±1)</span><br>
+A 0–100 speedometer of the last 14 days' up-moves vs down-moves. Above 55 = buyers in charge; below 45 = sellers in charge; below 35 = "washed out" — historically the zone where selling exhausts itself and dips become buyable (which is why 35 is the dip trigger below).</div>
+<div class="ex"><b>Volatility regime</b> <span class="pts">(±1)</span><br>
+The exact same measure the live bot uses to cut its risk in half: are SPY's daily swings bigger than their 6-month norm? Calm markets drift up; stressed ones whipsaw. When this is ELEVATED, the bot is already trading half-size automatically.</div>
+<div class="ex"><b>Breadth above 50d MA</b> <span class="pts">(±1)</span><br>
+Short-term participation: what % of our names are above their own 10-week line. Falling breadth here shows a sell-off spreading; recovering breadth is usually the first sign of repair.</div>
+
+<h3>From scores to the verdict</h3>
+<div class="ex">Structure ≥ +3 → <b>UP</b>, ≤ −3 → <b>BROKEN</b>, between → MIXED. Momentum ≥ +2 → <b>RISING</b>, ≤ −2 → <b>FALLING</b>, between → FLAT. The pair picks one of nine labels (e.g. UP + FALLING = "uptrend under pressure"). The banner color follows the label, not just the math.</div>
+
+<h3>The dip read</h3>
+<div class="ex">One rule with strong historical support: a pullback is only worth buying when the <b>long-term structure is intact</b> (price above a rising 200d MA) <b>and</b> price has actually stretched (RSI under 35, or below the 50d MA while 3–12% off the high). Same chart below a broken 200d MA = a falling knife, not a dip. "DIP FORMING" means the first condition holds and the second is approaching — wait for the trigger, don't front-run it.</div>
+
+<h3>The turn checklist</h3>
+<div class="ex">Only matters when structure is BROKEN. Bottoms don't announce themselves, but they tend to share fingerprints: an RSI washout that recovers, MACD turning back up, price reclaiming the 50d line, volatility compressing, breadth repairing. 4+ of 6 lit up = a turn forming; 2 or fewer = the downtrend is intact.</div>
+
+<h3>The honest caveat</h3>
+<div class="ex">All of this <b>describes</b> the tape; none of it <b>predicts</b> it — in our own backtests, indicator-based entry signals keep failing to add value over the validated system. Use this page for context and sizing courage, not as a trade signal. The live bot doesn't read it; its own validated regime logic (vol-dial + trend filter) is unchanged.</div>
+</details></div>`;
 function renderRegime(rd){
   let h=topNav("regime");
   if(rd.error){
@@ -844,6 +897,7 @@ function renderRegime(rd){
       <div class="stat" style="grid-column:span 2"><div class="k">Verdict</div><div class="v">${d.verdict||"—"}</div></div>
     </div>
     <div class="hint">${d.note||""}</div></div>`;
+  h+=REGIME_EXPLAIN;
   // index table
   const idx=rd.indexes||{};
   h+=`<div class="card"><h2>Indexes (daily)</h2><table><tr><th>sym</th><th>last</th><th>MA50</th><th>MA120</th><th>MA200</th><th>200d slope</th><th>RSI</th><th>MACD hist</th><th>off 52w hi</th><th>20d vol</th></tr>`;
