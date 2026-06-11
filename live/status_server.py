@@ -815,6 +815,11 @@ PAGE = """<!doctype html>
   .tab.active{background:#1f2630;color:var(--txt);border-color:#3a4350}
   .tab.toggle.active{background:#10231a;color:#3fbf72;border-color:#1d4d2e}
   .hint{color:var(--dim);font-size:11px;margin-top:8px}
+  #tip{position:fixed;z-index:60;max-width:300px;background:#0b0e13;border:1px solid #3a4350;
+       color:#d6dde7;font-size:12px;line-height:1.5;padding:8px 10px;border-radius:8px;
+       box-shadow:0 8px 24px rgba(0,0,0,.55);pointer-events:none;opacity:0;transition:opacity .08s}
+  #tip.show{opacity:1}
+  th[data-tip],.k[data-tip]{cursor:help;text-decoration:underline dotted #586273;text-underline-offset:3px}
   details.explain summary{cursor:pointer;color:var(--txt);font-size:13px;list-style:none}
   details.explain summary::before{content:"▸ ";color:var(--dim)}
   details.explain[open] summary::before{content:"▾ "}
@@ -832,6 +837,95 @@ const money = v => (v<0?"-$":"$") + Math.abs(v).toLocaleString(undefined,{minimu
 const sign = v => (v>=0?"+":"") + money(v);
 const cls = v => v>=0 ? "pos":"neg";
 function row(cells, trCls){ return `<tr${trCls?` class="${trCls}"`:""}>`+cells.map((c,i)=>`<td${c.cls?` class="${c.cls}"`:""}>${c.v}</td>`).join("")+"</tr>"; }
+// ---- hover tooltips: one glossary, matched to a header/label's text on hover ----
+const GLOSSARY={
+ "sym":"Ticker symbol of the stock.",
+ "side":"Direction: long = bought expecting it to rise (ORB only trades long).",
+ "qty":"Number of shares.",
+ "avg":"Average price you paid to enter the position.",
+ "last":"Most recent traded price.",
+ "value":"Current market value of the position (shares × last price).",
+ "invested":"Dollars actually put into the position (cost basis) — the capital at work, not the whole account.",
+ "avg invested":"Average daily capital deployed over the period (the same money is redeployed each day, so it isn't summed).",
+ "or low":"Low of the first 15 minutes (the 'opening range'). A long breakout's protective stop sits here.",
+ "or high":"High of the first 15 minutes. A long entry triggers when price breaks above this.",
+ "risk $":"Dollars at risk right now = distance from entry to the protective stop × shares held.",
+ "unreal p/l":"Unrealized profit/loss — paper gain/loss on positions still open (not yet sold).",
+ "realized p/l":"Profit/loss locked in by closing the position today.",
+ "realized":"Profit/loss locked in by closing the position.",
+ "entry":"Average price the position was opened at.",
+ "exit":"Average price the position was closed at.",
+ "target":"Take-profit price (legacy bracket leg; the live bot now mostly uses a trailing stop instead).",
+ "stop":"Protective stop price — the position auto-sells here to cap the loss.",
+ "status":"Order state at the broker (e.g. new, held, filled).",
+ "fill":"Price at which the entry order actually executed.",
+ "id":"Broker order ID for this entry (for cross-referencing logs).",
+ "date":"Trading day.",
+ "week":"Week (Monday-dated) the rows are grouped into.",
+ "month":"Calendar month the rows are grouped into.",
+ "p/l":"Profit or loss in dollars.",
+ "%":"Return on the capital actually invested that day (P/L ÷ invested) — NOT on total account equity.",
+ "s&p 500 %":"How the S&P 500 (SPY) moved over the same period — the market benchmark to beat.",
+ "equity":"Total account value (cash + positions) at the end of that period.",
+ "signal":"The morning scan's call: ▲ +1 frontrunner (bullish catalyst), ▼ −1 avoid (bearish), 0 neutral, ctrl = mechanical control.",
+ "held":"✓ = this name is currently held in the news bot's account.",
+ "conf":"The analyst's confidence in the call, 0–100%.",
+ "gap%":"How far the stock opened today versus yesterday's close.",
+ "day%":"Total move so far today versus yesterday's close.",
+ "vs or":"Whether price is above the opening-range high (a breakout — what the bot trades), inside it, or below the low.",
+ "9:45 px":"The stock's price at 9:45 ET — the reference point the after-close scorer measures from.",
+ "since 9:45":"Move since 9:45 ET. This IS the 'buy the pick outright, no ORB' result, updating live.",
+ "9:45→close":"The pick's actual move from 9:45 ET to the close — the outcome the experiment scores.",
+ "hit":"✓ if the pick's direction was right (a +1 that rose, or a −1 that fell), ✗ if not.",
+ "reason":"The catalyst/rationale the scan recorded for the call.",
+ "ma50":"50-day average closing price (~10 weeks) — the medium-term trend line.",
+ "ma120":"120-day average closing price (~6 months).",
+ "ma200":"200-day average closing price (~10 months) — the major bull/bear dividing line.",
+ "200d slope":"Direction of the 200-day average over the last month — rising = long-term uptrend intact.",
+ "rsi":"RSI-14 (0–100): under 35 washed out, 45–55 neutral, over 70 overbought. A momentum speedometer.",
+ "macd hist":"Momentum gauge: above 0 = rising, below 0 = falling. The slope (growing/shrinking) matters most.",
+ "off 52w hi":"How far below the 52-week high — small = near highs (healthy), under −15% = serious damage.",
+ "20d vol":"Annualized size of daily swings over 20 days. When elevated, the live bot halves its risk automatically.",
+ "pts":"Points this reading contributes to the structure or momentum score (+ bullish, − bearish).",
+ "component":"The individual indicator being scored.",
+ "reading":"Its current value and what it implies.",
+ "event":"A level/condition worth watching — if reached it would flip part of the read.",
+ "trigger":"The value at which this event fires.",
+ "now":"The current value, for comparison with the trigger.",
+ "effect":"What changes in the verdict if the trigger is hit.",
+ // stat-card labels
+ "day p/l":"Profit/loss so far today (vs yesterday's close).",
+ "week p/l":"Profit/loss over the last 7 days.",
+ "month p/l":"Profit/loss over the last 30 days.",
+ "cash":"Uninvested cash in the account.",
+ "buying power":"Maximum position value you can hold — equity × intraday margin (up to 4×).",
+ "days logged":"Number of days the news scan has recorded picks.",
+ "scored picks":"Picks that have a measured 9:45→close outcome.",
+ "verdict":"The overall market read, combining the structure and momentum scores.",
+};
+function attachTips(){
+  document.querySelectorAll("#root th, #root .stat .k").forEach(el=>{
+    if(el.hasAttribute("data-tip")) return;
+    const g=GLOSSARY[el.textContent.trim().toLowerCase()];
+    if(g) el.setAttribute("data-tip", g);
+  });
+}
+(function initTips(){
+  const tip=document.createElement("div"); tip.id="tip"; document.body.appendChild(tip);
+  function show(el){
+    const t=el.getAttribute("data-tip"); if(!t) return;
+    tip.textContent=t; tip.classList.add("show");
+    const r=el.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
+    let x=r.left+r.width/2-w/2; x=Math.max(8,Math.min(x,innerWidth-w-8));
+    let y=r.top-h-8; if(y<8) y=r.bottom+8;
+    tip.style.left=x+"px"; tip.style.top=y+"px";
+  }
+  document.addEventListener("mouseover",e=>{ const el=e.target.closest("[data-tip]"); if(el) show(el); });
+  document.addEventListener("mouseout",e=>{ if(e.target.closest("[data-tip]")) tip.classList.remove("show"); });
+  const root=document.getElementById("root");
+  if(root) new MutationObserver(attachTips).observe(root,{childList:true,subtree:true});
+  attachTips();
+})();
 function pctTxt(v){ return (v>=0?"+":"")+v.toFixed(2)+"%"; }
 function winStat(label, w){
   if(!w) return `<div class="stat"><div class="k">${label}</div><div class="v">—</div></div>`;
