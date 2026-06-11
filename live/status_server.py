@@ -611,6 +611,27 @@ def _newsedge() -> dict:
     return out
 
 
+# Market regime gauge (scripts/market_regime.py snapshot) for the Market tab.
+# Daily-bar data, so a long cache: 15 min when healthy, 60 s retry after an error.
+# The snapshot fetches ~125 names of daily closes — cheap, but no reason to refetch
+# on every page poll.
+_regime_cache: dict = {"ts": 0.0, "data": None, "ttl": 0.0}
+
+
+def _regime() -> dict:
+    now = _time.time()
+    if _regime_cache["data"] is None or now - _regime_cache["ts"] > _regime_cache["ttl"]:
+        try:
+            from scripts.market_regime import snapshot
+            data = snapshot()
+        except Exception as e:
+            data = {"error": f"regime snapshot failed: {e}"}
+        _regime_cache["data"] = data
+        _regime_cache["ts"] = now
+        _regime_cache["ttl"] = 60.0 if data.get("error") else 900.0
+    return _regime_cache["data"]
+
+
 def _status(tc, dc=None) -> dict:
     now = _time.time()
     if _cache["data"] is None or now - _cache["ts"] > CACHE_TTL:
@@ -715,13 +736,70 @@ let lastNews=null;
 function setPLView(v){ plView=v; if(lastData) render(lastData); }
 function setCalm(){ calmOnly=!calmOnly; if(lastData) render(lastData); }
 function topNav(active){
-  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"]].map(
+  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["regime","Market"]].map(
     ([k,l])=>`<button class="tab${active===k?" active":""}" onclick="setTopView('${k}')">${l}</button>`).join("")+`</div>`;
 }
+let lastRegime=null;
 function setTopView(v){
   topView=v;
   if(v==="news") fetchNews();
+  else if(v==="regime") fetchRegime();
   else if(lastData) render(lastData);
+}
+async function fetchRegime(){
+  try{ const r=await fetch("/api/regime",{cache:"no-store"}); lastRegime=await r.json(); renderRegime(lastRegime); }
+  catch(e){ document.getElementById("root").innerHTML=topNav("regime")+`<div class="card empty">market regime data unavailable</div>`; }
+}
+function renderRegime(rd){
+  let h=topNav("regime");
+  if(rd.error){
+    document.getElementById("root").innerHTML=h+`<div class="card empty">${rd.error}</div>`;
+    return;
+  }
+  const sc=rd.score;
+  const bcls = sc>=5?"s-alive":sc>=1?"s-idle":sc>=-4?"s-warning":"s-down";
+  h+=`<div class="banner ${bcls}"><span class="dot"></span><h1>${rd.verdict}</h1><p>weight of evidence <b>${sc>=0?"+":""}${sc}</b> of ±10 · daily closes through ${rd.asof} · refreshes ~15 min</p></div>`;
+  // dip read — the question the tab exists to answer
+  const d=rd.dip||{};
+  h+=`<div class="card"><h2>Buy-the-dip read</h2>
+    <div class="grid">
+      <div class="stat"><div class="k">Long-term structure</div><div class="v ${d.structure?"pos":"neg"}">${d.structure?"INTACT":"BROKEN"}</div></div>
+      <div class="stat"><div class="k">Short-term stretch</div><div class="v">${d.oversold?"OVERSOLD":"not oversold"}</div></div>
+      <div class="stat" style="grid-column:span 2"><div class="k">Verdict</div><div class="v">${d.verdict||"—"}</div></div>
+    </div>
+    <div class="hint">${d.note||""}</div></div>`;
+  // index table
+  const idx=rd.indexes||{};
+  h+=`<div class="card"><h2>Indexes (daily)</h2><table><tr><th>sym</th><th>last</th><th>MA50</th><th>MA120</th><th>MA200</th><th>200d slope</th><th>RSI</th><th>MACD hist</th><th>off 52w hi</th><th>20d vol</th></tr>`;
+  for(const [sym,a] of Object.entries(idx)){
+    h+=row([{v:sym},{v:a.px.toFixed(0)},{v:a.ma["50"].toFixed(0)},{v:a.ma["120"].toFixed(0)},{v:a.ma["200"].toFixed(0)},
+            {v:a.ma200_rising?"rising":"falling",cls:a.ma200_rising?"pos":"neg"},
+            {v:a.rsi.toFixed(0)},{v:(a.macd_hist>=0?"+":"")+a.macd_hist.toFixed(2),cls:cls(a.macd_hist)},
+            {v:pctTxt(a.dd52),cls:cls(a.dd52)},{v:a.vol20_ann.toFixed(0)+"%"+(a.vol_hot?" ⚠":"")}]);
+  }
+  h+=`</table></div>`;
+  // breadth
+  const br=rd.breadth||{};
+  h+=`<div class="card"><h2>Breadth — our ${br.n||0}-name watchlist</h2><div class="grid">
+    <div class="stat"><div class="k">Above 200d MA</div><div class="v ${br.pct200>55?"pos":br.pct200<45?"neg":""}">${(br.pct200||0).toFixed(0)}%</div></div>
+    <div class="stat"><div class="k">Above 50d MA</div><div class="v ${br.pct50>55?"pos":br.pct50<45?"neg":""}">${(br.pct50||0).toFixed(0)}%</div></div>
+  </div><div class="hint">breadth leads the index at turns — indexes can be held up by a few mega-caps while the average stock is already in a downtrend</div></div>`;
+  // votes
+  h+=`<div class="card"><h2>Weight of evidence (SPY + breadth)</h2><table><tr><th>pts</th><th style="text-align:left">component</th><th style="text-align:left">reading</th></tr>`;
+  for(const v of (rd.votes||[])){
+    const p=v.pts>0?`+${v.pts}`:`${v.pts}`;
+    h+=`<tr><td class="${v.pts>0?"pos":v.pts<0?"neg":""}">${p}</td><td style="text-align:left">${v.name}</td><td style="text-align:left;color:#9aa6b4">${v.detail}</td></tr>`;
+  }
+  h+=`</table></div>`;
+  // turn checklist
+  h+=`<div class="card"><h2>Downtrend-ending checklist — ${rd.n_turn_on}/6 markers on${rd.n_turn_on>=4?" · turn forming":rd.n_turn_on<=2?" · no confirmed turn":""}</h2><table>`;
+  for(const c of (rd.turn||[])){
+    h+=`<tr><td style="text-align:left">${c.on?'<span class="pos">✓</span>':'<span style="color:#5a6675">✗</span>'}</td><td style="text-align:left;color:${c.on?'#d6dde7':'#7c8694'}">${c.name}</td></tr>`;
+  }
+  h+=`</table><div class="hint">matters most when structure is BROKEN — these are the classic bottoming markers to wait for before buying weakness in a downtrend</div></div>`;
+  h+=`<div class="hint">Descriptive read for the human — indicators describe the tape, they don't predict it. NOT a bot input: the live bot's regime logic (vol-dial + trend filter) is unchanged.</div>`;
+  h+=`<div class="foot"><span>regime · ${rd.generated||""}</span><span></span></div>`;
+  document.getElementById("root").innerHTML=h;
 }
 async function fetchNews(){
   try{ const r=await fetch("/api/newsedge",{cache:"no-store"}); lastNews=await r.json(); renderNews(lastNews); }
@@ -908,6 +986,7 @@ async function tick(){
   catch(e){ fails++; const t=document.getElementById("tick");
        if(t) t.textContent=`page offline (${fails}) — is the SSH tunnel up?`; }
   if(topView==="news") fetchNews();
+  if(topView==="regime") fetchRegime();
 }
 tick(); setInterval(tick, 3000);
 </script>
@@ -959,6 +1038,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.startswith("/api/newsedge"):
             try:
                 body = json.dumps(_newsedge()).encode("utf-8")
+                self._send(200, body, "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
+        elif self.path.startswith("/api/regime"):
+            try:
+                body = json.dumps(_regime()).encode("utf-8")
                 self._send(200, body, "application/json")
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")

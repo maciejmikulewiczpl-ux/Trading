@@ -17,6 +17,9 @@ pullbacks in an INTACT long-term uptrend (price above a rising 200d MA) have
 historically resolved up, while "dips" below a falling 200d MA are downtrend
 rallies. The TURN CHECKLIST tracks classic bottoming markers for the latter case.
 
+`snapshot()` returns the whole read as a JSON-safe dict — consumed by both the
+CLI below and the status page's Market tab (live/status_server.py /api/regime).
+
 Run:
     .venv/Scripts/python.exe scripts/market_regime.py
 """
@@ -96,7 +99,7 @@ def analyze(close: pd.Series) -> dict:
     line, sig, hist = macd(close)
     hi52 = float(close.tail(252).max())
     vol, vol_hot = vol_regime(close)
-    a = {
+    return {
         "px": px,
         "ma": {n: float(ma[n].iloc[-1]) for n in MA_WINDOWS},
         "ma200_rising": bool(ma[200].iloc[-1] > ma[200].iloc[-21]),
@@ -114,7 +117,6 @@ def analyze(close: pd.Series) -> dict:
         "vol_hot": vol_hot,
         "vol_falling": bool(vol.iloc[-1] < vol.iloc[-11]),
     }
-    return a
 
 
 def breadth(watch: dict[str, pd.Series]) -> dict:
@@ -133,17 +135,17 @@ def breadth(watch: dict[str, pd.Series]) -> dict:
 
 
 # ---------- verdict ----------
-def composite(spy: dict, br: dict) -> tuple[int, list[str]]:
-    """Weight-of-evidence score in ~[-10, +10]. Long-term structure and breadth
-    carry double weight; momentum oscillators single."""
-    votes = []
+def composite(spy: dict, br: dict) -> tuple[int, list[dict]]:
+    """Weight-of-evidence score in ~[-10, +10]; votes = [{pts, name, detail}].
+    Long-term structure and breadth carry double weight; oscillators single."""
+    votes: list[dict] = []
     score = 0
 
     def vote(cond_pos, cond_neg, w, name, detail):
         nonlocal score
         s = w if cond_pos else (-w if cond_neg else 0)
         score += s
-        votes.append(f"  {'+'+str(s) if s > 0 else s if s < 0 else ' 0':>3}  {name:<26} {detail}")
+        votes.append({"pts": s, "name": name, "detail": detail})
 
     vote(spy["px"] > spy["ma"][200], spy["px"] <= spy["ma"][200], 2,
          "price vs 200d MA", f"{spy['px']:.0f} vs {spy['ma'][200]:.0f}")
@@ -158,7 +160,7 @@ def composite(spy: dict, br: dict) -> tuple[int, list[str]]:
          "MACD (12-26-9)", f"hist {spy['macd_hist']:+.2f}")
     vote(spy["rsi"] > 55, spy["rsi"] < 45, 1, "RSI-14 zone", f"{spy['rsi']:.0f}")
     vote(not spy["vol_hot"], spy["vol_hot"], 1,
-         "vol regime (live dial)", f"20d {spy['vol20_ann']:.0f}%ann "
+         "vol regime (live dial)", f"20d {spy['vol20_ann']:.0f}% ann, "
          f"{'> 126d median (ELEVATED)' if spy['vol_hot'] else '<= median (calm)'}")
     vote(br["pct200"] > 55, br["pct200"] < 45, 2,
          "breadth >200d MA", f"{br['pct200']:.0f}% of {br['n']} watchlist names")
@@ -177,27 +179,29 @@ def label(score: int) -> str:
     return "BEARISH — downtrend"
 
 
-def dip_read(spy: dict) -> list[str]:
+def dip_assess(spy: dict) -> dict:
+    """{structure, oversold, verdict, note} — the buy-the-dip read."""
     structure = spy["px"] > spy["ma"][200] and (spy["ma200_rising"] or spy["golden"])
     oversold = spy["rsi"] < 35 or (spy["px"] < spy["ma"][50] and -12 < spy["dd52"] < -3)
-    out = [f"  long-term structure : {'INTACT (above ~rising 200d MA)' if structure else 'BROKEN (below/falling 200d MA)'}",
-           f"  short-term stretch  : {'OVERSOLD' if oversold else 'not oversold'} "
-           f"(RSI {spy['rsi']:.0f}, {spy['dd52']:+.1f}% off high)"]
     if structure and oversold:
-        out.append("  => BUYABLE-DIP ZONE: pullback inside an intact uptrend — the kind that has"
-                   "\n     historically resolved up. (Not a validated signal; size accordingly.)")
+        verdict, note = "BUYABLE-DIP ZONE", \
+            ("Pullback inside an intact uptrend — the kind that has historically "
+             "resolved up. (Not a validated signal; size accordingly.)")
     elif structure:
-        out.append("  => No dip on offer — trend intact and not stretched. Nothing to time.")
+        verdict, note = "NO DIP ON OFFER", \
+            "Trend intact and not stretched. Nothing to time."
     elif oversold:
-        out.append("  => CAUTION: oversold BELOW a broken 200d MA = downtrend rally risk, not a dip."
-                   "\n     Wait for the turn checklist below before buying weakness.")
+        verdict, note = "KNIFE — NOT A DIP", \
+            ("Oversold BELOW a broken 200d MA = downtrend rally risk. "
+             "Wait for the turn checklist before buying weakness.")
     else:
-        out.append("  => Downtrend, not yet washed out. Watch the turn checklist.")
-    return out
+        verdict, note = "DOWNTREND", "Not yet washed out. Watch the turn checklist."
+    return {"structure": structure, "oversold": oversold, "verdict": verdict, "note": note}
 
 
-def turn_checklist(spy: dict, br: dict) -> list[str]:
-    checks = [
+def turn_checks(spy: dict, br: dict) -> list[dict]:
+    """Classic bottoming markers — [{name, on}]. 4+ on = a turn forming."""
+    return [{"name": n, "on": bool(ok)} for n, ok in [
         ("RSI washed out (<35 in last 60d) then recovered >40",
          spy["rsi_low60"] < 35 and spy["rsi"] > 40 and spy["rsi"] > spy["rsi_10d_ago"]),
         ("MACD crossed up (10d) or histogram rising 4 of 5 days",
@@ -206,53 +210,76 @@ def turn_checklist(spy: dict, br: dict) -> list[str]:
         ("50d MA slope turned up (2wk)", spy["ma50_rising"]),
         ("volatility compressing (20d vol < 2wk ago)", spy["vol_falling"]),
         ("breadth repair: >50% of watchlist above 50d MA", br["pct50"] > 50),
-    ]
-    n_on = sum(1 for _, ok in checks if ok)
-    out = [f"  [{'x' if ok else ' '}] {name}" for name, ok in checks]
-    out.append(f"  {n_on}/6 bottoming markers ON"
-               + (" — turn forming" if n_on >= 4 else " — no confirmed turn yet" if n_on <= 2 else ""))
-    return out
+    ]]
 
 
-def main() -> int:
+def snapshot() -> dict:
+    """The full regime read as a JSON-safe dict (CLI + status-page Market tab)."""
     watchlist = list(orb_config.load_config()["watchlist"])
     closes = fetch_daily(sorted(set(INDEXES + watchlist)))
     missing = [s for s in INDEXES if s not in closes]
     if missing:
-        print(f"missing index data: {missing}")
-        return 1
-    asof = closes["SPY"].index[-1].date()
-    print(f"=== MARKET REGIME GAUGE — data through {asof} (daily closes, IEX) ===")
+        return {"error": f"missing index data: {missing}"}
+    idx = {sym: analyze(closes[sym]) for sym in INDEXES}
+    br = breadth({s: c for s, c in closes.items() if s in watchlist})
+    spy = idx["SPY"]
+    score, votes = composite(spy, br)
+    checks = turn_checks(spy, br)
+    return {
+        "generated": datetime.now(ET).strftime("%Y-%m-%d %H:%M:%S %Z"),
+        "asof": closes["SPY"].index[-1].date().isoformat(),
+        "indexes": idx,
+        "breadth": br,
+        "score": score,
+        "votes": votes,
+        "verdict": label(score),
+        "dip": dip_assess(spy),
+        "turn": checks,
+        "n_turn_on": sum(1 for c in checks if c["on"]),
+    }
 
-    rows = {}
-    for sym in INDEXES:
-        rows[sym] = analyze(closes[sym])
+
+def main() -> int:
+    snap = snapshot()
+    if snap.get("error"):
+        print(snap["error"])
+        return 1
+    print(f"=== MARKET REGIME GAUGE — data through {snap['asof']} (daily closes, IEX) ===")
+
     hdr = (f"{'':<6}{'last':>8}{'MA50':>8}{'MA120':>8}{'MA200':>8}{'200d':>7}"
            f"{'RSI':>6}{'MACDh':>7}{'off-hi':>8}{'vol20':>7}")
     print("\n" + hdr)
     print("-" * len(hdr))
-    for sym, a in rows.items():
+    for sym, a in snap["indexes"].items():
         print(f"{sym:<6}{a['px']:>8.0f}{a['ma'][50]:>8.0f}{a['ma'][120]:>8.0f}"
               f"{a['ma'][200]:>8.0f}{'rise' if a['ma200_rising'] else 'FALL':>7}"
               f"{a['rsi']:>6.0f}{a['macd_hist']:>+7.2f}{a['dd52']:>+8.1f}%"
               f"{a['vol20_ann']:>6.0f}%")
 
-    watch = {s: c for s, c in closes.items() if s in watchlist}
-    br = breadth(watch)
+    br = snap["breadth"]
     print(f"\nBREADTH (our {br['n']}-name watchlist): {br['pct200']:.0f}% above 200d MA, "
           f"{br['pct50']:.0f}% above 50d MA")
 
-    spy = rows["SPY"]
-    score, votes = composite(spy, br)
-    print(f"\nWEIGHT OF EVIDENCE (SPY + breadth) — score {score:+d} of +/-10:")
-    print("\n".join(votes))
-    print(f"\nVERDICT: {label(score)}")
+    print(f"\nWEIGHT OF EVIDENCE (SPY + breadth) — score {snap['score']:+d} of +/-10:")
+    for v in snap["votes"]:
+        pts = f"+{v['pts']}" if v["pts"] > 0 else (str(v["pts"]) if v["pts"] < 0 else " 0")
+        print(f"  {pts:>3}  {v['name']:<26} {v['detail']}")
+    print(f"\nVERDICT: {snap['verdict']}")
 
+    d = snap["dip"]
+    spy = snap["indexes"]["SPY"]
     print("\nBUY-THE-DIP READ:")
-    print("\n".join(dip_read(spy)))
+    print(f"  long-term structure : {'INTACT (above ~rising 200d MA)' if d['structure'] else 'BROKEN (below/falling 200d MA)'}")
+    print(f"  short-term stretch  : {'OVERSOLD' if d['oversold'] else 'not oversold'} "
+          f"(RSI {spy['rsi']:.0f}, {spy['dd52']:+.1f}% off high)")
+    print(f"  => {d['verdict']}: {d['note']}")
 
     print("\nDOWNTREND-ENDING (turn) CHECKLIST:")
-    print("\n".join(turn_checklist(spy, br)))
+    for c in snap["turn"]:
+        print(f"  [{'x' if c['on'] else ' '}] {c['name']}")
+    n_on = snap["n_turn_on"]
+    print(f"  {n_on}/6 bottoming markers ON"
+          + (" — turn forming" if n_on >= 4 else " — no confirmed turn yet" if n_on <= 2 else ""))
 
     print("\nNote: descriptive read for the human, not a bot input — the live bot's regime")
     print("logic (vol-dial + trend filter) is unchanged. Re-run any morning: ")
