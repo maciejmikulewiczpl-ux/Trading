@@ -742,6 +742,7 @@ PAGE = """<!doctype html>
   details.explain .ex b{color:var(--txt)}
   details.explain .ex .pts{color:var(--dim);font-size:11px}
   details.explain h3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin:14px 0 2px}
+  .cap{color:#8a95a3;font-size:11.5px;line-height:1.5;margin:4px 0 12px;border-left:2px solid #262e3a;padding-left:8px}
   tr.dim td{opacity:.4}
   .hivol{color:var(--orange);font-size:10px;margin-left:6px;white-space:nowrap}
 </style></head>
@@ -950,14 +951,19 @@ function renderRegime(rd){
     h+=`<div class="card"><h2>Charts — last ${H.dates.length} sessions (${H.dates[0]} → ${H.dates[H.dates.length-1]})</h2>`;
     h+=chartLabel([[`SPY ${last(H.spy_close)}`,"#d6dde7"],[`MA50 ${Math.round(last(H.spy_ma50))}`,"#e0871f"],[`MA200 ${Math.round(last(H.spy_ma200))}`,"#5a8bd6"]]);
     h+=spark([{vals:H.spy_close,color:"#d6dde7",w:1.7},{vals:H.spy_ma50,color:"#e0871f"},{vals:H.spy_ma200,color:"#5a8bd6"}],{h:120});
+    h+=`<div class="cap"><b>Price vs its averages</b> — SPY (white) with its 50-day (orange) and 200-day (blue) average closing prices. The market's skeleton: price above both rising averages = healthy uptrend. In a pullback, watch the orange 50d line — holding above it = an orderly dip; losing it = the correction deepening. The blue 200d line is the bull/bear divide itself.</div>`;
     h+=chartLabel([[`RSI-14: ${Math.round(last(H.rsi))}`,"#3fbf72"]]);
     h+=spark([{vals:H.rsi,color:"#3fbf72"}],{h:56,guides:[{y:35,label:"35 washout"},{y:55,label:"55"}]});
+    h+=`<div class="cap"><b>RSI-14 (0–100)</b> — a speedometer comparing the size of up-days vs down-days over the last 14 sessions. Ranges: <b>70+</b> overbought (rallies often pause) · <b>55–70</b> buyers in charge · <b>45–55</b> neutral · <b>35–45</b> sellers in charge · <b>under 35</b> washed out — selling tends to exhaust itself there, which is why 35 is the dip trigger. Mid-range readings say little on their own.</div>`;
     h+=chartLabel([[`MACD histogram: ${last(H.macd_hist)>=0?"+":""}${last(H.macd_hist)}`,"#c77dff"]]);
     h+=spark([{vals:H.macd_hist,color:"#c77dff"}],{h:56,guides:[{y:0,label:"0"}]});
+    h+=`<div class="cap"><b>MACD histogram</b> — in plain terms: is recent buying stronger or weaker than its own recent norm? Above the 0-line = momentum up, below = momentum down — but the <b>slope</b> matters most: bars growing away from zero = the move accelerating; shrinking back toward zero = the move fading (often the earliest sign a sell-off or rally is ending).</div>`;
     h+=chartLabel([[`breadth >200d: ${Math.round(last(H.breadth200))}%`,"#3fbf72"],[`>50d: ${Math.round(last(H.breadth50))}%`,"#e0871f"]]);
     h+=spark([{vals:H.breadth200,color:"#3fbf72"},{vals:H.breadth50,color:"#e0871f"}],{h:56,guides:[{y:45,label:"45%"},{y:55,label:"55%"}]});
+    h+=`<div class="cap"><b>Breadth</b> — the % of our own 122 tradable names above their own 200-day (green) and 50-day (orange) averages. It answers "is the average stock OK, or is the index being carried by a few giants?" Above 55% = broad participation; below 45% = the average stock is already breaking down. Green moves slowly (long-term health); orange reacts fast — it's where a sell-off spreads first and heals first.</div>`;
     h+=chartLabel([[`SPY 20d realized vol: ${Math.round(last(H.vol20))}% ann`,"#e0594f"]]);
     h+=spark([{vals:H.vol20,color:"#e0594f"}],{h:56});
+    h+=`<div class="cap"><b>20-day realized volatility</b> — how big SPY's daily swings have <i>actually</i> been over the last 20 sessions, scaled to a yearly number (14% ≈ daily wiggle consistent with ±14%/yr). Calm bull markets typically run ~8–12%; when this rises above its 6-month norm, the live bot automatically cuts position size in half (the "vol-dial"). Spikes mark stress; vol falling back after a spike is one of the turn markers.</div>`;
     h+=`</div>`;
   }
   // what to watch — the concrete trigger levels that would flip the read
