@@ -87,6 +87,15 @@ MAX_RISK_PER_SHARE = float(_CFG["max_risk_per_share"])
 # Max simultaneously-open positions (broad-watchlist guardrail). 0 = unlimited.
 _mcp = int(_CFG.get("max_concurrent_positions", 0))
 MAX_CONCURRENT_POSITIONS = _mcp if _mcp > 0 else None
+# Open-risk cap: hard rail on TOTAL initial $ risk across open positions (the
+# daily loss cap only counts REALIZED losses — it never sees what the open book
+# could lose). 0 = AUTO: risk_per_trade x max_concurrent (the theoretical normal
+# max, so it only trips on sizing bugs / config mistakes). None = disabled
+# (auto with unlimited concurrency has no defined ceiling).
+_mor = float(_CFG.get("max_open_risk", 0.0) or 0.0)
+if _mor <= 0:
+    _mor = float(_CFG["risk_per_trade"]) * _mcp if _mcp > 0 else 0.0
+MAX_OPEN_RISK = _mor if _mor > 0 else None
 # Default from config, but overridable per-run via the ORB_TREND_FILTER env var so a
 # second instance (the news-edge bot) can run with NO technical screen — letting the
 # morning news catalyst, not a trend test, select the names. Read at import, so the
@@ -173,6 +182,18 @@ class SymbolState:
     # attached on first-observed entry fill (Alpaca can't trail a bracket leg).
     trail_amount: Optional[float] = None   # $/share to trail below the peak (= 1R)
     trail_stop_id: Optional[str] = None    # id of the placed trailing-stop order
+
+
+def open_risk_now(run: "RunState") -> float:
+    """Total INITIAL $ risk across open (non-exited) positions:
+    sum of |entry - stop| x shares. Initial risk is a safe upper bound — the
+    trailing exit only ever ratchets a position's remaining risk DOWN."""
+    total = 0.0
+    for s in run.states.values():
+        if (s.entered and s.entry_order_id and not s.exited and not s.reject_reason
+                and s.entry_price is not None and s.stop_price is not None and s.shares):
+            total += abs(s.entry_price - s.stop_price) * s.shares
+    return total
 
 
 @dataclass
@@ -1663,6 +1684,33 @@ def run_session(tc: TradingClient, dc: StockHistoricalDataClient,
                     log.warning(f"Reject notification failed: {e}")
                 continue
 
+            # Open-risk cap: never let the book's total initial risk exceed the
+            # rail, no matter what sizing said. At the auto default (risk x
+            # concurrency cap) this only trips on bugs — which is the point.
+            if MAX_OPEN_RISK is not None:
+                cand_risk = abs(entry_estimate - stop) * qty
+                cur_risk = open_risk_now(run)
+                if cur_risk + cand_risk > MAX_OPEN_RISK + 1e-6:
+                    log.warning(f"{sym} {side_name} breakout BLOCKED by open-risk cap: "
+                                f"${cur_risk:,.0f} open + ${cand_risk:,.0f} new > "
+                                f"${MAX_OPEN_RISK:,.0f} rail.")
+                    state.entered = True
+                    state.side = side_name
+                    state.reject_reason = "open-risk cap"
+                    try:
+                        notify(
+                            f"{sym} {side_name} entry BLOCKED by the open-risk cap:\n"
+                            f"${cur_risk:,.0f} already at risk + ${cand_risk:,.0f} new "
+                            f"> ${MAX_OPEN_RISK:,.0f}.\n"
+                            f"At the auto rail this should only happen on a sizing "
+                            f"bug or config mistake — check the log.",
+                            title=f"ORB open-risk cap: {sym}",
+                            priority=4, tags=["rotating_light"],
+                        )
+                    except Exception as e:
+                        log.warning(f"Open-risk-cap notification failed: {e}")
+                    continue
+
             oid = submit_bracket(tc, sym, qty, entry_estimate, stop, target, side, today, dry_run)
             state.entered = True
             state.side = side_name
@@ -1732,7 +1780,8 @@ def main() -> int:
     log.info(f"Watchlist: {watchlist}")
     log.info(f"Params: or_min={PARAMS.or_minutes} target_r={PARAMS.target_r} "
              f"risk=${PARAMS.risk_per_trade} max_pos=${PARAMS.max_position_dollars} "
-             f"loss_cap=${DAILY_LOSS_CAP}")
+             f"loss_cap=${DAILY_LOSS_CAP} "
+             f"open_risk_cap={'$' + format(MAX_OPEN_RISK, ',.0f') if MAX_OPEN_RISK else 'OFF'}")
     if SHORT_ENABLED:
         log.info(f"Shorts: regime-gated (SPY < SMA{REGIME_SMA_WINDOW} x{REGIME_CONFIRM_DAYS} days), "
                  f"symbols={sorted(SHORT_SYMBOLS)}, flips=0")

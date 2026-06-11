@@ -188,6 +188,18 @@ SETTINGS: list[Setting] = [
         minv=0.0, maxv=1000000.0,
     ),
     Setting(
+        "max_open_risk", "Max open risk ($, 0 = auto)", "Risk", "float", 0.0,
+        "Hard rail on TOTAL initial dollar risk across all OPEN positions: a new "
+        "entry is skipped when (sum of |entry-stop| x shares over open positions) "
+        "+ its own risk would exceed this. 0 = AUTO: risk_per_trade x "
+        "max_concurrent_positions ($800 at defaults) — never binds in normal "
+        "operation; it exists to catch sizing bugs and config mistakes before they "
+        "compound. The daily loss cap only sees REALIZED losses (16 open positions "
+        "gapping down sail right past it); this bounds what is at stake in the book "
+        "right now. Real-money prerequisite (tightOR follow-ups, 2026-06-09).",
+        minv=0.0, maxv=1000000.0,
+    ),
+    Setting(
         "max_concurrent_positions", "Max concurrent positions", "Risk", "int", 16,
         "Cap on how many positions may be open at once. With a broad watchlist many "
         "breakouts fire near the open; this stops $100k from being over-deployed. "
