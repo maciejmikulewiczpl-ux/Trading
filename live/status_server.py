@@ -805,8 +805,24 @@ function setTopView(v){
   else if(v==="regime") fetchRegime();
   else if(lastData) render(lastData);
 }
+let lastRegimeTxt=null;
+let explainOpen=false;
+function toggleExplain(v){
+  explainOpen=v;
+  const ex=document.querySelector("details.explain");
+  if(ex) ex.open=v;
+}
 async function fetchRegime(){
-  try{ const r=await fetch("/api/regime",{cache:"no-store"}); lastRegime=await r.json(); renderRegime(lastRegime); }
+  try{
+    const r=await fetch("/api/regime",{cache:"no-store"});
+    const txt=await r.text();
+    // identical payload + tab already rendered -> leave the DOM alone, so an
+    // open explainer (or text selection) survives the 3s poll
+    if(txt===lastRegimeTxt && document.getElementById("regime-marker")) return;
+    lastRegimeTxt=txt;
+    lastRegime=JSON.parse(txt);
+    renderRegime(lastRegime);
+  }
   catch(e){ document.getElementById("root").innerHTML=topNav("regime")+`<div class="card empty">market regime data unavailable</div>`; }
 }
 // Tiny SVG line chart: series=[{vals,color,w}], guides=[{y,label}]. Drawn in the
@@ -878,6 +894,7 @@ Short-term participation: what % of our names are above their own 10-week line. 
 
 <h3>The honest caveat</h3>
 <div class="ex">All of this <b>describes</b> the tape; none of it <b>predicts</b> it — in our own backtests, indicator-based entry signals keep failing to add value over the validated system. Use this page for context and sizing courage, not as a trade signal. The live bot doesn't read it; its own validated regime logic (vol-dial + trend filter) is unchanged.</div>
+<button class="tab" style="margin-top:10px" onclick="toggleExplain(false)">▴ Close explainer</button>
 </details></div>`;
 function renderRegime(rd){
   let h=topNav("regime");
@@ -897,7 +914,8 @@ function renderRegime(rd){
       <div class="stat" style="grid-column:span 2"><div class="k">Verdict</div><div class="v">${d.verdict||"—"}</div></div>
     </div>
     <div class="hint">${d.note||""}</div></div>`;
-  h+=REGIME_EXPLAIN;
+  h+=`<span id="regime-marker" style="display:none"></span>`;
+  h+=REGIME_EXPLAIN.replace('<details class="explain"', explainOpen?'<details class="explain" open':'<details class="explain"');
   // index table
   const idx=rd.indexes||{};
   h+=`<div class="card"><h2>Indexes (daily)</h2><table><tr><th>sym</th><th>last</th><th>MA50</th><th>MA120</th><th>MA200</th><th>200d slope</th><th>RSI</th><th>MACD hist</th><th>off 52w hi</th><th>20d vol</th></tr>`;
@@ -958,6 +976,8 @@ function renderRegime(rd){
   h+=`<div class="hint">Descriptive read for the human — indicators describe the tape, they don't predict it. NOT a bot input: the live bot's regime logic (vol-dial + trend filter) is unchanged.</div>`;
   h+=`<div class="foot"><span>regime · ${rd.generated||""}</span><span></span></div>`;
   document.getElementById("root").innerHTML=h;
+  const ex=document.querySelector("details.explain");
+  if(ex) ex.addEventListener("toggle",()=>{ explainOpen=ex.open; });
 }
 async function fetchNews(){
   try{ const r=await fetch("/api/newsedge",{cache:"no-store"}); lastNews=await r.json(); renderNews(lastNews); }
