@@ -101,6 +101,7 @@ def analyze(close: pd.Series) -> dict:
     vol, vol_hot = vol_regime(close)
     return {
         "px": px,
+        "hi52": hi52,
         "ret5": (px / float(close.iloc[-6]) - 1.0) * 100 if len(close) > 6 else 0.0,
         "ma": {n: float(ma[n].iloc[-1]) for n in MA_WINDOWS},
         "ma200_rising": bool(ma[200].iloc[-1] > ma[200].iloc[-21]),
@@ -241,6 +242,63 @@ def turn_checks(spy: dict, br: dict) -> list[dict]:
     ]]
 
 
+def history_block(spy_close: pd.Series, watch: dict[str, pd.Series], n: int = 120) -> dict:
+    """Last-n-sessions series for the status-page charts (plain rounded floats —
+    the browser draws them as SVG, the server just ships numbers)."""
+    r = rsi(spy_close)
+    _, _, hist = macd(spy_close)
+    vol = spy_close.pct_change().rolling(20).std() * (252 ** 0.5) * 100
+    ma50 = spy_close.rolling(50).mean()
+    ma200 = spy_close.rolling(200).mean()
+    # breadth history: per-day % of watchlist names above their own 50d/200d MA
+    # (NaN-masked so short-history names don't drag the early readings down)
+    def _breadth_hist(win: int) -> pd.Series:
+        cols = {}
+        for sym, s in watch.items():
+            m = s.rolling(win).mean()
+            cols[sym] = (s > m).where(m.notna())
+        return pd.concat(cols, axis=1).mean(axis=1) * 100
+
+    b200 = _breadth_hist(200).reindex(spy_close.index)
+    b50 = _breadth_hist(50).reindex(spy_close.index)
+
+    def tail(s: pd.Series) -> list:
+        return [None if pd.isna(v) else round(float(v), 2) for v in s.tail(n)]
+
+    return {"dates": [d.date().isoformat() for d in spy_close.tail(n).index],
+            "spy_close": tail(spy_close), "spy_ma50": tail(ma50), "spy_ma200": tail(ma200),
+            "rsi": tail(r), "macd_hist": tail(hist), "vol20": tail(vol),
+            "breadth200": tail(b200), "breadth50": tail(b50)}
+
+
+def watch_levels(spy: dict, br: dict) -> list[dict]:
+    """'What would change this read' — the concrete trigger levels to watch.
+    No prediction (nothing here forecasts), just where the regime votes flip."""
+    hi = spy["hi52"]
+    px = spy["px"]
+    return [
+        {"name": "MACD histogram turns up", "trigger": "rising 4 of 5 days",
+         "now": f"{spy['macd_hist']:+.1f}",
+         "effect": "first momentum-repair marker — the correction losing force"},
+        {"name": "RSI-14 drops below 35", "trigger": "35", "now": f"{spy['rsi']:.0f}",
+         "effect": "classic washout trigger -> dip read flips to BUYABLE-DIP ZONE"},
+        {"name": "SPY closes below 50d MA", "trigger": f"{spy['ma'][50]:.0f}",
+         "now": f"{px:.0f}",
+         "effect": "momentum vote flips; with a 3-12% drawdown also a dip trigger"},
+        {"name": "SPY -5% off its high", "trigger": f"{hi * 0.95:.0f}", "now": f"{px:.0f}",
+         "effect": "official correction territory (off-high vote drops out)"},
+        {"name": "breadth <45% above 200d MA", "trigger": "45%",
+         "now": f"{br['pct200']:.0f}%",
+         "effect": "the average stock breaks down -> structure score -2"},
+        {"name": "SPY closes below 200d MA", "trigger": f"{spy['ma'][200]:.0f}",
+         "now": f"{px:.0f}",
+         "effect": "STRUCTURE BREAK — bull case off, dips become knives, live trend "
+                   "filter starts rejecting most names"},
+        {"name": "SPY -15% off its high", "trigger": f"{hi * 0.85:.0f}", "now": f"{px:.0f}",
+         "effect": "bear-market territory vote"},
+    ]
+
+
 def snapshot() -> dict:
     """The full regime read as a JSON-safe dict (CLI + status-page Market tab)."""
     watchlist = list(orb_config.load_config()["watchlist"])
@@ -249,12 +307,15 @@ def snapshot() -> dict:
     if missing:
         return {"error": f"missing index data: {missing}"}
     idx = {sym: analyze(closes[sym]) for sym in INDEXES}
-    br = breadth({s: c for s, c in closes.items() if s in watchlist})
+    watch = {s: c for s, c in closes.items() if s in watchlist}
+    br = breadth(watch)
     spy = idx["SPY"]
     comp = composite(spy, br)
     verdict, tone = VERDICTS[(comp["struct_state"], comp["mom_state"])]
     checks = turn_checks(spy, br)
     return {
+        "history": history_block(closes["SPY"], watch),
+        "levels": watch_levels(spy, br),
         "generated": datetime.now(ET).strftime("%Y-%m-%d %H:%M:%S %Z"),
         "asof": closes["SPY"].index[-1].date().isoformat(),
         "indexes": idx,
@@ -314,6 +375,10 @@ def main() -> int:
     n_on = snap["n_turn_on"]
     print(f"  {n_on}/6 bottoming markers ON"
           + (" — turn forming" if n_on >= 4 else " — no confirmed turn yet" if n_on <= 2 else ""))
+
+    print("\nWHAT WOULD CHANGE THIS READ (trigger levels, not predictions):")
+    for lv in snap["levels"]:
+        print(f"  {lv['name']:<34} trigger {lv['trigger']:>8}  (now {lv['now']:>6})  -> {lv['effect']}")
 
     print("\nNote: descriptive read for the human, not a bot input — the live bot's regime")
     print("logic (vol-dial + trend filter) is unchanged. Re-run any morning: ")

@@ -614,8 +614,47 @@ def _newsedge() -> dict:
 # Market regime gauge (scripts/market_regime.py snapshot) for the Market tab.
 # Daily-bar data, so a long cache: 15 min when healthy, 60 s retry after an error.
 # The snapshot fetches ~125 names of daily closes — cheap, but no reason to refetch
-# on every page poll.
+# on every page poll. A background thread (started in serve()) refreshes it every
+# 15 min even when nobody has the page open, so the verdict-change phone push
+# below fires regardless of page views.
 _regime_cache: dict = {"ts": 0.0, "data": None, "ttl": 0.0}
+REGIME_STATE_FILE = ROOT / "logs" / "regime_state.json"
+
+
+def _regime_notify(data: dict) -> None:
+    """Push to the phone (ntfy, same topic as the trading bot) when the regime
+    verdict or the dip read CHANGES. State persists across restarts; the very
+    first run only seeds the state file (no push for 'no change')."""
+    cur = {"verdict": data.get("verdict"),
+           "dip": (data.get("dip") or {}).get("verdict")}
+    prev = None
+    try:
+        if REGIME_STATE_FILE.exists():
+            prev = json.load(open(REGIME_STATE_FILE))
+    except Exception:
+        prev = None
+    if prev is not None and {k: prev.get(k) for k in cur} == cur:
+        return
+    if prev is not None:
+        try:
+            from live.notify import notify
+            tone = data.get("tone")
+            tags = {"good": ["chart_with_upwards_trend"], "caution": ["warning"],
+                    "bad": ["rotating_light"], "neutral": ["scales"]}.get(tone)
+            notify(f"{cur['verdict']}\n"
+                   f"dip read: {cur['dip']}\n"
+                   f"structure {data.get('struct_score', 0):+d} ({data.get('struct_state')}) · "
+                   f"momentum {data.get('mom_score', 0):+d} ({data.get('mom_state')})"
+                   + (f"\nwas: {prev.get('verdict')}" if prev.get("verdict") else ""),
+                   title="Market regime changed",
+                   priority=4 if tone == "bad" else 3, tags=tags)
+        except Exception:
+            pass  # decoration only — the page must serve regardless
+    try:
+        REGIME_STATE_FILE.parent.mkdir(exist_ok=True)
+        json.dump(cur, open(REGIME_STATE_FILE, "w"))
+    except Exception:
+        pass
 
 
 def _regime() -> dict:
@@ -629,7 +668,20 @@ def _regime() -> dict:
         _regime_cache["data"] = data
         _regime_cache["ts"] = now
         _regime_cache["ttl"] = 60.0 if data.get("error") else 900.0
+        if not data.get("error"):
+            _regime_notify(data)
     return _regime_cache["data"]
+
+
+def _regime_loop() -> None:
+    """Daemon thread: keep the regime fresh so verdict-change pushes don't
+    depend on someone polling the page."""
+    while True:
+        try:
+            _regime()
+        except Exception:
+            pass
+        _time.sleep(300)  # cheap check; _regime() itself enforces the 15-min TTL
 
 
 def _status(tc, dc=None) -> dict:
@@ -750,6 +802,30 @@ async function fetchRegime(){
   try{ const r=await fetch("/api/regime",{cache:"no-store"}); lastRegime=await r.json(); renderRegime(lastRegime); }
   catch(e){ document.getElementById("root").innerHTML=topNav("regime")+`<div class="card empty">market regime data unavailable</div>`; }
 }
+// Tiny SVG line chart: series=[{vals,color,w}], guides=[{y,label}]. Drawn in the
+// browser from the numbers the API ships — zero chart libs, zero VM load.
+function spark(series, opts){
+  opts=opts||{};
+  const w=760, hh=opts.h||64;
+  const all=series.flatMap(s=>s.vals).filter(v=>v!=null);
+  if(!all.length) return "";
+  let mn=Math.min(...all), mx=Math.max(...all);
+  for(const g of (opts.guides||[])){ mn=Math.min(mn,g.y); mx=Math.max(mx,g.y); }
+  const rg=(mx-mn)||1, n=series[0].vals.length;
+  const X=i=>(i/(n-1))*w, Y=v=>hh-3-((v-mn)/rg)*(hh-8);
+  let out="";
+  for(const g of (opts.guides||[]))
+    out+=`<line x1="0" x2="${w}" y1="${Y(g.y).toFixed(1)}" y2="${Y(g.y).toFixed(1)}" stroke="#39424f" stroke-dasharray="3,5"/>`
+        +(g.label?`<text x="${w-4}" y="${(Y(g.y)-3).toFixed(1)}" text-anchor="end" font-size="9" fill="#5a6675">${g.label}</text>`:"");
+  for(const s of series){
+    const pts=s.vals.map((v,i)=>v==null?null:X(i).toFixed(1)+","+Y(v).toFixed(1)).filter(Boolean).join(" ");
+    out+=`<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="${s.w||1.4}"/>`;
+  }
+  return `<svg viewBox="0 0 ${w} ${hh}" width="100%" height="${hh}" preserveAspectRatio="none" style="display:block">${out}</svg>`;
+}
+function chartLabel(parts){
+  return `<div class="hint" style="margin:10px 0 2px">`+parts.map(([t,c])=>`<span style="color:${c}">● ${t}</span>`).join(" &nbsp; ")+`</div>`;
+}
 function renderRegime(rd){
   let h=topNav("regime");
   if(rd.error){
@@ -794,6 +870,30 @@ function renderRegime(rd){
       h+=`<tr><td class="${v.pts>0?"pos":v.pts<0?"neg":""}">${p}</td><td style="text-align:left">${v.name}</td><td style="text-align:left;color:#9aa6b4">${v.detail}</td></tr>`;
     }
     h+=`</table></div>`;
+  }
+  // charts — last 120 sessions, drawn client-side as SVG
+  const H=rd.history;
+  if(H && H.spy_close){
+    const last=a=>{ for(let i=a.length-1;i>=0;i--) if(a[i]!=null) return a[i]; return null; };
+    h+=`<div class="card"><h2>Charts — last ${H.dates.length} sessions (${H.dates[0]} → ${H.dates[H.dates.length-1]})</h2>`;
+    h+=chartLabel([[`SPY ${last(H.spy_close)}`,"#d6dde7"],[`MA50 ${Math.round(last(H.spy_ma50))}`,"#e0871f"],[`MA200 ${Math.round(last(H.spy_ma200))}`,"#5a8bd6"]]);
+    h+=spark([{vals:H.spy_close,color:"#d6dde7",w:1.7},{vals:H.spy_ma50,color:"#e0871f"},{vals:H.spy_ma200,color:"#5a8bd6"}],{h:120});
+    h+=chartLabel([[`RSI-14: ${Math.round(last(H.rsi))}`,"#3fbf72"]]);
+    h+=spark([{vals:H.rsi,color:"#3fbf72"}],{h:56,guides:[{y:35,label:"35 washout"},{y:55,label:"55"}]});
+    h+=chartLabel([[`MACD histogram: ${last(H.macd_hist)>=0?"+":""}${last(H.macd_hist)}`,"#c77dff"]]);
+    h+=spark([{vals:H.macd_hist,color:"#c77dff"}],{h:56,guides:[{y:0,label:"0"}]});
+    h+=chartLabel([[`breadth >200d: ${Math.round(last(H.breadth200))}%`,"#3fbf72"],[`>50d: ${Math.round(last(H.breadth50))}%`,"#e0871f"]]);
+    h+=spark([{vals:H.breadth200,color:"#3fbf72"},{vals:H.breadth50,color:"#e0871f"}],{h:56,guides:[{y:45,label:"45%"},{y:55,label:"55%"}]});
+    h+=chartLabel([[`SPY 20d realized vol: ${Math.round(last(H.vol20))}% ann`,"#e0594f"]]);
+    h+=spark([{vals:H.vol20,color:"#e0594f"}],{h:56});
+    h+=`</div>`;
+  }
+  // what to watch — the concrete trigger levels that would flip the read
+  if(rd.levels && rd.levels.length){
+    h+=`<div class="card"><h2>What would change this read — levels to watch (not predictions)</h2><table><tr><th style="text-align:left">event</th><th>trigger</th><th>now</th><th style="text-align:left">effect</th></tr>`;
+    for(const lv of rd.levels)
+      h+=`<tr><td style="text-align:left">${lv.name}</td><td>${lv.trigger}</td><td>${lv.now}</td><td style="text-align:left;color:#9aa6b4">${lv.effect}</td></tr>`;
+    h+=`</table><div class="hint">a phone push (same ntfy topic as the bot) fires automatically whenever the verdict or dip read changes</div></div>`;
   }
   // turn checklist
   h+=`<div class="card"><h2>Downtrend-ending checklist — ${rd.n_turn_on}/6 markers on${rd.n_turn_on>=4?" · turn forming":rd.n_turn_on<=2?" · no confirmed turn":""}</h2><table>`;
@@ -1068,6 +1168,8 @@ def serve() -> int:
         return 1
     Handler.tc = tc
     Handler.dc = dc
+    threading.Thread(target=_regime_loop, daemon=True,
+                     name="regime-refresh").start()
     httpd = ThreadingHTTPServer((BIND, PORT), Handler)
     print(f"ORB status server on http://{BIND}:{PORT}  (Ctrl-C to stop)")
     try:
