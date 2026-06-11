@@ -8,6 +8,7 @@ STEPS (in order):
 1) CANDIDATE NET (cast wide, liquid only — skip sub-$5 / penny pumps):
    - SEC EDGAR fresh filings (primary-source catalysts BEFORE aggregators rewrite them — 8-K material events, 424B5/S-1 = dilution/offering): `.venv/Scripts/python.exe experiments/news_edge/sources.py edgar 16`
    - StockTwits trending (free, real-time crowd — a CROWDING gauge, not direction): `.venv/Scripts/python.exe experiments/news_edge/sources.py st-trending 30`
+   - Reddit/WSB mention SURGE (same rule — crowding, not direction; a big overnight mention spike means "something happened, find the catalyst", never a signal by itself): `.venv/Scripts/python.exe experiments/news_edge/sources.py reddit 25`
    - Market tone + single-stock catalysts: WebSearch (include Yahoo Finance + CNBC) for today's premarket movers / earnings / upgrades / FDA / deals.
    - If mcp__alpaca__ tools are available, also use get_market_movers, get_most_active_stocks, and get_news for fresh Benzinga catalysts. If NOT, rely on EDGAR + StockTwits + WebSearch — fine.
 2) MY CALL per candidate: signal +1 (frontrunner, clear bullish catalyst) / -1 (avoid, clear bearish) / 0 (unclear), each with a short reason + confidence 0-1 + sources + a `theme` (short tag, e.g. "ai-chips", "fda", "dilution"). RULES:
@@ -19,7 +20,7 @@ STEPS (in order):
    - `.venv/Scripts/python.exe experiments/news_edge/sources.py st-sentiment <TICKERS>`  (StockTwits crowd — main scored source; contrarian/crowding read)
    - `.venv/Scripts/python.exe experiments/news_edge/sources.py av <TICKERS>`  (Alpha Vantage — often empty on fresh news; include ONLY if n>0)
    - `.venv/Scripts/python.exe experiments/news_edge/sources.py pm-rvol <TICKERS>`  (premarket relative volume — abnormal participation is what makes a story tradeable)
-   Each pick: source_signals {"stocktwits": sig, "alphavantage": sig if n>0}, and set `premarket_rvol` to the pm-rvol value (story + volume > story alone).
+   Each pick: source_signals {"stocktwits": sig, "alphavantage": sig if n>0}, and set `premarket_rvol` to the pm-rvol value (story + volume > story alone). If a pick appears in the reddit list, set `reddit_rank` to its rank (crowding context for later analysis — do NOT put reddit in source_signals; it has no direction). Viral X/Twitter chatter surfaced via WebSearch is the same: a crowding flag prompting catalyst-hunting, never itself the catalyst.
 4) CONTROL BASKET (mechanical, no judgment): `.venv/Scripts/python.exe experiments/news_edge/sources.py pm-gappers 3` → for EACH returned name add a pick with `signal: 0, control: true, gap_pct: <its gap>, sources: ["control"], reason: "mechanical >3% gapper"`. These are scored alongside your picks; your (+) picks must beat them.
 5) LOG: write ALL picks (your calls + the control basket) to a temp JSON file (a list; each item: symbol, signal, confidence, reason, sources, source_signals, theme, premarket_rvol, earnings_day, and for controls control+gap_pct) and run:
    `.venv/Scripts/python.exe experiments/news_edge/newsedge.py log <that.json>`

@@ -63,6 +63,8 @@ def cmd_log(picks_path: str) -> int:
                       # retroactively by `outcomes` if absent. control=True marks the mechanical
                       # >3%-gapper basket (signal 0) the analyst's (+) picks must beat.
                       "premarket_rvol": _opt(p, "premarket_rvol"),
+                      # WSB mention rank (sources.py reddit) — crowding context, not direction
+                      "reddit_rank": _opt(p, "reddit_rank"),
                       "earnings_day": bool(p.get("earnings_day", False)),
                       "theme": _opt(p, "theme"),
                       "control": bool(p.get("control", False)),

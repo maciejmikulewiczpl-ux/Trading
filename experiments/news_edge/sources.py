@@ -117,6 +117,38 @@ def st_sentiment(tickers: list) -> dict:
     return out
 
 
+# ---- Reddit (via apewisdom.io): WSB mention counts — a CROWDING gauge, no direction ----
+# reddit.com JSON + tradestie are Cloudflare-blocked for scripts (verified 2026-06-11);
+# apewisdom's free API serves clean {ticker, mentions, mentions_24h_ago, rank, upvotes}.
+# The informative bit is the mention SURGE vs 24h ago (something happened overnight),
+# not the absolute count (SPY/NVDA are always top). No sentiment direction is available,
+# so this feeds the candidate net + a per-pick reddit_rank context field — never a +/- signal.
+APEWISDOM = "https://apewisdom.io/api/v1.0/filter/wallstreetbets/page/1"
+
+
+def reddit_trending(limit: int = 25) -> list:
+    """Top WSB tickers by mention surge (mentions / mentions_24h_ago, min 10 mentions),
+    then by mentions. [{ticker, rank, mentions, mentions_24h_ago, surge, upvotes}]."""
+    try:
+        req = urllib.request.Request(APEWISDOM, headers=_UA)
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = json.load(r)
+    except Exception as e:
+        return [f"_error: {e}"]
+    out = []
+    for it in data.get("results", []):
+        try:
+            m, m24 = int(it["mentions"]), int(it.get("mentions_24h_ago") or 0)
+            out.append({"ticker": it["ticker"], "rank": int(it["rank"]), "mentions": m,
+                        "mentions_24h_ago": m24,
+                        "surge": round(m / m24, 1) if m24 > 0 else None,
+                        "upvotes": int(it.get("upvotes") or 0)})
+        except (KeyError, ValueError, TypeError):
+            continue
+    out.sort(key=lambda x: (-(x["surge"] or 0) if x["mentions"] >= 10 else 0, -x["mentions"]))
+    return out[:limit]
+
+
 # ---- SEC EDGAR: free, official, real-time primary-source catalysts (no key) ----
 # Recent material filings mapped to tickers — 8-Ks (material events), 424B5/S-1
 # (offerings/dilution), Form 4 (insider). EDGAR requires a descriptive User-Agent
@@ -274,6 +306,9 @@ def main(argv) -> int:
         return 0
     if cmd == "st-trending":
         print(json.dumps(st_trending(int(argv[2]) if len(argv) > 2 else 30), indent=2))
+        return 0
+    if cmd == "reddit":
+        print(json.dumps(reddit_trending(int(argv[2]) if len(argv) > 2 else 25), indent=2))
         return 0
     if cmd == "st-sentiment" and len(argv) >= 3:
         tickers = [t.strip().upper() for t in argv[2].split(",") if t.strip()]
