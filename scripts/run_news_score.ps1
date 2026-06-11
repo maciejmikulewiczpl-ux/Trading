@@ -14,4 +14,8 @@ New-Item -ItemType Directory -Force -Path (Join-Path $ROOT 'logs') | Out-Null
 & git -C $ROOT add experiments/news_edge/picks *>> $log 2>&1
 & git -C $ROOT commit -q -m "news-edge outcomes $stamp" *>> $log 2>&1
 & git -C $ROOT push origin main *>> $log 2>&1
+# nudge the VM to pull so its status page shows today's outcomes immediately —
+# the VM otherwise only pulls at the 9:40 ET news-orb launch, leaving the
+# News-Edge tab's today-table blank until the next morning (seen 2026-06-11).
+& ssh -o BatchMode=yes -o ConnectTimeout=15 trading-vm "cd /home/ubuntu/trading && git pull --ff-only" *>> $log 2>&1
 "=== news-edge score END (exit $LASTEXITCODE) $((Get-Date).ToString('o')) ===" | Add-Content -Path $log -Encoding utf8
