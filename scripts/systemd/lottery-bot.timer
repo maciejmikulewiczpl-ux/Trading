@@ -1,0 +1,12 @@
+[Unit]
+Description=Fire the lottery paper bot at 09:44 ET on US weekdays
+# Fires just after the laptop morning board (~09:24 ET) is pushed and ~1 min before
+# the 09:45 ET measurement/entry mark. The wrapper waits/pulls for today's board.
+# The bot no-ops idle on US-equity holidays (no board) so a blanket Mon..Fri timer is safe.
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 09:44:00 America/New_York
+Unit=lottery-bot.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,19 @@
+[Unit]
+Description=Lottery paper bot (repurposed dual-mom account; top-3 combined_score hype picks)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Short-lived: pulls today's board, buys top-3 ($500 notional + 10% trail), runs
+# time-stops, exits. Idle exit 0 on days with no board or market closed.
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/trading
+# run_lottery_bot.py loads .env.lottery itself (repurposed dual-mom keys); no EnvironmentFile.
+ExecStart=/home/ubuntu/trading/scripts/launch_lottery_bot.sh
+Restart=no
+KillSignal=SIGINT
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

@@ -39,6 +39,10 @@ backtest/.pit_*.pkl
 backtest/OVERNIGHT_RESULTS.md
 backtest/overnight.sh
 experiments/news_edge/wake_log.txt
+# lottery experiment runtime state/caches (regenerable; mutate daily/weekly)
+experiments/lottery/.uoa_state.json
+experiments/lottery/.short_interest_cache.json
+logs/lottery_positions.json
 *.tmp
 openbb-out.json
 
