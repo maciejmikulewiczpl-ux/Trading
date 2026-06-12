@@ -216,30 +216,28 @@ def permutation_p(panel: pd.DataFrame, n_perms: int, rng: np.random.Generator) -
 
 def bootstrap_ci(panel: pd.DataFrame, n_boot: int, rng: np.random.Generator) -> tuple:
     """Resample DAYS with replacement; recompute ignition>=3 lift each time -> 95% CI.
-    Resampling days (not rows) respects the within-day dependence."""
-    by_day = {dt: g for dt, g in panel.groupby("date")}
-    days = list(by_day.keys())
-    base_all = panel["winner"].mean()
-    lifts = []
-    for _ in range(n_boot):
-        samp = rng.choice(len(days), size=len(days), replace=True)
-        wins_hi = 0
-        n_hi = 0
-        wins_all = 0
-        n_all = 0
-        for j in samp:
-            g = by_day[days[j]]
-            hi = g[g["ignition"] >= 3]
-            wins_hi += hi["winner"].sum()
-            n_hi += len(hi)
-            wins_all += g["winner"].sum()
-            n_all += len(g)
-        if n_hi == 0 or n_all == 0 or wins_all == 0:
-            continue
-        rate_hi = wins_hi / n_hi
-        rate_all = wins_all / n_all
-        lifts.append(rate_hi / rate_all)
-    if not lifts:
+    Resampling days (not rows) respects the within-day dependence. Vectorized: precompute
+    each day's (wins_hi, n_hi, wins_all, n_all) once, then index with a bootstrap matrix."""
+    hi_mask = (panel["ignition"] >= 3)
+    win = (panel["winner"] == 1)
+    g = panel.groupby("date")
+    wins_hi = g.apply(lambda d: int(((d["ignition"] >= 3) & (d["winner"] == 1)).sum())).values.astype(float)
+    n_hi = g.apply(lambda d: int((d["ignition"] >= 3).sum())).values.astype(float)
+    wins_all = g["winner"].sum().values.astype(float)
+    n_all = g.size().values.astype(float)
+    nd = len(n_all)
+    if nd == 0:
+        return float("nan"), float("nan")
+    idx = rng.integers(0, nd, size=(n_boot, nd))
+    sum_wh = wins_hi[idx].sum(axis=1)
+    sum_nh = n_hi[idx].sum(axis=1)
+    sum_wa = wins_all[idx].sum(axis=1)
+    sum_na = n_all[idx].sum(axis=1)
+    good = (sum_nh > 0) & (sum_wa > 0)
+    rate_hi = sum_wh[good] / sum_nh[good]
+    rate_all = sum_wa[good] / sum_na[good]
+    lifts = rate_hi / rate_all
+    if lifts.size == 0:
         return float("nan"), float("nan")
     lo, hi = np.percentile(lifts, [2.5, 97.5])
     return float(lo), float(hi)
