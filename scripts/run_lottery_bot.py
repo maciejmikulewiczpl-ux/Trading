@@ -2,9 +2,15 @@
 
 At ~09:45 ET it reads today's lottery board (experiments/lottery/picks/<ET-date>.json),
 takes the TOP-3 by combined_score (the hype basket), and for each:
-  - submits a $500-notional market BUY (fractional ok),
-  - attaches a 10% NATIVE Alpaca trailing stop on fill,
-  - records the entry so a later run can time-stop close at T+3 if still open.
+  - buys ~$500 of WHOLE shares at market (qty = floor($500/price); names pricier than
+    $500 are skipped -- NOT fractional/notional, because Alpaca rejects trailing stops
+    on fractional quantities (found in the 2026-06-12 end-to-end trace; a notional buy
+    would have left positions with NO stop at all),
+  - attaches a 10% NATIVE Alpaca trailing stop on fill, GTC (the position holds up to
+    3 days -- a DAY trail would expire at the close and leave the rest unprotected),
+  - records the entry so a later run can time-stop close at T+3 if still open
+    (cancelling the GTC trail first, else Alpaca rejects the close for insufficient
+    available qty).
 
 Runs on the REPURPOSED dual-momentum paper account (keys in .env.lottery). Isolation
 mirrors scripts/run_news_orb.py: loads its own .env.lottery (override), writes its own
@@ -83,6 +89,22 @@ def _trading_client():
                          paper=True)
 
 
+def _latest_prices(symbols: list[str]) -> dict[str, float]:
+    """Latest trade price per symbol (IEX) -- for whole-share sizing."""
+    try:
+        from alpaca.data.historical import StockHistoricalDataClient
+        from alpaca.data.requests import StockLatestTradeRequest
+        from alpaca.data.enums import DataFeed
+        dc = StockHistoricalDataClient(os.environ["ALPACA_API_KEY"],
+                                       os.environ["ALPACA_SECRET_KEY"])
+        res = dc.get_stock_latest_trade(StockLatestTradeRequest(
+            symbol_or_symbols=symbols, feed=DataFeed.IEX))
+        return {s: float(t.price) for s, t in res.items() if t and t.price}
+    except Exception as e:
+        print(f"latest-price fetch failed: {e}")
+        return {}
+
+
 def _trading_days_since(entry_iso: str) -> int:
     """Rough trading-day count since entry (weekdays only; holidays ignored — close on
     the safe side). Good enough for a T+3 time stop."""
@@ -114,7 +136,14 @@ def run_time_stops(tc, dry_run: bool) -> int:
         info = state[sym]
         age = _trading_days_since(info["entry_date"])
         if sym not in positions:
-            # position gone (trailing stop hit or manually closed) -> drop tracking
+            # position gone (trailing stop hit or manually closed) -> drop tracking,
+            # and cancel any leftover GTC trail so it can't fire with no position
+            oid = info.get("trail_order_id")
+            if oid and not dry_run:
+                try:
+                    tc.cancel_order_by_id(oid)
+                except Exception:
+                    pass   # usually already filled/cancelled -- that's how the position closed
             print(f"time-stops: {sym} no longer held (age {age}) -> untracked.")
             del state[sym]
             continue
@@ -123,7 +152,16 @@ def run_time_stops(tc, dry_run: bool) -> int:
                 print(f"[DRY-RUN] WOULD time-stop close {sym} (age {age} >= {TIME_STOP_DAYS})")
             else:
                 try:
-                    tc.close_position(sym)          # cancels related orders + flattens
+                    # cancel the GTC trailing stop FIRST -- with it open, the shares are
+                    # reserved and Alpaca rejects the close (insufficient qty available)
+                    oid = info.get("trail_order_id")
+                    if oid:
+                        try:
+                            tc.cancel_order_by_id(oid)
+                            print(f"time-stops: cancelled trail order {oid} for {sym}.")
+                        except Exception as ce:
+                            print(f"time-stops: trail cancel {sym} ({oid}) failed/already done: {ce}")
+                    tc.close_position(sym)
                     print(f"time-stop CLOSED {sym} (age {age}).")
                     del state[sym]
                     closed += 1
@@ -153,22 +191,32 @@ def run_entries(tc, dry_run: bool) -> int:
     except Exception:
         held = set()
 
+    prices = _latest_prices([p["symbol"] for p in picks])
     placed = 0
     for p in picks:
         sym = p["symbol"]
         if sym in held or sym in state:
             print(f"  {sym}: already held/tracked, skip.")
             continue
+        px = prices.get(sym)
+        if px is None or px <= 0:
+            print(f"  {sym}: no price available -- skip.")
+            continue
+        qty = int(NOTIONAL // px)   # WHOLE shares: trailing stops reject fractional qty
+        if qty <= 0:
+            print(f"  {sym}: price ${px:.2f} > ${NOTIONAL:.0f} budget -- skip "
+                  f"(whole-share constraint).")
+            continue
         if dry_run:
-            print(f"  [DRY-RUN] WOULD BUY {sym} ${NOTIONAL:.0f} notional (market) "
-                  f"+ {TRAIL_PCT:.0f}% trailing stop on fill")
+            print(f"  [DRY-RUN] WOULD BUY {sym} {qty} sh @ ~${px:.2f} (~${qty*px:.0f}) "
+                  f"+ {TRAIL_PCT:.0f}% GTC trailing stop on fill")
             continue
         try:
             order = tc.submit_order(MarketOrderRequest(
-                symbol=sym, notional=NOTIONAL, side=OrderSide.BUY,
+                symbol=sym, qty=qty, side=OrderSide.BUY,
                 time_in_force=TimeInForce.DAY))
-            print(f"  BUY submitted {sym} ${NOTIONAL:.0f} notional (order {order.id}).")
-            state[sym] = {"entry_date": date_str, "notional": NOTIONAL,
+            print(f"  BUY submitted {sym} {qty} sh @ ~${px:.2f} (order {order.id}).")
+            state[sym] = {"entry_date": date_str, "qty": qty, "ref_price": px,
                           "combined_score": p["combined_score"], "trail_attached": False}
             placed += 1
         except Exception as e:
@@ -199,12 +247,12 @@ def attach_trailing_stops(tc, dry_run: bool) -> int:
         if pos is None:
             continue
         try:
-            qty = abs(float(pos.qty))
+            qty = int(float(pos.qty))   # whole shares (entries are whole-share now)
             if qty <= 0:
                 continue
             to = tc.submit_order(TrailingStopOrderRequest(
                 symbol=sym, qty=qty, side=OrderSide.SELL,
-                time_in_force=TimeInForce.DAY, trail_percent=TRAIL_PCT))
+                time_in_force=TimeInForce.GTC, trail_percent=TRAIL_PCT))
             info["trail_attached"] = True
             info["trail_order_id"] = str(to.id)
             print(f"  trailing stop attached {sym}: {TRAIL_PCT:.0f}% (order {to.id}).")
