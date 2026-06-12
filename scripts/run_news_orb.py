@@ -44,6 +44,14 @@ def _load_news_env() -> None:
     # Catalyst selects the names — turn OFF both technical screens (trend + tight-OR width).
     os.environ["ORB_TREND_FILTER"] = "false"
     os.environ["ORB_TIGHT_OR"] = "false"
+    # Notional sizing instead of risk-based (2026-06-12). News catalysts land on high-priced,
+    # volatile names whose OR-low stops give a huge risk/share, which risk-based sizing + the
+    # $10 max_risk_per_share cap reject outright (2026-06-12: AMD/STX/SNDK all rejected, only
+    # cheap FCX traded). Fixed $ per name lets every catalyst name trade; the $800 open-risk
+    # rail still caps total book risk. Tunable via .env.news. $2000 buys >=1 share of names up
+    # to ~$2000; pricier names size to 0 (an intentional ceiling for one experiment account).
+    os.environ.setdefault("ORB_NOTIONAL_PER_TRADE", "2000")
+    os.environ.setdefault("ORB_NOTIONAL_CAP", "3000")
     # Isolation when sharing a machine with the baseline bot (the VM): separate heartbeat +
     # log file so we don't clobber its liveness/logs. And a later late-start cutoff because
     # we start after the morning scan (~9:43 ET) — give entries room to ~10:10 ET.

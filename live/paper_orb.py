@@ -141,6 +141,20 @@ REGIME_CONFIRM_DAYS = int(_CFG["regime_confirm_days"])
 
 LATE_START_CUTOFF_MINUTES = int(os.environ.get("ORB_LATE_START_CUTOFF") or 10)  # halt NEW entries if started > N min after OR close. News bot starts later (after the scan) -> raises it.
 POLL_SECONDS = 10
+
+# Notional sizing mode (news-edge / catalyst names). When ORB_NOTIONAL_PER_TRADE is set,
+# size by a FIXED DOLLAR amount per position (whole shares) instead of by risk-per-share,
+# and SKIP the max_risk_per_share rejection. Rationale (2026-06-12): news catalysts land on
+# high-priced, volatile names whose OR-low stops give huge risk/share ($18-87 on 2026-06-12's
+# AMD/STX/SNDK). Risk-based sizing ($50 / risk_per_share) then yields 0-2 shares or rejects
+# outright, so the catalyst bot only ever traded the cheapest, lowest-conviction name. Notional
+# sizing makes every catalyst name tradeable with controlled dollar exposure. The baseline ORB
+# never sets this -> risk-based sizing, behaviour unchanged. ORB_NOTIONAL_CAP optionally caps a
+# single position (defaults to max_position_dollars / max_position_pct).
+_notional_env = os.environ.get("ORB_NOTIONAL_PER_TRADE")
+NOTIONAL_PER_TRADE = (float(_notional_env) if _notional_env and _notional_env.strip() else None)
+_notcap_env = os.environ.get("ORB_NOTIONAL_CAP")
+NOTIONAL_CAP = (float(_notcap_env) if _notcap_env and _notcap_env.strip() else None)
 RTH_OPEN = time(9, 30)
 RTH_CLOSE = time(16, 0)
 EOD_FLAT_TIME = time(15, 55)
@@ -812,6 +826,22 @@ def size_position(entry: float, stop: float, equity: float,
     risk_per_share = abs(entry - stop)
     if risk_per_share < MIN_RISK_PER_SHARE:
         return 0, f"risk_per_share ${risk_per_share:.4f} < min ${MIN_RISK_PER_SHARE}"
+
+    # --- notional sizing mode (news-edge): fixed $ per name, ignores the risk/share cap ---
+    if NOTIONAL_PER_TRADE is not None:
+        cap_dollars = equity * PARAMS.max_position_pct
+        if PARAMS.max_position_dollars is not None:
+            cap_dollars = min(cap_dollars, PARAMS.max_position_dollars)
+        if NOTIONAL_CAP is not None:
+            cap_dollars = min(cap_dollars, NOTIONAL_CAP)
+        budget = min(NOTIONAL_PER_TRADE * risk_mult, cap_dollars)
+        shares = math.floor(budget / entry)
+        if shares <= 0:
+            return 0, (f"notional sizing produced 0 shares "
+                       f"(budget ${budget:.0f}, price ${entry:.2f})")
+        return shares, "ok"
+
+    # --- risk-based sizing (baseline ORB) ---
     if risk_per_share > MAX_RISK_PER_SHARE:
         return 0, f"risk_per_share ${risk_per_share:.2f} > max ${MAX_RISK_PER_SHARE}"
     shares_by_risk = math.floor(PARAMS.risk_per_trade * risk_mult / risk_per_share)
