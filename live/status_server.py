@@ -691,6 +691,205 @@ def _newsedge() -> dict:
     return out
 
 
+# ---------------------------------------------------------------------------
+# Lottery experiment tab — mirrors the news-edge tab (read-only). Reads
+# experiments/lottery/picks/*.json (written by board.py / scored by outcomes.py)
+# and the lottery bot's repurposed dual-mom paper account via .env.lottery.
+# ---------------------------------------------------------------------------
+LOTTERY_PICKS_DIR = ROOT / "experiments" / "lottery" / "picks"
+
+_LOTTERY = {"built": False, "tc": None, "dc": None}
+_lottery_cache = {"ts": 0.0, "data": None}
+_lottery_live_cache: dict = {"ts": 0.0, "data": None}
+
+
+def _lottery_clients():
+    if not _LOTTERY["built"]:
+        _LOTTERY["built"] = True
+        f = ROOT / ".env.lottery"
+        if f.exists():
+            vals = {}
+            for line in f.read_text().splitlines():
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    vals[k.strip()] = v.strip().strip('"').strip("'")
+            key, sec = vals.get("ALPACA_API_KEY"), vals.get("ALPACA_SECRET_KEY")
+            if key and sec:
+                try:
+                    _LOTTERY["tc"] = TradingClient(key, sec, paper=True)
+                    _LOTTERY["dc"] = StockHistoricalDataClient(key, sec)
+                except Exception:
+                    _LOTTERY["tc"] = _LOTTERY["dc"] = None
+    return _LOTTERY["tc"], _LOTTERY["dc"]
+
+
+def _lottery_status() -> dict | None:
+    """Trade-state snapshot for the lottery bot's account (repurposed dual-mom)."""
+    tc, dc = _lottery_clients()
+    if tc is None:
+        return None
+    now = _time.time()
+    if _lottery_cache["data"] is None or now - _lottery_cache["ts"] > CACHE_TTL:
+        try:
+            _lottery_cache["data"] = _gather(tc, dc)
+        except Exception as e:
+            _lottery_cache["data"] = {"errors": [f"lottery account: {e}"]}
+        _lottery_cache["ts"] = now
+    return _lottery_cache["data"]
+
+
+def _lottery_live(symbols: list[str]) -> dict:
+    """Live intraday behavior for today's lottery picks — bought or not. Same per-symbol
+    fields as the news tab (last, gap%, day%, 9:45 ref, since-9:45). 30s cache."""
+    dc = Handler.dc or _lottery_clients()[1]
+    if dc is None or not symbols:
+        return {}
+    now = _time.time()
+    if _lottery_live_cache["data"] is not None and now - _lottery_live_cache["ts"] < 30.0:
+        return _lottery_live_cache["data"]
+    now_et = datetime.now(ET)
+    snaps = {}
+    try:
+        from alpaca.data.requests import StockSnapshotRequest
+        snaps = dc.get_stock_snapshot(
+            StockSnapshotRequest(symbol_or_symbols=list(symbols), feed=DataFeed.IEX)) or {}
+    except Exception:
+        pass
+    px945: dict = {}
+    try:
+        ref_t = datetime.combine(now_et.date(), dtime(9, 45), tzinfo=ET)
+        if now_et >= ref_t:
+            req = StockBarsRequest(symbol_or_symbols=list(symbols), timeframe=TimeFrame.Minute,
+                                   start=ref_t.astimezone(UTC),
+                                   end=(ref_t + timedelta(minutes=1)).astimezone(UTC),
+                                   feed=DataFeed.IEX)
+            bars = dc.get_stock_bars(req).df
+            if bars is not None and not bars.empty:
+                for sym in set(bars.index.get_level_values(0)):
+                    px945[sym] = float(bars.xs(sym, level=0)["open"].iloc[0])
+    except Exception:
+        pass
+    out: dict = {}
+    for sym in symbols:
+        sn = snaps.get(sym)
+        if sn is None:
+            continue
+        try:
+            prev_c = float(sn.previous_daily_bar.close) if sn.previous_daily_bar else None
+            db = sn.daily_bar
+            last = (float(sn.latest_trade.price) if sn.latest_trade
+                    else (float(db.close) if db else None))
+            o = float(db.open) if db else None
+            p945 = px945.get(sym)
+            out[sym] = {
+                "last": last,
+                "gap_pct": ((o / prev_c - 1) * 100) if (o and prev_c) else None,
+                "day_pct": ((last / prev_c - 1) * 100) if (last and prev_c) else None,
+                "px945": p945,
+                "since945_pct": ((last / p945 - 1) * 100) if (last and p945) else None,
+            }
+        except Exception:
+            continue
+    _lottery_live_cache["data"] = out
+    _lottery_live_cache["ts"] = now
+    return out
+
+
+def _lottery() -> dict:
+    """Summarize the lottery forward-test for its web tab (read-only).
+
+    Per-day picks + a signal scoreboard: for each signal/basket, the W1/W2/W3
+    hit-rate, the lift vs the RANDOM-basket luck baseline, and a binomial p.
+    Reuses the pre-registered stat helpers from experiments/lottery/analyze.py.
+    """
+    out = {"generated": datetime.now(ET).strftime("%Y-%m-%d %H:%M:%S %Z"),
+           "days": [], "scoreboard": {}}
+    if not LOTTERY_PICKS_DIR.exists():
+        return out
+    days = []
+    for f in sorted(LOTTERY_PICKS_DIR.glob("*.json")):
+        try:
+            rec = json.load(open(f))
+        except Exception:
+            continue
+        picks = rec.get("picks", [])
+        baskets: dict = {}
+        for p in picks:
+            b = p.get("basket", "?")
+            baskets[b] = baskets.get(b, 0) + 1
+        n_scored = sum(1 for p in picks if p.get("ret_945_close") is not None)
+        days.append({
+            "date": rec.get("date", f.stem),
+            "logged_at": rec.get("logged_at"),
+            "n": len(picks),
+            "n_scored": n_scored,
+            "baskets": baskets,
+            "picks": picks,
+        })
+    days.sort(key=lambda d: d["date"], reverse=True)
+    out["days"] = days
+
+    # --- signal scoreboard (reuse the pre-registered verdict math) ---
+    try:
+        from experiments.lottery.analyze import hit_stats, _binom_p, WINDEFS, SUCCESS_LIFT, SUCCESS_NDAYS
+        recs = [{"picks": d["picks"]} for d in days]
+        by_basket: dict = {}
+        by_signal: dict = {}
+        combined_top3: list = []
+        for rec in recs:
+            ranked = sorted([p for p in rec["picks"] if p.get("combined_score") is not None],
+                            key=lambda x: -x["combined_score"])
+            combined_top3.extend(ranked[:3])
+            for p in rec["picks"]:
+                by_basket.setdefault(p.get("basket", "?"), []).append(p)
+                for sig in p.get("top_k_of", []):
+                    by_signal.setdefault(sig, []).append(p)
+        random_picks = by_basket.get("random", [])
+        base = {}
+        for key, field, thr in WINDEFS:
+            w, s = hit_stats(random_picks, field, thr)
+            base[key] = (w / s) if s else None
+
+        def rows_for(name, kind, picks):
+            r = {"name": name, "kind": kind, "wins": {}}
+            for key, field, thr in WINDEFS:
+                w, s = hit_stats(picks, field, thr)
+                br = base.get(key)
+                rate = (w / s) if s else None
+                lift = (rate / br) if (rate is not None and br) else None
+                p = _binom_p(w, s, br) if (s and br) else None
+                r["wins"][key] = {"w": w, "n": s, "rate": rate, "lift": lift, "p": p}
+            return r
+
+        scoreboard = {
+            "n_days": len(days),
+            "success_lift": SUCCESS_LIFT, "success_ndays": SUCCESS_NDAYS,
+            "base": base,
+            "signals": [rows_for(s, "signal", by_signal[s]) for s in sorted(by_signal)],
+            "baskets": [rows_for(b, "basket", by_basket[b])
+                        for b in ["wsb", "stocktwits", "gappers", "control", "random"]
+                        if by_basket.get(b)],
+            "combined_top3": rows_for("combined top-3/day", "combined", combined_top3),
+        }
+        out["scoreboard"] = scoreboard
+    except Exception as e:
+        out["scoreboard"] = {"error": f"scoreboard unavailable: {e}"}
+
+    bot = _lottery_status()
+    if bot is not None:
+        out["bot"] = bot
+    today_iso = datetime.now(ET).date().isoformat()
+    tday = next((d for d in days if d["date"] == today_iso), None)
+    if tday:
+        try:
+            out["live"] = _lottery_live([p["symbol"] for p in tday["picks"]])
+            out["live_date"] = today_iso
+        except Exception:
+            pass
+    return out
+
+
 # Market regime gauge (scripts/market_regime.py snapshot) for the Market tab.
 # Daily-bar data, so a long cache: 15 min when healthy, 60 s retry after an error.
 # The snapshot fetches ~125 names of daily closes — cheap, but no reason to refetch
@@ -970,13 +1169,14 @@ let lastNews=null;
 function setPLView(v){ plView=v; if(lastData) render(lastData); }
 function setCalm(){ calmOnly=!calmOnly; if(lastData) render(lastData); }
 function topNav(active){
-  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["regime","Market"]].map(
+  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["lottery","Lottery"],["regime","Market"]].map(
     ([k,l])=>`<button class="tab${active===k?" active":""}" onclick="setTopView('${k}')">${l}</button>`).join("")+`</div>`;
 }
-let lastRegime=null;
+let lastRegime=null, lastLottery=null;
 function setTopView(v){
   topView=v;
   if(v==="news") fetchNews();
+  else if(v==="lottery") fetchLottery();
   else if(v==="regime") fetchRegime();
   else if(lastData) render(lastData);
 }
@@ -1256,6 +1456,125 @@ function renderNews(nd){
   h+=`<div class="foot"><span>news-edge · ${nd.generated||''}</span><span></span></div>`;
   document.getElementById("root").innerHTML=h;
 }
+async function fetchLottery(){
+  try{ const r=await fetch("/api/lottery",{cache:"no-store"}); lastLottery=await r.json(); renderLottery(lastLottery); }
+  catch(e){ document.getElementById("root").innerHTML=topNav("lottery")+`<div class="card empty">lottery data unavailable</div>`; }
+}
+function renderLottery(ld){
+  const sb=ld.scoreboard||{};
+  const liftC=v=>(v==null?"":(v>=2?"pos":(v<1?"neg":"")));
+  const pct1=v=>v==null?"—":(v*100).toFixed(0)+"%";
+  let h=topNav("lottery");
+  h+=`<div class="banner s-idle"><h1>Lottery — can ANY hype metric pick the day's winners?</h1><p>A pre-registered forward test: every morning, mechanically log the top names per hype signal (WSB surge, StockTwits, premarket RVOL, squeeze, options flow, ignition) plus a <b>random control basket</b>. A signal "works" only if it hits real winners ≥2× more often than the random picks. Bold paper bot buys the top-3 combined-score picks. Verdict at 30 trading days.</p></div>`;
+  // --- bot account ---
+  if(ld.bot){
+    const b=ld.bot, a=b.account;
+    h+=`<div class="card"><h2>Lottery bot — live paper account${a&&a.number?` &nbsp;·&nbsp; #${a.number}`:''} <small style="color:var(--dim)">(repurposed dual-mom)</small></h2>`;
+    if(a){
+      h+=`<div class="grid">
+        <div class="stat"><div class="k">Equity</div><div class="v">${money(a.equity)}</div></div>
+        <div class="stat"><div class="k">Day P/L</div><div class="v ${cls(a.day_pnl)}">${sign(a.day_pnl)}<br><small>${a.day_pnl_pct>=0?"+":""}${a.day_pnl_pct.toFixed(2)}%</small></div></div>
+        ${winStat("Week P/L", b.week_pnl)}
+        ${winStat("Month P/L", b.month_pnl)}
+        <div class="stat"><div class="k">Cash</div><div class="v">${money(a.cash)}</div></div>
+        <div class="stat"><div class="k">Invested</div><div class="v">${money(b.invested||0)}</div></div>
+      </div>`;
+    }
+    const bp=b.positions||[];
+    h+=`<div style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:6px 0 6px">Open positions (${bp.length})</div>`;
+    if(bp.length){
+      h+=`<table><tr><th>sym</th><th>qty</th><th>avg</th><th>last</th><th>invested</th><th>unreal P/L</th></tr>`;
+      for(const p of bp) h+=row([{v:p.symbol},{v:p.qty.toFixed(0)},{v:money(p.avg_entry)},{v:money(p.current)},{v:money(p.cost_basis)},{v:`${sign(p.unrealized_pl)} <small>(${p.unrealized_plpc>=0?"+":""}${p.unrealized_plpc.toFixed(1)}%)</small>`,cls:cls(p.unrealized_pl)}]);
+      h+=`</table>`;
+    } else h+=`<div class="empty">flat</div>`;
+    if(b.errors&&b.errors.length) h+=`<div class="err">⚠ ${b.errors.join(" · ")}</div>`;
+    h+=`</div>`;
+  } else {
+    h+=`<div class="card"><div class="empty">Lottery bot account not visible here yet (needs .env.lottery where the status server runs). First live run Mon 09:44 ET. Signal measurement below still works.</div></div>`;
+  }
+  // --- signal scoreboard (the verdict engine) ---
+  h+=`<div class="card"><h2>Signal scoreboard — does any hype metric beat luck?</h2>`;
+  if(sb.error){ h+=`<div class="err">${sb.error}</div>`; }
+  else if(!sb.n_days){ h+=`<div class="empty">No picks logged yet — the first board logs near 6:24am PT.</div>`; }
+  else {
+    const base=sb.base||{};
+    h+=`<div class="hint" style="margin-bottom:8px">Random-basket base rate (the luck line) — W1 9:45→close ≥+5%: <b>${base.W1==null?'n/a':(base.W1*100).toFixed(0)+'%'}</b> · W2 next-day ≥+10%: <b>${base.W2==null?'n/a':(base.W2*100).toFixed(0)+'%'}</b> · W3 3-day ≥+20%: <b>${base.W3==null?'n/a':(base.W3*100).toFixed(0)+'%'}</b>. A signal "works" iff W1 lift ≥${sb.success_lift||2}× with p<0.05 over ≥${sb.success_ndays||30} days (${sb.n_days} so far).</div>`;
+    const mkRow=(r)=>{
+      const w1=r.wins.W1||{}, w2=r.wins.W2||{}, w3=r.wins.W3||{};
+      const liftCell=w=>w.lift==null?{v:"—"}:{v:`${w.lift.toFixed(2)}×`,cls:liftC(w.lift)};
+      const rateCell=w=>w.n?`${pct1(w.rate)} <small style="color:var(--dim)">(${w.w}/${w.n})</small>`:"—";
+      let verdict="";
+      if(w1.lift!=null && w1.p!=null){
+        if(w1.lift>=(sb.success_lift||2) && w1.p<0.05) verdict = sb.n_days>=(sb.success_ndays||30)?`<span class="pos">PASSES</span>`:`<span class="pos">on track</span>`;
+      }
+      const nm = r.kind==="combined"?`<b>${r.name}</b>`:(r.kind==="basket"?`<span style="color:#9aa6b4">${r.name}</span>`:r.name);
+      return `<tr><td style="text-align:left">${nm}</td><td>${rateCell(w1)}</td>`+
+             row_cell(liftCell(w1))+`<td>${w1.p==null?"—":"p="+w1.p.toFixed(3)}</td>`+
+             `<td>${rateCell(w2)}</td><td>${rateCell(w3)}</td><td>${verdict}</td></tr>`;
+    };
+    h+=`<div style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:10px 0 4px">By signal (names that were top-K for that metric)</div>`;
+    h+=`<table><tr><th>signal</th><th>W1 hit</th><th>W1 lift</th><th>W1 p</th><th>W2 hit</th><th>W3 hit</th><th></th></tr>`;
+    for(const r of (sb.signals||[])) h+=mkRow(r);
+    h+=`</table>`;
+    h+=`<div style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:14px 0 4px">By basket &amp; the combined top-3 bot picks</div>`;
+    h+=`<table><tr><th>basket</th><th>W1 hit</th><th>W1 lift</th><th>W1 p</th><th>W2 hit</th><th>W3 hit</th><th></th></tr>`;
+    for(const r of (sb.baskets||[])) h+=mkRow(r);
+    if(sb.combined_top3) h+=mkRow(sb.combined_top3);
+    h+=`</table>`;
+  }
+  h+=`<div class="hint">W1 = 9:45→close ≥+5% · W2 = next-day ≥+10% · W3 = 3-day ≥+20%. Lift = signal hit-rate ÷ random base rate. ≥2× and growing with the sample = a real winner-picker. One good week is noise.</div></div>`;
+  // --- today's picks live behavior ---
+  if(ld.live && Object.keys(ld.live).length){
+    const held=new Set(((ld.bot||{}).positions||[]).map(p=>p.symbol));
+    const today=(ld.days||[]).find(d=>d.date===ld.live_date)||{picks:[]};
+    const ord=p=>({hype:0,wsb:0,stocktwits:0,gappers:1,control:2,random:3}[p.basket]??1);
+    h+=`<div class="card"><h2>Today's board — live behavior (${ld.live_date})</h2>`;
+    h+=`<table><tr><th>sym</th><th>basket</th><th>score</th><th>held</th><th>last</th><th>gap%</th><th>day%</th><th>9:45 px</th><th>since 9:45</th></tr>`;
+    for(const p of today.picks.slice().sort((a,b)=>ord(a)-ord(b)||(b.combined_score||0)-(a.combined_score||0))){
+      const L=ld.live[p.symbol]; if(!L) continue;
+      const pc=v=>v==null?{v:"—"}:{v:pctTxt(v),cls:cls(v)};
+      h+=row([{v:p.symbol},{v:basketBadge(p.basket)},{v:p.combined_score==null?"—":p.combined_score.toFixed(2)},
+              {v:held.has(p.symbol)?`<span class="pos">✓</span>`:""},
+              {v:L.last!=null?money(L.last):"—"},pc(L.gap_pct),pc(L.day_pct),
+              {v:L.px945!=null?money(L.px945):"—"},pc(L.since945_pct)]);
+    }
+    h+=`</table><div class="hint">every candidate tracked live whether or not the bot bought it · "since 9:45" is the exact reference the after-close scorer measures · "held" = currently in the lottery bot's book</div></div>`;
+  }
+  // --- per-day board breakdown ---
+  const days=ld.days||[];
+  if(!days.length){ h+=`<div class="card"><div class="empty">No boards logged yet — the first board logs near 6:24am PT.</div></div>`; }
+  for(const day of days){
+    const bk=day.baskets||{};
+    const bkTxt=Object.keys(bk).map(k=>`${k} ${bk[k]}`).join(" · ");
+    h+=`<div class="card"><h2>${day.date} &nbsp;·&nbsp; ${day.n} picks &nbsp;<small style="color:var(--dim)">${bkTxt}</small></h2>`;
+    h+=`<table><tr><th>sym</th><th>basket</th><th>signals</th><th>score</th><th>9:45→close</th><th>1d</th><th>3d</th><th>win</th></tr>`;
+    for(const p of (day.picks||[]).slice().sort((a,b)=>(b.combined_score||0)-(a.combined_score||0))){
+      const sg=p.signals||{};
+      const tags=(p.top_k_of||[]).join(",")||"—";
+      const r1=p.ret_945_close, r2=p.ret_1d, r3=p.ret_3d;
+      const rc=v=>v==null?"—":`<span class="${cls(v)}">${pctTxt(v)}</span>`;
+      let win="";
+      if(r1!=null||r2!=null||r3!=null){
+        const isW=(r1!=null&&r1>=5)||(r2!=null&&r2>=10)||(r3!=null&&r3>=20);
+        win=isW?`<span class="pos">★</span>`:"";
+      }
+      h+=`<tr><td>${p.symbol}</td><td style="text-align:right">${basketBadge(p.basket)}</td>`+
+         `<td style="text-align:left;color:#9aa6b4;font-size:11px">${tags}</td>`+
+         `<td>${p.combined_score==null?"—":p.combined_score.toFixed(2)}</td>`+
+         `<td>${rc(r1)}</td><td>${rc(r2)}</td><td>${rc(r3)}</td><td>${win}</td></tr>`;
+    }
+    h+=`</table></div>`;
+  }
+  h+=`<div class="foot"><span>lottery · ${ld.generated||''}</span><span></span></div>`;
+  document.getElementById("root").innerHTML=h;
+}
+function row_cell(c){ return `<td${c.cls?` class="${c.cls}"`:''}>${c.v}</td>`; }
+function basketBadge(b){
+  const m={wsb:["#d97706","WSB"],stocktwits:["#2563eb","ST"],gappers:["#7c8694","gap"],
+           control:["#7c8694","ctrl"],random:["#7c8694","rand"]};
+  const x=m[b]||["#7c8694",b||"?"];
+  return `<span style="color:${x[0]};font-size:11px;font-weight:600">${x[1]}</span>`;
+}
 function render(d){
   lastData=d;
   const L=d.liveness;
@@ -1368,6 +1687,7 @@ async function tick(){
   catch(e){ fails++; const t=document.getElementById("tick");
        if(t) t.textContent=`page offline (${fails}) — is the SSH tunnel up?`; }
   if(topView==="news") fetchNews();
+  if(topView==="lottery") fetchLottery();
   if(topView==="regime") fetchRegime();
 }
 tick(); setInterval(tick, 3000);
@@ -1420,6 +1740,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.startswith("/api/newsedge"):
             try:
                 body = json.dumps(_newsedge()).encode("utf-8")
+                self._send(200, body, "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
+        elif self.path.startswith("/api/lottery"):
+            try:
+                body = json.dumps(_lottery()).encode("utf-8")
                 self._send(200, body, "application/json")
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
