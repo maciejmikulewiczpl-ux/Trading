@@ -1,0 +1,417 @@
+{
+  "date": "2026-06-12",
+  "logged_at": "2026-06-12T09:40:08-04:00",
+  "picks": [
+    {
+      "symbol": "ADBE",
+      "signal": -1,
+      "confidence": 0.65,
+      "reason": "FQ2 beat on top/bottom but non-GAAP op margin 44pct vs 44.5pct est, ARR concerns, and CFO Dan Dunn departing June 15; stock -7-9pct premarket despite raised outlook. StockTwits 62pct bull = contrarian dip-buying a faller; reddit rank 5 surge on the news.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 5,
+      "earnings_day": true,
+      "theme": "software-earnings",
+      "control": false,
+      "gap_pct": -8.64
+    },
+    {
+      "symbol": "LEN",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Q2 revenue 7.94B missed 8.02B est and deliveries 20519 vs 20541 est; EPS in line. Mixed-to-soft homebuilder print, 8-K filed 09:00. Modest negative.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "homebuilder-earnings",
+      "control": false
+    },
+    {
+      "symbol": "RH",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Narrower-than-expected loss + revenue beat, but guided current-quarter revenue growth 0.5-2.5pct vs 4.3pct consensus; slightly up premarket. Genuinely mixed - no call.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "home-furnishings-earnings",
+      "control": false
+    },
+    {
+      "symbol": "AMD",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Citi upgrade Neutral->Buy this morning on GPU share-gain-from-NVDA thesis; small gap (~+1pct) with fresh same-day analyst catalyst - fits the small-gap fresh-news profile. StockTwits 85pct bull agrees.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.22,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-chips",
+      "control": false
+    },
+    {
+      "symbol": "RKLB",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "SpaceX (SPCX) debuts on Nasdaq TODAY at fixed 135/share (~1.77T, largest IPO ever) - early premarket sympathy pop (+6pct per CNBC) fully REVERSED at the open to -6.1pct: rotation out of public space proxies into the real thing. StockTwits 70pct bull + reddit rank 13 = crowd dip-buying the faller.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit",
+        "alpaca-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 2.23,
+      "reddit_rank": 13,
+      "earnings_day": false,
+      "theme": "spacex-debut",
+      "control": false,
+      "gap_pct": -6.06
+    },
+    {
+      "symbol": "ASTS",
+      "signal": -1,
+      "confidence": 0.45,
+      "reason": "Same SpaceX-debut proxy rotation: early premarket +4pct reversed to -7.4pct at the open. StockTwits 76pct bull contrarian; reddit rank 11.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit",
+        "alpaca-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.07,
+      "reddit_rank": 11,
+      "earnings_day": false,
+      "theme": "spacex-debut",
+      "control": false,
+      "gap_pct": -7.42
+    },
+    {
+      "symbol": "SMCI",
+      "signal": -1,
+      "confidence": 0.45,
+      "reason": "7B equity/equity-linked raise: 45.5M shares priced at 27.50 (closes TODAY, stock ~29.84) + 3.75B mandatory converts + 1.25B ATM agreement - heavy near-term supply/dilution; three 424B5s since last night, gap -6.6pct. Bull counter: funds ~39B of AI server orders. StockTwits split 50/50.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 0.32,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false,
+      "gap_pct": -6.63
+    },
+    {
+      "symbol": "KURA",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Priced 100M public offering of common stock + pre-funded warrants - classic offering fade setup; trending on StockTwits with 87pct bull = contrarian crowd buying the dilution dip (same pattern as day-1 RDW ATM).",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Day-2 of AI-memory analyst wave: Mizuho PT 1825->2200 and Susquehanna 2000->3250 on NAND pricing tracking +75-100pct q/q; ran +14pct intraday yesterday. Catalyst is a day old -> continuation bet at moderate conf. StockTwits split.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": 12,
+      "earnings_day": false,
+      "theme": "ai-memory",
+      "control": false
+    },
+    {
+      "symbol": "STX",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Same Mizuho AI-memory call: PT 875->1090; 8-K filed last night. Second name of the memory theme, slightly lower conviction than SNDK.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-memory",
+      "control": false
+    },
+    {
+      "symbol": "XOM",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "US-Iran deal reportedly close -> crude selling off on supply-normalization hopes; XOM pm_rvol 1.73 (elevated participation) and reddit mention surge 8.5x on a macro faller. StockTwits 38pct bull agrees bearish for once.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": 1.73,
+      "reddit_rank": 38,
+      "earnings_day": false,
+      "theme": "iran-deal-oil",
+      "control": false
+    },
+    {
+      "symbol": "MBX",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "One-year data for chronic hypoparathyroidism program disappointed; -27.5pct premarket, 8-K 07:05. Most of the move already gapped (fade-back risk acknowledged) but day-after drift on failed-data biotechs tends negative. StockTwits 75pct bull = contrarian.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-data",
+      "control": false
+    },
+    {
+      "symbol": "FCX",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Copper/risk-on bid on Iran-deal hopes, +3.2pct gap; no company-specific news found -> momentum-unconfirmed, confidence capped at 0.3 per rules. StockTwits 100pct bull (n=5).",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "alpaca-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "copper-macro",
+      "control": false,
+      "gap_pct": 3.15
+    },
+    {
+      "symbol": "SPCE",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3pct gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": 1.47,
+      "reddit_rank": 7,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -24.57
+    },
+    {
+      "symbol": "PWRL",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3pct gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 13.89
+    },
+    {
+      "symbol": "VELO",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3pct gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -12.76
+    },
+    {
+      "symbol": "RDW",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3pct gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": 0.03,
+      "reddit_rank": 28,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -8.75
+    },
+    {
+      "symbol": "SHAZ",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3pct gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -7.68
+    },
+    {
+      "symbol": "SATS",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3pct gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": 43,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.18
+    },
+    {
+      "symbol": "NASA",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3pct gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -5.91
+    },
+    {
+      "symbol": "GT",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3pct gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.0
+    },
+    {
+      "symbol": "CRWV",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3pct gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": 33,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.62
+    },
+    {
+      "symbol": "FUBO",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3pct gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.07
+    }
+  ]
+}
