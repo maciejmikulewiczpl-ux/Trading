@@ -52,6 +52,12 @@ def _load_news_env() -> None:
     # to ~$2000; pricier names size to 0 (an intentional ceiling for one experiment account).
     os.environ.setdefault("ORB_NOTIONAL_PER_TRADE", "2000")
     os.environ.setdefault("ORB_NOTIONAL_CAP", "3000")
+    # Vol-dial OFF (2026-06-12, user): act on the morning catalyst EVERY day, choppy or
+    # calm — that's the experiment. The dial would otherwise halve notional on high-vol
+    # days and drop the priciest catalyst names (exactly the regression seen 2026-06-12,
+    # a high-vol session). The $800 open-risk rail is still the turbulence backstop.
+    # Baseline ORB keeps its validated vol-dial (never sets this).
+    os.environ["ORB_VOL_REGIME_FILTER"] = "false"
     # Isolation when sharing a machine with the baseline bot (the VM): separate heartbeat +
     # log file so we don't clobber its liveness/logs. And a later late-start cutoff because
     # we start after the morning scan (~9:43 ET) — give entries room to ~10:10 ET.

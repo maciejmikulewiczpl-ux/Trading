@@ -127,7 +127,17 @@ TIGHT_OR_MAX_PCT = float(_CFG.get("tight_or_max_pct", 0.5))
 TRAILING_EXIT_ENABLED = bool(_CFG.get("trailing_exit_enabled", False))
 # Vol-regime risk dial: halve (or pause) risk in high-vol regimes. Reactive — sits
 # out the turbulent aftermath of a shock. See backtest/compare_volpause.py.
-VOL_REGIME_FILTER_ENABLED = bool(_CFG.get("vol_regime_filter_enabled", False))
+# Config default (ON for the validated baseline ORB), overridable off per-run via
+# ORB_VOL_REGIME_FILTER=false — the news-edge bot turns it OFF because its whole point is
+# to act on the morning catalyst EVERY day, choppy or calm (the dial would otherwise halve
+# its notional on high-vol days and drop the priciest catalyst names). Baseline never sets
+# it -> config default, validated vol-dial behaviour unchanged.
+_vr_env = os.environ.get("ORB_VOL_REGIME_FILTER")
+VOL_REGIME_FILTER_ENABLED = (
+    _vr_env.strip().lower() not in ("false", "0", "no", "off")
+    if _vr_env is not None and _vr_env.strip() != ""
+    else bool(_CFG.get("vol_regime_filter_enabled", False))
+)
 VOL_REGIME_RISK_MULT = float(_CFG.get("vol_regime_risk_mult", 0.5))
 VOL_WIN = 20          # SPY realized-vol lookback (trading days)
 VOL_MED_WIN = 126     # trailing window for the vol threshold
