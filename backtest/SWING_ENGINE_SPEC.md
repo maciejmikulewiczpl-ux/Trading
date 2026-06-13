@@ -1,6 +1,12 @@
 # Engine #3 — Swing-Horizon Breakout: SPEC + TEST PLAN (pre-registered)
 
-**Status: DESIGNED 2026-06-12, NOT YET RUN.** Design locked before any data was
+**Status: REJECTED 2026-06-12 after audit (verify_swing.py).** Initial run reported
+ALL GATES PASS (Sharpe 3.03), but review found (A) the daily-PnL series counted each
+trade's PnL ~5.65x (MTM added daily AND full realized PnL added again at exit) — the
+corrected Sharpe is 0.57; and (B) the candidate universe was the top-500 by 2024-26
+dollar volume, i.e. future winners — the survivorship-clean 2024-07+ window shows
+$3.00/trade (vs $8.20 contaminated) and Sharpe 0.45. Corrected G1a FAIL (0.57 < 1.0),
+G2a FAIL (2022 = -$629 < -$500). Cell closed per pre-registered discipline. Design locked before any data was
 looked at. The executing session implements EXACTLY this; if results are bad, the
 verdict is FAIL — no post-hoc tuning, no new variants invented mid-run. (Tuning
 discipline = same as tight-OR / meanrev / options precedents.)
