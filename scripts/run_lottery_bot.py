@@ -2,10 +2,13 @@
 
 At ~09:45 ET it reads today's lottery board (experiments/lottery/picks/<ET-date>.json),
 takes the TOP-3 by combined_score (the hype basket), and for each:
-  - buys ~$500 of WHOLE shares at market (qty = floor($500/price); names pricier than
-    $500 are skipped -- NOT fractional/notional, because Alpaca rejects trailing stops
+  - buys ~$2,000 of WHOLE shares at market (qty = floor($2000/price); names pricier than
+    $2000 are skipped -- NOT fractional/notional, because Alpaca rejects trailing stops
     on fractional quantities (found in the 2026-06-12 end-to-end trace; a notional buy
-    would have left positions with NO stop at all),
+    would have left positions with NO stop at all). $2,000/name MATCHES the news-edge
+    bot's ORB_NOTIONAL_PER_TRADE=2000 (also whole-share floored, paper_orb.py) so the two
+    bots' dollar PnL is directly comparable. Sizing is COLOR only -- the lottery verdict
+    is Track B's size-independent hit-rate, so this budget change doesn't affect it,
   - attaches a 10% NATIVE Alpaca trailing stop on fill, GTC (the position holds up to
     3 days -- a DAY trail would expire at the close and leave the rest unprotected),
   - records the entry so a later run can time-stop close at T+3 if still open
@@ -37,7 +40,7 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[1]
 ET = ZoneInfo("America/New_York")
 
-NOTIONAL = 500.0            # $ per pick
+NOTIONAL = 2000.0          # $ per pick (matches news-edge ORB_NOTIONAL_PER_TRADE for a direct PnL comparison)
 TRAIL_PCT = 10.0           # native trailing stop %
 TOP_N = 3                  # top-3 by combined_score
 TIME_STOP_DAYS = 3         # close at T+3 trading-ish days if still open
