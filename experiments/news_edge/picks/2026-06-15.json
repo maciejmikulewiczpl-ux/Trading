@@ -1,0 +1,403 @@
+{
+  "date": "2026-06-15",
+  "logged_at": "2026-06-15T09:38:55-04:00",
+  "picks": [
+    {
+      "symbol": "ROKU",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Fox to acquire Roku for $160/sh (~$22B EV; $96 cash + 0.9693 FOX shares), definitive agreement 8-K filed today. Clear bullish deal catalyst, but a confirmed-price target tends to gap to deal value and PIN intraday (limited ORB breakout follow-through).",
+      "sources": [
+        "edgar:8-K",
+        "sec:Form425",
+        "websearch:Fox-Roku-deal",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "m&a",
+      "control": false
+    },
+    {
+      "symbol": "NTLA",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Positive Phase 3 HAELO data for lonvo-z (HAE) presented at EAACI 6/13 + NEJM publication; rolling BLA underway, all AEs mild/moderate, patients free of prophylaxis. Weekend data so Monday is first trade reaction; gapping +9%.",
+      "sources": [
+        "edgar:8-K",
+        "websearch:EAACI-HAELO",
+        "nejm",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-data",
+      "control": false
+    },
+    {
+      "symbol": "TSEM",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Multi-year supply agreement announced + resolution of IP disputes; +4.7% premarket. Fresh, dated, bullish foundry/semi catalyst.",
+      "sources": [
+        "websearch:supply-agreement-IP",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "semis",
+      "control": false
+    },
+    {
+      "symbol": "ELTX",
+      "signal": -1,
+      "confidence": 0.7,
+      "reason": "Phase 2 AMPLIFY-7P MISSED pre-specified primary DFS endpoint in ITT; only post-hoc landmark benefit. Cash into Q4 2026 only, Phase 3 needs financing. Gapping ~-71%. Clear bearish trial-fail catalyst.",
+      "sources": [
+        "edgar:8-K",
+        "websearch:AMPLIFY-7P-miss",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-fail",
+      "control": false
+    },
+    {
+      "symbol": "FOX",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Acquirer side of Roku deal: $12B committed bridge financing + ~27% stock issuance to Roku holders; accretive only by year 2. Acquirers commonly dip on large debt+dilution announcements.",
+      "sources": [
+        "edgar:8-K",
+        "websearch:Fox-Roku-deal",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "m&a-acquirer",
+      "control": false
+    },
+    {
+      "symbol": "FISV",
+      "signal": -1,
+      "confidence": 0.3,
+      "reason": "CEO Mike Lyons abruptly departs to run Truist; Georgakopoulos in, guidance reaffirmed. Leadership uncertainty; market read it negatively, gapping ~-8.7%.",
+      "sources": [
+        "edgar:8-K",
+        "websearch:CEO-change",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "mgmt-change",
+      "control": false
+    },
+    {
+      "symbol": "ONDS",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "8-K filed today amid hot Pentagon-drone theme + large recent defense backlog, but no confirmed fresh catalyst for today's filing; already ran hard. Crowd very bullish (price-action momentum, not a confident call).",
+      "sources": [
+        "edgar:8-K",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.39,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "drones-defense",
+      "control": false
+    },
+    {
+      "symbol": "USAR",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Rare-earth name in a sell-the-news pullback (-27% wk) after CHIPS funding finalized; 8-K today unconfirmed direction. Geopolitics/oil-shock theme adjacent. No clean fresh catalyst.",
+      "sources": [
+        "edgar:8-K",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.13,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "rare-earth",
+      "control": false
+    },
+    {
+      "symbol": "MU",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Heavy Reddit/ST crowding on AI-memory shortage thesis, but earnings are 6/24 (not today). No dated catalyst for today so crowding/anticipation only.",
+      "sources": [
+        "reddit",
+        "stocktwits",
+        "websearch:earnings-jun24"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.44,
+      "reddit_rank": 2,
+      "earnings_day": false,
+      "theme": "ai-memory",
+      "control": false
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Riding the MU/AI-memory momentum, elevated premarket RVOL (1.57) and Reddit surge, but no fresh dated catalyst of its own today.",
+      "sources": [
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.57,
+      "reddit_rank": 5,
+      "earnings_day": false,
+      "theme": "ai-memory",
+      "control": false
+    },
+    {
+      "symbol": "DXYZ",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "StockTwits trending #1 with elevated premarket RVOL (1.7) - pure crowding flag, no confirmed catalyst. Logged for crowding context.",
+      "sources": [
+        "stocktwits-trending"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.7,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "crowding",
+      "control": false
+    },
+    {
+      "symbol": "MAAS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 20.98
+    },
+    {
+      "symbol": "JBLU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 9.48
+    },
+    {
+      "symbol": "HOOD",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.07
+    },
+    {
+      "symbol": "QS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.77
+    },
+    {
+      "symbol": "DJT",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.54
+    },
+    {
+      "symbol": "FLY",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.18
+    },
+    {
+      "symbol": "OMER",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.07
+    },
+    {
+      "symbol": "XOM",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.03
+    },
+    {
+      "symbol": "AAL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.65
+    },
+    {
+      "symbol": "SPCX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.15
+    },
+    {
+      "symbol": "PR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.36
+    },
+    {
+      "symbol": "CAT",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.62
+    }
+  ]
+}
