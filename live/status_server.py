@@ -237,7 +237,11 @@ def _next_session_date(tc, after_iso: str) -> str | None:
 # --------------------------------------------------------------------------
 # Trade state: authoritative, straight from Alpaca
 # --------------------------------------------------------------------------
-def _gather(tc, dc=None) -> dict:
+def _gather(tc, dc=None, since_date=None) -> dict:
+    # `since_date` (YYYY-MM-DD ET str) clips P/L history to an account's inception — used
+    # for the Hype account, which is the RETIRED dual-mom paper account: rows before the
+    # first Hype trade belong to dual-mom and must not be attributed to Hype.
+    # (Named `since_date`, NOT `since` — a local `since` datetime is reused below.)
     now_et = datetime.now(ET)
     out: dict = {
         "generated": now_et.strftime("%Y-%m-%d %H:%M:%S %Z"),
@@ -497,6 +501,11 @@ def _gather(tc, dc=None) -> dict:
                 "equity": eq_now,
             })
 
+        # Clip to inception (Hype account): drop dual-mom-era rows BEFORE the rollups
+        # and daily list are built, so every figure reflects only this bot's history.
+        if since_date:
+            rows = [r for r in rows if r["date"] >= since_date]
+
         # Trailing-window roll-ups for the stat cards (calendar windows incl. today).
         def _window(days: int) -> dict:
             cutoff = (today - timedelta(days=days - 1)).isoformat()
@@ -697,6 +706,10 @@ def _newsedge() -> dict:
 # and the lottery bot's repurposed dual-mom paper account via .env.lottery.
 # ---------------------------------------------------------------------------
 LOTTERY_PICKS_DIR = ROOT / "experiments" / "lottery" / "picks"
+# Hype bot inception: its first real trades (NBIS/TRV/SPCL) filled 2026-06-15. The
+# account is the retired dual-mom paper account (dual-mom liquidated 2026-06-12), so
+# P/L history before this date is dual-mom's and is clipped out of the Hype views.
+HYPE_INCEPTION = "2026-06-15"
 
 _LOTTERY = {"built": False, "tc": None, "dc": None}
 _lottery_cache = {"ts": 0.0, "data": None}
@@ -725,14 +738,16 @@ def _lottery_clients():
 
 
 def _lottery_status() -> dict | None:
-    """Trade-state snapshot for the lottery bot's account (repurposed dual-mom)."""
+    """Trade-state snapshot for the Hype bot's account (the RETIRED dual-mom account).
+    P/L history is clipped to HYPE_INCEPTION so dual-mom's pre-06-15 days/equity swings
+    are not shown as Hype's (its first trades — NBIS/TRV/SPCL — landed 2026-06-15)."""
     tc, dc = _lottery_clients()
     if tc is None:
         return None
     now = _time.time()
     if _lottery_cache["data"] is None or now - _lottery_cache["ts"] > CACHE_TTL:
         try:
-            _lottery_cache["data"] = _gather(tc, dc)
+            _lottery_cache["data"] = _gather(tc, dc, since_date=HYPE_INCEPTION)
         except Exception as e:
             _lottery_cache["data"] = {"errors": [f"lottery account: {e}"]}
         _lottery_cache["ts"] = now
@@ -971,6 +986,34 @@ def _status(tc, dc=None) -> dict:
     return _cache["data"]
 
 
+def _summary(tc, dc=None) -> dict:
+    """Compact day-by-day P/L for all three bots (ORB baseline, news-edge, lottery)
+    for the Summary tab. Reuses the cached per-account gathers — no extra Alpaca calls.
+    Each entry carries that account's daily_pnl rows (same shape the P/L breakdown uses)."""
+    out = {"generated": datetime.now(ET).isoformat(timespec="seconds"), "bots": []}
+
+    def _add(key: str, name: str, getter):
+        try:
+            data = getter()
+        except Exception as e:
+            out["bots"].append({"key": key, "name": name, "daily_pnl": [], "error": str(e)})
+            return
+        if not data:
+            out["bots"].append({"key": key, "name": name, "daily_pnl": [], "absent": True})
+            return
+        out["bots"].append({
+            "key": key, "name": name,
+            "daily_pnl": data.get("daily_pnl", []),
+            "week_pnl": data.get("week_pnl"),
+            "month_pnl": data.get("month_pnl"),
+        })
+
+    _add("orb", "ORB baseline", lambda: _status(tc, dc))
+    _add("news", "News-Edge", _news_status)
+    _add("lottery", "Lottery", _lottery_status)
+    return out
+
+
 # --------------------------------------------------------------------------
 # HTML
 # --------------------------------------------------------------------------
@@ -1161,22 +1204,70 @@ function groupRows(rows, keyFn, labelFn){
     };
   });
 }
-let plView="day";
-let calmOnly=false;
 let lastData=null;
 let topView="trading";
 let lastNews=null;
-function setPLView(v){ plView=v; if(lastData) render(lastData); }
-function setCalm(){ calmOnly=!calmOnly; if(lastData) render(lastData); }
+// Per-tab P/L-breakdown view state (each tab keeps its own Day/Week/Month + calm toggle).
+let plState={trading:{view:"day",calm:false},news:{view:"day",calm:false},lottery:{view:"day",calm:false}};
+function rerenderPL(tab){
+  if(tab==="news"){ if(lastNews) renderNews(lastNews); }
+  else if(tab==="lottery"){ if(lastLottery) renderLottery(lastLottery); }
+  else if(lastData) render(lastData);
+}
+function setPLView(tab,v){ plState[tab].view=v; rerenderPL(tab); }
+function setCalm(tab){ plState[tab].calm=!plState[tab].calm; rerenderPL(tab); }
+// Shared "P/L breakdown" card — identical table for the ORB, News-Edge and Lottery tabs.
+// dp = that account's daily_pnl rows (from _gather); tab keys into plState for view/calm.
+function plBreakdownCard(dp, todayStr, tab){
+  dp=dp||[];
+  const st=plState[tab], plView=st.view, calmOnly=st.calm;
+  const calmKnown=dp.some(r=>r.calm!=null);
+  const dpView = calmOnly ? dp.filter(r=>r.calm===true) : dp;
+  let h=`<div class="card"><h2>P/L breakdown</h2>`;
+  h+=`<div class="tabs">`+["day","week","month"].map(v=>
+       `<button class="tab${plView===v?" active":""}" onclick="setPLView('${tab}','${v}')">${v[0].toUpperCase()+v.slice(1)}</button>`).join("")
+     +(calmKnown?`<button class="tab toggle${calmOnly?" active":""}" onclick="setCalm('${tab}')" title="Count only low-volatility (calm) days — where ORB does better. Does not change live trading.">Calm days only</button>`:``)+`</div>`;
+  if(calmKnown){
+    const calmRows=dp.filter(r=>r.calm===true);
+    const tAll=dp.reduce((s,r)=>s+r.pnl,0), tCalm=calmRows.reduce((s,r)=>s+r.pnl,0);
+    h+=`<div class="hint">vol filter: <b>${calmRows.length}/${dp.length}</b> days calm · P/L calm-only <span class="${cls(tCalm)}">${sign(tCalm)}</span> vs all-days <span class="${cls(tAll)}">${sign(tAll)}</span> &nbsp;(high-vol days marked <span class="hivol">hi-vol</span>)</div>`;
+  }
+  if(dpView.length){
+    let rowsV, lblHead, fmtLbl, invHead="invested";
+    if(plView==="week"){
+      rowsV=groupRows(dpView, weekStart, dt=>"wk of "+weekStart(dt)); lblHead="week"; invHead="avg invested"; fmtLbl=r=>r.label;
+    } else if(plView==="month"){
+      rowsV=groupRows(dpView, dt=>dt.slice(0,7), dt=>dt.slice(0,7)); lblHead="month"; invHead="avg invested"; fmtLbl=r=>r.label;
+    } else {
+      rowsV=dpView; lblHead="date";
+      fmtLbl=r=>(r.date===todayStr?`${r.date} <small>(today)</small>`:r.date)+(r.calm===false?` <span class="hivol">hi-vol</span>`:``);
+    }
+    h+=`<table><tr><th>${lblHead}</th><th>${invHead}</th><th>P/L</th><th>%</th><th>S&P 500 %</th><th>equity</th></tr>`;
+    rowsV.forEach((r)=>{
+      const pct = (r.pnl_pct_inv===null||r.pnl_pct_inv===undefined)
+        ? {v:"—"}
+        : {v:`${r.pnl_pct_inv>=0?"+":""}${r.pnl_pct_inv.toFixed(1)}%`,cls:cls(r.pnl_pct_inv)};
+      const spy = (r.spy_pct===null||r.spy_pct===undefined)
+        ? {v:"—"}
+        : {v:`${r.spy_pct>=0?"+":""}${r.spy_pct.toFixed(2)}%`,cls:cls(r.spy_pct)};
+      // high-vol days keep their "hi-vol" label but are NOT faded (full contrast).
+      h+=row([{v:fmtLbl(r)},{v:r.invested>0?money(r.invested):"—"},{v:sign(r.pnl),cls:cls(r.pnl)},pct,spy,{v:money(r.equity)}]); });
+    h+=`</table>`;
+    h+=`<div class="hint">% = P/L vs capital invested (avg daily capital for Week/Month) · S&P 500 % = SPY close-to-close (compounded) · calm = SPY 20d vol below its trailing median</div>`;
+  } else h+=`<div class="empty">${calmOnly?"no calm days in range":"no history"}</div>`;
+  h+=`</div>`;
+  return h;
+}
 function topNav(active){
-  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["lottery","Lottery"],["regime","Market"]].map(
+  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["lottery","Hype"],["summary","Summary"],["regime","Market"]].map(
     ([k,l])=>`<button class="tab${active===k?" active":""}" onclick="setTopView('${k}')">${l}</button>`).join("")+`</div>`;
 }
-let lastRegime=null, lastLottery=null;
+let lastRegime=null, lastLottery=null, lastSummary=null;
 function setTopView(v){
   topView=v;
   if(v==="news") fetchNews();
   else if(v==="lottery") fetchLottery();
+  else if(v==="summary") fetchSummary();
   else if(v==="regime") fetchRegime();
   else if(lastData) render(lastData);
 }
@@ -1402,6 +1493,8 @@ function renderNews(nd){
   } else {
     h+=`<div class="card"><div class="empty">News bot account not visible here yet (needs .env.news where the status server runs). Picks measurement below still works.</div></div>`;
   }
+  // --- P/L breakdown (same table as the ORB tab, for the news bot's account) ---
+  if(nd.bot && nd.bot.daily_pnl) h+=plBreakdownCard(nd.bot.daily_pnl, (nd.generated||"").slice(0,10), "news");
   // --- live behavior of today's picks (bought or not) ---
   if(nd.live && Object.keys(nd.live).length){
     const held=new Set(((nd.bot||{}).positions||[]).map(p=>p.symbol));
@@ -1465,11 +1558,11 @@ function renderLottery(ld){
   const liftC=v=>(v==null?"":(v>=2?"pos":(v<1?"neg":"")));
   const pct1=v=>v==null?"—":(v*100).toFixed(0)+"%";
   let h=topNav("lottery");
-  h+=`<div class="banner s-idle"><h1>Lottery — can ANY hype metric pick the day's winners?</h1><p>A pre-registered forward test: every morning, mechanically log the top names per hype signal (WSB surge, StockTwits, premarket RVOL, squeeze, options flow, ignition) plus a <b>random control basket</b>. A signal "works" only if it hits real winners ≥2× more often than the random picks. Bold paper bot buys the top-3 combined-score picks. Verdict at 30 trading days.</p></div>`;
+  h+=`<div class="banner s-idle"><h1>Hype — can ANY hype metric pick the day's winners?</h1><p>A pre-registered forward test: every morning, mechanically log the top names per hype signal (WSB surge, StockTwits, premarket RVOL, squeeze, options flow, ignition) plus a <b>random control basket</b>. A signal "works" only if it hits real winners ≥2× more often than the random picks. Bold paper bot buys the top-3 combined-score picks. Verdict at 30 trading days.</p></div>`;
   // --- bot account ---
   if(ld.bot){
     const b=ld.bot, a=b.account;
-    h+=`<div class="card"><h2>Lottery bot — live paper account${a&&a.number?` &nbsp;·&nbsp; #${a.number}`:''} <small style="color:var(--dim)">(repurposed dual-mom)</small></h2>`;
+    h+=`<div class="card"><h2>Hype bot — live paper account${a&&a.number?` &nbsp;·&nbsp; #${a.number}`:''} <small style="color:var(--dim)">(repurposed dual-mom)</small></h2>`;
     if(a){
       h+=`<div class="grid">
         <div class="stat"><div class="k">Equity</div><div class="v">${money(a.equity)}</div></div>
@@ -1490,8 +1583,10 @@ function renderLottery(ld){
     if(b.errors&&b.errors.length) h+=`<div class="err">⚠ ${b.errors.join(" · ")}</div>`;
     h+=`</div>`;
   } else {
-    h+=`<div class="card"><div class="empty">Lottery bot account not visible here yet (needs .env.lottery where the status server runs). First live run Mon 09:44 ET. Signal measurement below still works.</div></div>`;
+    h+=`<div class="card"><div class="empty">Hype bot account not visible here yet (needs .env.lottery where the status server runs). First live run Mon 09:44 ET. Signal measurement below still works.</div></div>`;
   }
+  // --- P/L breakdown (same table as the ORB tab, for the lottery bot's account) ---
+  if(ld.bot && ld.bot.daily_pnl) h+=plBreakdownCard(ld.bot.daily_pnl, (ld.generated||"").slice(0,10), "lottery");
   // --- signal scoreboard (the verdict engine) ---
   h+=`<div class="card"><h2>Signal scoreboard — does any hype metric beat luck?</h2>`;
   if(sb.error){ h+=`<div class="err">${sb.error}</div>`; }
@@ -1538,7 +1633,7 @@ function renderLottery(ld){
               {v:L.last!=null?money(L.last):"—"},pc(L.gap_pct),pc(L.day_pct),
               {v:L.px945!=null?money(L.px945):"—"},pc(L.since945_pct)]);
     }
-    h+=`</table><div class="hint">every candidate tracked live whether or not the bot bought it · "since 9:45" is the exact reference the after-close scorer measures · "held" = currently in the lottery bot's book</div></div>`;
+    h+=`</table><div class="hint">every candidate tracked live whether or not the bot bought it · "since 9:45" is the exact reference the after-close scorer measures · "held" = currently in the hype bot's book</div></div>`;
   }
   // --- per-day board breakdown ---
   const days=ld.days||[];
@@ -1565,7 +1660,7 @@ function renderLottery(ld){
     }
     h+=`</table></div>`;
   }
-  h+=`<div class="foot"><span>lottery · ${ld.generated||''}</span><span></span></div>`;
+  h+=`<div class="foot"><span>hype · ${ld.generated||''}</span><span></span></div>`;
   document.getElementById("root").innerHTML=h;
 }
 function row_cell(c){ return `<td${c.cls?` class="${c.cls}"`:''}>${c.v}</td>`; }
@@ -1574,6 +1669,66 @@ function basketBadge(b){
            control:["#7c8694","ctrl"],random:["#7c8694","rand"]};
   const x=m[b]||["#7c8694",b||"?"];
   return `<span style="color:${x[0]};font-size:11px;font-weight:600">${x[1]}</span>`;
+}
+async function fetchSummary(){
+  try{ const r=await fetch("/api/summary",{cache:"no-store"}); lastSummary=await r.json(); renderSummary(lastSummary); }
+  catch(e){ document.getElementById("root").innerHTML=topNav("summary")+`<div class="card empty">summary data unavailable</div>`; }
+}
+// Summary tab: all three bots' daily P/L side by side (invested · P/L · % per bot) vs the S&P 500.
+function renderSummary(sd){
+  let h=topNav("summary");
+  h+=`<div class="banner s-idle"><h1>Summary — all three bots, day by day</h1><p>Daily P/L, capital invested and return for each paper bot side by side, against the S&P 500. News-Edge and Hype both size ~$2,000/name; the ORB baseline sizes by risk. Same money-to-money lens for every strategy.</p></div>`;
+  const keys=["orb","news","lottery"], names={orb:"ORB baseline",news:"News-Edge",lottery:"Hype"};
+  const bots=sd.bots||[];
+  const byKey={}; bots.forEach(b=>byKey[b.key]=b);
+  // merge all three accounts' daily rows by ET date
+  const map={};
+  for(const b of bots) for(const r of (b.daily_pnl||[])){ (map[r.date]=map[r.date]||{})[b.key]=r; }
+  const dates=Object.keys(map).sort().reverse();
+  const todayStr=(sd.generated||"").slice(0,10);
+  // note any bot whose account isn't visible where the server runs
+  const missing=keys.filter(k=>byKey[k] && (byKey[k].absent||byKey[k].error));
+  if(missing.length) h+=`<div class="card"><div class="hint">Not visible here yet: ${missing.map(k=>names[k]).join(", ")} (account keys absent where the status server runs). Their columns show — until then.</div></div>`;
+  if(!dates.length){ h+=`<div class="card"><div class="empty">No P/L history yet for any bot.</div></div>`; h+=`<div class="foot"><span>summary · ${sd.generated||''}</span><span></span></div>`; document.getElementById("root").innerHTML=h; return; }
+
+  const plCell=v=>v==null?{v:"—"}:{v:sign(v),cls:cls(v)};
+  const pctCell=(v,dp)=>(v==null||v===undefined)?{v:"—"}:{v:`${v>=0?"+":""}${v.toFixed(dp)}%`,cls:cls(v)};
+  const invCell=v=>(v&&v>0)?{v:money(v)}:{v:"—"};
+  const spyOf=d=>{ for(const k of keys){ const r=(map[d]||{})[k]; if(r&&r.spy_pct!=null) return r.spy_pct; } return null; };
+
+  h+=`<div class="card"><h2>Daily P/L — ORB · News-Edge · Hype</h2><div style="overflow-x:auto">`;
+  h+=`<table><tr><th rowspan="2">date</th>`
+    +keys.map(k=>`<th colspan="3" style="text-align:center;color:var(--txt)">${names[k]}</th>`).join("")
+    +`<th rowspan="2">S&P 500 %</th></tr>`;
+  h+=`<tr>`+keys.map(()=>`<th>inv</th><th>P/L</th><th>%</th>`).join("")+`</tr>`;
+
+  // totals across the shown window (per bot: Σ invested, Σ P/L; S&P compounded)
+  const tot={}; keys.forEach(k=>tot[k]={inv:0,pnl:0,any:false});
+  let spyMul=1, spyAny=false;
+  for(const d of dates){
+    for(const k of keys){ const r=(map[d]||{})[k]; if(r){ tot[k].inv+=r.invested||0; tot[k].pnl+=r.pnl||0; tot[k].any=true; } }
+    const s=spyOf(d); if(s!=null){ spyMul*=(1+s/100); spyAny=true; }
+  }
+  let trow=[{v:`<b>Σ window</b>`}];
+  keys.forEach(k=>{ trow.push(invCell(tot[k].any?tot[k].inv:null)); trow.push(plCell(tot[k].any?tot[k].pnl:null)); trow.push({v:""}); });
+  trow.push(pctCell(spyAny?(spyMul-1)*100:null,2));
+  h+=row(trow);
+
+  for(const d of dates){
+    const cells=[{v:(d===todayStr?`${d} <small>(today)</small>`:d)}];
+    for(const k of keys){
+      const r=(map[d]||{})[k];
+      cells.push(invCell(r?r.invested:null));
+      cells.push(plCell(r?r.pnl:null));
+      cells.push(pctCell(r?r.pnl_pct_inv:null,1));
+    }
+    cells.push(pctCell(spyOf(d),2));
+    h+=row(cells);
+  }
+  h+=`</table></div>`;
+  h+=`<div class="hint">inv = capital deployed that day (gross buy notional) · % = that bot's P/L ÷ its invested · S&P 500 % = SPY close-to-close · "Σ window" = totals over all days shown (S&P compounded). Each bot trades its own paper account.</div></div>`;
+  h+=`<div class="foot"><span>summary · ${sd.generated||''}</span><span></span></div>`;
+  document.getElementById("root").innerHTML=h;
 }
 function render(d){
   lastData=d;
@@ -1633,48 +1788,8 @@ function render(d){
     h+=`</table>`;
   } else h+=`<div class="empty">no ORB entries filled today</div>`;
   h+=`</div>`;
-  // P/L breakdown — account-level, newest first. Day rows come from the server;
-  // Week/Month are aggregated client-side from those same rows via the tabs.
-  const dp=d.daily_pnl||[];
-  const todayStr=(d.generated||"").slice(0,10);  // "YYYY-MM-DD" of this snapshot (ET)
-  // Calm-day vol filter: "calm" days are low-volatility sessions (SPY 20d vol below
-  // its trailing median) where ORB historically does better. The toggle shows the
-  // counterfactual — your P/L counting ONLY calm days — without changing live trading.
-  const calmKnown=dp.some(r=>r.calm!=null);
-  const dpView = calmOnly ? dp.filter(r=>r.calm===true) : dp;
-  h+=`<div class="card"><h2>P/L breakdown</h2>`;
-  h+=`<div class="tabs">`+["day","week","month"].map(v=>
-       `<button class="tab${plView===v?" active":""}" onclick="setPLView('${v}')">${v[0].toUpperCase()+v.slice(1)}</button>`).join("")
-     +(calmKnown?`<button class="tab toggle${calmOnly?" active":""}" onclick="setCalm()" title="Count only low-volatility (calm) days — where ORB does better. Does not change live trading.">Calm days only</button>`:``)+`</div>`;
-  if(calmKnown){
-    const calmRows=dp.filter(r=>r.calm===true);
-    const tAll=dp.reduce((s,r)=>s+r.pnl,0), tCalm=calmRows.reduce((s,r)=>s+r.pnl,0);
-    h+=`<div class="hint">vol filter: <b>${calmRows.length}/${dp.length}</b> days calm · P/L calm-only <span class="${cls(tCalm)}">${sign(tCalm)}</span> vs all-days <span class="${cls(tAll)}">${sign(tAll)}</span> &nbsp;(high-vol days marked <span class="hivol">hi-vol</span>)</div>`;
-  }
-  if(dpView.length){
-    let rowsV, lblHead, fmtLbl, invHead="invested";
-    if(plView==="week"){
-      rowsV=groupRows(dpView, weekStart, dt=>"wk of "+weekStart(dt)); lblHead="week"; invHead="avg invested"; fmtLbl=r=>r.label;
-    } else if(plView==="month"){
-      rowsV=groupRows(dpView, dt=>dt.slice(0,7), dt=>dt.slice(0,7)); lblHead="month"; invHead="avg invested"; fmtLbl=r=>r.label;
-    } else {
-      rowsV=dpView; lblHead="date";
-      fmtLbl=r=>(r.date===todayStr?`${r.date} <small>(today)</small>`:r.date)+(r.calm===false?` <span class="hivol">hi-vol</span>`:``);
-    }
-    h+=`<table><tr><th>${lblHead}</th><th>${invHead}</th><th>P/L</th><th>%</th><th>S&P 500 %</th><th>equity</th></tr>`;
-    rowsV.forEach((r)=>{
-      const pct = (r.pnl_pct_inv===null||r.pnl_pct_inv===undefined)
-        ? {v:"—"}
-        : {v:`${r.pnl_pct_inv>=0?"+":""}${r.pnl_pct_inv.toFixed(1)}%`,cls:cls(r.pnl_pct_inv)};
-      const spy = (r.spy_pct===null||r.spy_pct===undefined)
-        ? {v:"—"}
-        : {v:`${r.spy_pct>=0?"+":""}${r.spy_pct.toFixed(2)}%`,cls:cls(r.spy_pct)};
-      const trCls=(plView==="day" && !calmOnly && r.calm===false)?"dim":"";
-      h+=row([{v:fmtLbl(r)},{v:r.invested>0?money(r.invested):"—"},{v:sign(r.pnl),cls:cls(r.pnl)},pct,spy,{v:money(r.equity)}], trCls); });
-    h+=`</table>`;
-    h+=`<div class="hint">% = P/L vs capital invested (avg daily capital for Week/Month) · S&P 500 % = SPY close-to-close (compounded) · calm = SPY 20d vol below its trailing median</div>`;
-  } else h+=`<div class="empty">${calmOnly?"no calm days in range":"no history"}</div>`;
-  h+=`</div>`;
+  // P/L breakdown — account-level, newest first (shared with the News-Edge & Lottery tabs).
+  h+=plBreakdownCard(d.daily_pnl||[], (d.generated||"").slice(0,10), "trading");
   if(d.errors && d.errors.length) h+=`<div class="err">⚠ ${d.errors.join(" · ")}</div>`;
   h+=`<div class="foot"><span>snapshot ${d.generated}</span><span id="tick"></span></div>`;
   document.getElementById("root").innerHTML=h;
@@ -1688,6 +1803,7 @@ async function tick(){
        if(t) t.textContent=`page offline (${fails}) — is the SSH tunnel up?`; }
   if(topView==="news") fetchNews();
   if(topView==="lottery") fetchLottery();
+  if(topView==="summary") fetchSummary();
   if(topView==="regime") fetchRegime();
 }
 tick(); setInterval(tick, 3000);
@@ -1746,6 +1862,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.startswith("/api/lottery"):
             try:
                 body = json.dumps(_lottery()).encode("utf-8")
+                self._send(200, body, "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
+        elif self.path.startswith("/api/summary"):
+            try:
+                body = json.dumps(_summary(self.tc, self.dc)).encode("utf-8")
                 self._send(200, body, "application/json")
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
