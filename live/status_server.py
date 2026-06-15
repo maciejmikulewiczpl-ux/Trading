@@ -1263,13 +1263,32 @@ function topNav(active){
     ([k,l])=>`<button class="tab${active===k?" active":""}" onclick="setTopView('${k}')">${l}</button>`).join("")+`</div>`;
 }
 let lastRegime=null, lastLottery=null, lastSummary=null;
+function showLoading(tab){
+  const r=document.getElementById("root");
+  if(r) r.innerHTML=topNav(tab)+`<div class="card"><div class="empty">loading…</div></div>`;
+}
+// One-time, on-load warm of the bot tabs so even the FIRST click on each is instant
+// (stores the payload, does NOT render — we may be on another tab). Sequential so only
+// one request is in flight at a time: gentle on the 1 GB VM, and /api/summary then reuses
+// the freshly-warmed news/lottery server caches.
+let _prefetched=false;
+async function prefetchTabs(){
+  if(_prefetched) return; _prefetched=true;
+  const grab=async(url,set)=>{ try{ const r=await fetch(url,{cache:"no-store"}); set(await r.json()); }catch(e){} };
+  await grab("/api/newsedge", d=>{lastNews=d;});
+  await grab("/api/lottery", d=>{lastLottery=d;});
+  await grab("/api/summary", d=>{lastSummary=d;});
+}
 function setTopView(v){
   topView=v;
-  if(v==="news") fetchNews();
-  else if(v==="lottery") fetchLottery();
-  else if(v==="summary") fetchSummary();
-  else if(v==="regime") fetchRegime();
-  else if(lastData) render(lastData);
+  // Paint the tab IMMEDIATELY from the last-known payload (or a loading shell on first
+  // visit) so switching feels instant; the fetch then refreshes it in place a moment
+  // later. Avoids staring at the previous tab while the server round-trip completes.
+  if(v==="news"){ lastNews?renderNews(lastNews):showLoading("news"); fetchNews(); }
+  else if(v==="lottery"){ lastLottery?renderLottery(lastLottery):showLoading("lottery"); fetchLottery(); }
+  else if(v==="summary"){ lastSummary?renderSummary(lastSummary):showLoading("summary"); fetchSummary(); }
+  else if(v==="regime"){ lastRegime?renderRegime(lastRegime):showLoading("regime"); fetchRegime(); }
+  else { lastData?render(lastData):showLoading("trading"); }
 }
 let lastRegimeTxt=null;
 let explainOpen=false;
@@ -1807,6 +1826,7 @@ async function tick(){
   if(topView==="regime") fetchRegime();
 }
 tick(); setInterval(tick, 3000);
+setTimeout(prefetchTabs, 2000);  // warm bot tabs ~2s after load (after the first paint)
 </script>
 </body></html>"""
 
