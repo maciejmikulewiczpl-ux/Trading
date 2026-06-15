@@ -1267,6 +1267,19 @@ function showLoading(tab){
   const r=document.getElementById("root");
   if(r) r.innerHTML=topNav(tab)+`<div class="card"><div class="empty">loading…</div></div>`;
 }
+// Rebuild #root WITHOUT losing scroll position. The 3s auto-refresh replaces the DOM,
+// which otherwise snaps the page (and any horizontally-scrolled wide table) back to the
+// top-left. Preserve the page scroll + every inner ".scrollx" container's scrollLeft.
+function setRoot(html){
+  const root=document.getElementById("root");
+  if(!root){ return; }
+  const sx=window.pageXOffset, sy=window.pageYOffset;
+  const inner=[].map.call(root.querySelectorAll(".scrollx"), e=>e.scrollLeft);
+  root.innerHTML=html;
+  const now=root.querySelectorAll(".scrollx");
+  for(let i=0;i<inner.length && i<now.length;i++){ now[i].scrollLeft=inner[i]; }
+  window.scrollTo(sx, sy);
+}
 // One-time, on-load warm of the bot tabs so even the FIRST click on each is instant
 // (stores the payload, does NOT render — we may be on another tab). Sequential so only
 // one request is in flight at a time: gentle on the 1 GB VM, and /api/summary then reuses
@@ -1465,7 +1478,7 @@ function renderRegime(rd){
   h+=`</table><div class="hint">matters most when structure is BROKEN — these are the classic bottoming markers to wait for before buying weakness in a downtrend</div></div>`;
   h+=`<div class="hint">Descriptive read for the human — indicators describe the tape, they don't predict it. NOT a bot input: the live bot's regime logic (vol-dial + trend filter) is unchanged.</div>`;
   h+=`<div class="foot"><span>regime · ${rd.generated||""}</span><span></span></div>`;
-  document.getElementById("root").innerHTML=h;
+  setRoot(h);
   const ex=document.querySelector("details.explain");
   if(ex) ex.addEventListener("toggle",()=>{ explainOpen=ex.open; });
 }
@@ -1566,7 +1579,7 @@ function renderNews(nd){
   }
   h+=`<div class="hint">edge = avg move of (+) picks minus avg move of (−) picks. Positive and growing with the sample = a real signal worth automating. One good week is noise.</div>`;
   h+=`<div class="foot"><span>news-edge · ${nd.generated||''}</span><span></span></div>`;
-  document.getElementById("root").innerHTML=h;
+  setRoot(h);
 }
 async function fetchLottery(){
   try{ const r=await fetch("/api/lottery",{cache:"no-store"}); lastLottery=await r.json(); if(topView==="lottery") renderLottery(lastLottery); }
@@ -1680,7 +1693,7 @@ function renderLottery(ld){
     h+=`</table></div>`;
   }
   h+=`<div class="foot"><span>hype · ${ld.generated||''}</span><span></span></div>`;
-  document.getElementById("root").innerHTML=h;
+  setRoot(h);
 }
 function row_cell(c){ return `<td${c.cls?` class="${c.cls}"`:''}>${c.v}</td>`; }
 function basketBadge(b){
@@ -1708,14 +1721,14 @@ function renderSummary(sd){
   // note any bot whose account isn't visible where the server runs
   const missing=keys.filter(k=>byKey[k] && (byKey[k].absent||byKey[k].error));
   if(missing.length) h+=`<div class="card"><div class="hint">Not visible here yet: ${missing.map(k=>names[k]).join(", ")} (account keys absent where the status server runs). Their columns show — until then.</div></div>`;
-  if(!dates.length){ h+=`<div class="card"><div class="empty">No P/L history yet for any bot.</div></div>`; h+=`<div class="foot"><span>summary · ${sd.generated||''}</span><span></span></div>`; document.getElementById("root").innerHTML=h; return; }
+  if(!dates.length){ h+=`<div class="card"><div class="empty">No P/L history yet for any bot.</div></div>`; h+=`<div class="foot"><span>summary · ${sd.generated||''}</span><span></span></div>`; setRoot(h); return; }
 
   const plCell=v=>v==null?{v:"—"}:{v:sign(v),cls:cls(v)};
   const pctCell=(v,dp)=>(v==null||v===undefined)?{v:"—"}:{v:`${v>=0?"+":""}${v.toFixed(dp)}%`,cls:cls(v)};
   const invCell=v=>(v&&v>0)?{v:money(v)}:{v:"—"};
   const spyOf=d=>{ for(const k of keys){ const r=(map[d]||{})[k]; if(r&&r.spy_pct!=null) return r.spy_pct; } return null; };
 
-  h+=`<div class="card"><h2>Daily P/L — ORB · News-Edge · Hype</h2><div style="overflow-x:auto">`;
+  h+=`<div class="card"><h2>Daily P/L — ORB · News-Edge · Hype</h2><div class="scrollx" style="overflow-x:auto">`;
   h+=`<table><tr><th rowspan="2">date</th>`
     +keys.map(k=>`<th colspan="3" style="text-align:center;color:var(--txt)">${names[k]}</th>`).join("")
     +`<th rowspan="2">S&P 500 %</th></tr>`;
@@ -1747,7 +1760,7 @@ function renderSummary(sd){
   h+=`</table></div>`;
   h+=`<div class="hint">inv = capital deployed that day (gross buy notional) · % = that bot's P/L ÷ its invested · S&P 500 % = SPY close-to-close · "Σ window" = totals over all days shown (S&P compounded). Each bot trades its own paper account.</div></div>`;
   h+=`<div class="foot"><span>summary · ${sd.generated||''}</span><span></span></div>`;
-  document.getElementById("root").innerHTML=h;
+  setRoot(h);
 }
 function render(d){
   lastData=d;
@@ -1811,7 +1824,7 @@ function render(d){
   h+=plBreakdownCard(d.daily_pnl||[], (d.generated||"").slice(0,10), "trading");
   if(d.errors && d.errors.length) h+=`<div class="err">⚠ ${d.errors.join(" · ")}</div>`;
   h+=`<div class="foot"><span>snapshot ${d.generated}</span><span id="tick"></span></div>`;
-  document.getElementById("root").innerHTML=h;
+  setRoot(h);
 }
 let fails=0;
 async function tick(){
