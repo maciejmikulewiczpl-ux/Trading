@@ -1306,9 +1306,9 @@ async function fetchRegime(){
     if(txt===lastRegimeTxt && document.getElementById("regime-marker")) return;
     lastRegimeTxt=txt;
     lastRegime=JSON.parse(txt);
-    renderRegime(lastRegime);
+    if(topView==="regime") renderRegime(lastRegime);   // don't clobber a tab switched to mid-flight
   }
-  catch(e){ document.getElementById("root").innerHTML=topNav("regime")+`<div class="card empty">market regime data unavailable</div>`; }
+  catch(e){ if(topView==="regime") document.getElementById("root").innerHTML=topNav("regime")+`<div class="card empty">market regime data unavailable</div>`; }
 }
 // Tiny SVG line chart: series=[{vals,color,w}], guides=[{y,label}]. Drawn in the
 // browser from the numbers the API ships — zero chart libs, zero VM load.
@@ -1470,8 +1470,8 @@ function renderRegime(rd){
   if(ex) ex.addEventListener("toggle",()=>{ explainOpen=ex.open; });
 }
 async function fetchNews(){
-  try{ const r=await fetch("/api/newsedge",{cache:"no-store"}); lastNews=await r.json(); renderNews(lastNews); }
-  catch(e){ document.getElementById("root").innerHTML=topNav("news")+`<div class="card empty">news-edge data unavailable</div>`; }
+  try{ const r=await fetch("/api/newsedge",{cache:"no-store"}); lastNews=await r.json(); if(topView==="news") renderNews(lastNews); }
+  catch(e){ if(topView==="news") document.getElementById("root").innerHTML=topNav("news")+`<div class="card empty">news-edge data unavailable</div>`; }
 }
 function renderNews(nd){
   const o=nd.overall||{};
@@ -1569,8 +1569,8 @@ function renderNews(nd){
   document.getElementById("root").innerHTML=h;
 }
 async function fetchLottery(){
-  try{ const r=await fetch("/api/lottery",{cache:"no-store"}); lastLottery=await r.json(); renderLottery(lastLottery); }
-  catch(e){ document.getElementById("root").innerHTML=topNav("lottery")+`<div class="card empty">lottery data unavailable</div>`; }
+  try{ const r=await fetch("/api/lottery",{cache:"no-store"}); lastLottery=await r.json(); if(topView==="lottery") renderLottery(lastLottery); }
+  catch(e){ if(topView==="lottery") document.getElementById("root").innerHTML=topNav("lottery")+`<div class="card empty">lottery data unavailable</div>`; }
 }
 function renderLottery(ld){
   const sb=ld.scoreboard||{};
@@ -1690,8 +1690,8 @@ function basketBadge(b){
   return `<span style="color:${x[0]};font-size:11px;font-weight:600">${x[1]}</span>`;
 }
 async function fetchSummary(){
-  try{ const r=await fetch("/api/summary",{cache:"no-store"}); lastSummary=await r.json(); renderSummary(lastSummary); }
-  catch(e){ document.getElementById("root").innerHTML=topNav("summary")+`<div class="card empty">summary data unavailable</div>`; }
+  try{ const r=await fetch("/api/summary",{cache:"no-store"}); lastSummary=await r.json(); if(topView==="summary") renderSummary(lastSummary); }
+  catch(e){ if(topView==="summary") document.getElementById("root").innerHTML=topNav("summary")+`<div class="card empty">summary data unavailable</div>`; }
 }
 // Summary tab: all three bots' daily P/L side by side (invested · P/L · % per bot) vs the S&P 500.
 function renderSummary(sd){
