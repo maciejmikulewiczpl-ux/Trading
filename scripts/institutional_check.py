@@ -39,7 +39,12 @@ def latest_screen_symbols() -> list[str]:
     return df["symbol"].tolist()
 
 
-def check(symbols: list[str]) -> pd.DataFrame:
+ARTIFACT_PCTCHANGE = 1.0   # a holder showing >= +100% in a quarter is almost always a NEW
+# position / reporting reclassification (e.g. a manager splitting its reporting entities),
+# not organic accumulation — it inflates net_shares. drop_artifacts skips these.
+
+
+def check(symbols: list[str], drop_artifacts: bool = False) -> pd.DataFrame:
     import yfinance as yf
     rows = []
     for i, sym in enumerate(symbols, 1):
@@ -48,6 +53,7 @@ def check(symbols: list[str]) -> pd.DataFrame:
         as_of = None
         n_add = n_trim = 0
         net_shares = 0.0
+        n_artifact = 0
         try:
             t = yf.Ticker(sym)
             mh = t.get_major_holders()
@@ -64,6 +70,9 @@ def check(symbols: list[str]) -> pd.DataFrame:
                     if pd.isna(pc) or pd.isna(sh):
                         continue
                     pc, sh = float(pc), float(sh)
+                    if drop_artifacts and pc >= ARTIFACT_PCTCHANGE:
+                        n_artifact += 1
+                        continue   # reclassification/new-baseline — not organic buying
                     if pc > 0:
                         n_add += 1
                     elif pc < 0:
@@ -73,12 +82,16 @@ def check(symbols: list[str]) -> pd.DataFrame:
                         net_shares += sh - sh / (1.0 + pc)
         except Exception as e:
             print(f"     ({sym} failed: {str(e)[:70]})")
+        # >100% institutional ownership is a yfinance short/double-count artifact -> unreliable
+        own_artifact = inst_pct is not None and inst_pct > 1.005
         rows.append({
             "symbol": sym,
             "inst_own%": round(inst_pct * 100, 1) if inst_pct is not None else None,
             "n_funds": n_inst,
             "top_adding": n_add, "top_trimming": n_trim,
             "net_shares_added": int(net_shares),
+            "n_artifact_holders": n_artifact,
+            "own_artifact": own_artifact,
             "verdict": ("ACCUMULATING" if net_shares > 0 and n_add >= n_trim
                         else "DISTRIBUTING" if net_shares < 0 and n_trim > n_add
                         else "mixed"),

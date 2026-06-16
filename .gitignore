@@ -61,9 +61,10 @@ backtest/pead_events.csv
 # Strategies summary (regenerable via scripts/generate_strategies_summary.py)
 strategies_summary.xlsx
 
-# Scanner outputs (regenerable via scripts/swing_screener.py / institutional_check.py)
+# Scanner outputs (regenerable via scripts/swing_screener.py / institutional_check.py / accumulation_scan.py)
 scripts/swing_screen_*.csv
 scripts/institutional_check.csv
+scripts/accumulation_scan.csv
 
 # Claude scheduled-tasks lock (transient harness artifact)
 .claude/scheduled_tasks.lock
