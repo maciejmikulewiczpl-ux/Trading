@@ -1,0 +1,790 @@
+{
+  "date": "2026-06-16",
+  "logged_at": "2026-06-16T07:54:51-04:00",
+  "n_candidates": 51,
+  "n_tradable": 49,
+  "picks": [
+    {
+      "symbol": "AFRM",
+      "basket": "gappers",
+      "top_k_of": [
+        "pm_rvol"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 18,
+        "pm_rvol": 0.0,
+        "gap_pct": 8.64,
+        "squeeze": 22.49,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.3855,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "AMD",
+      "basket": "wsb",
+      "top_k_of": [
+        "ignition",
+        "pm_rvol",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 4.1,
+        "wsb_rank": 12,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 2.98,
+        "uoa_z": null,
+        "ignition": 3
+      },
+      "combined_score": 0.4131,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "BABA",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 5,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 5.3,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.2833,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "BTQ",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 10,
+        "pm_rvol": null,
+        "gap_pct": 28.54,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.6371,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CHPY",
+      "basket": "gappers",
+      "top_k_of": [
+        "ignition"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 9,
+        "pm_rvol": null,
+        "gap_pct": 4.9,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 3
+      },
+      "combined_score": 0.595,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CIFR",
+      "basket": "gappers",
+      "top_k_of": [
+        "ignition"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 22,
+        "pm_rvol": 0.0,
+        "gap_pct": 6.35,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 3
+      },
+      "combined_score": 0.3785,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "D",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 9.83,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.3601,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "FCNCA",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 63.43,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.4445,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "FISV",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 14,
+        "pm_rvol": 0.0,
+        "gap_pct": -10.9,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.3284,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "HIMS",
+      "basket": "wsb",
+      "top_k_of": [
+        "squeeze",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 14.0,
+        "wsb_rank": 38,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 89.57,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.4774,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "HOOD",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": 3.2,
+        "wsb_rank": 16,
+        "st_rank": 3,
+        "pm_rvol": 0.0,
+        "gap_pct": 5.3,
+        "squeeze": 5.46,
+        "uoa_z": null,
+        "ignition": 2
+      },
+      "combined_score": 0.4146,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "HPE",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 13.0,
+        "wsb_rank": 41,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 16.71,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.3746,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "IBM",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 18.0,
+        "wsb_rank": 29,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 12.31,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.3555,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "ICE",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 4.07,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.1389,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "IP",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 94.28,
+        "uoa_z": null,
+        "ignition": 2
+      },
+      "combined_score": 0.8115,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "LUV",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 34.69,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.379,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "MDLZ",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 13.86,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.25,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "MRVL",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 4.4,
+        "wsb_rank": 9,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 6.12,
+        "uoa_z": null,
+        "ignition": 2
+      },
+      "combined_score": 0.4413,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "NVDA",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 3.6,
+        "wsb_rank": 6,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 2.09,
+        "uoa_z": null,
+        "ignition": 2
+      },
+      "combined_score": 0.3524,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "NVR",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 26.21,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.3472,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "O",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 30.3,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.3889,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "PLAY",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 7,
+        "pm_rvol": null,
+        "gap_pct": -4.57,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.4017,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "QNT",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 30,
+        "pm_rvol": 0.0,
+        "gap_pct": 4.89,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": null
+      },
+      "combined_score": 0.0635,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "RKT",
+      "basket": "gappers",
+      "top_k_of": [
+        "squeeze"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 6,
+        "pm_rvol": 0.0,
+        "gap_pct": 6.58,
+        "squeeze": 31.2,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.4757,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "RXT",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 2,
+        "pm_rvol": 0.0,
+        "gap_pct": 9.02,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.4634,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SBET",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 19,
+        "pm_rvol": 0.0,
+        "gap_pct": 5.64,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 2
+      },
+      "combined_score": 0.3478,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SE",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 25,
+        "pm_rvol": 0.0,
+        "gap_pct": 4.54,
+        "squeeze": 25.35,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.2476,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SERV",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 28,
+        "pm_rvol": 0.0,
+        "gap_pct": 3.73,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.0931,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SMCI",
+      "basket": "wsb",
+      "top_k_of": [
+        "squeeze",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 18.0,
+        "wsb_rank": 30,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 28.3,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.4691,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SNAP",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 26,
+        "pm_rvol": 0.0,
+        "gap_pct": 8.54,
+        "squeeze": 26.68,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.3375,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SNDK",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 29,
+        "pm_rvol": 0.0,
+        "gap_pct": 6.5,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 3
+      },
+      "combined_score": 0.3301,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SPCX",
+      "basket": "wsb",
+      "top_k_of": [
+        "stocktwits",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 11.7,
+        "wsb_rank": 1,
+        "st_rank": 1,
+        "pm_rvol": 0.0,
+        "gap_pct": 20.22,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": null
+      },
+      "combined_score": 0.6907,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "TQQQ",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": 3.7,
+        "wsb_rank": 51,
+        "st_rank": 23,
+        "pm_rvol": 0.0,
+        "gap_pct": 9.28,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 2
+      },
+      "combined_score": 0.2992,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "TSLA",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 12.6,
+        "wsb_rank": 5,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 3.4,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.4329,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "ULTA",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 18.41,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.2778,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "VG",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 13,
+        "pm_rvol": 0.0,
+        "gap_pct": -10.49,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.3251,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "WDC",
+      "basket": "wsb",
+      "top_k_of": [
+        "squeeze",
+        "stocktwits",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 40.0,
+        "wsb_rank": 17,
+        "st_rank": 4,
+        "pm_rvol": 0.0,
+        "gap_pct": 16.09,
+        "squeeze": 41.82,
+        "uoa_z": null,
+        "ignition": 3
+      },
+      "combined_score": 0.7232,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "XOM",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 8,
+        "pm_rvol": 0.0,
+        "gap_pct": -4.19,
+        "squeeze": 2.72,
+        "uoa_z": null,
+        "ignition": 0
+      },
+      "combined_score": 0.1766,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "XRP",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 24,
+        "pm_rvol": 0.0,
+        "gap_pct": 12.6,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1
+      },
+      "combined_score": 0.33,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    }
+  ]
+}
