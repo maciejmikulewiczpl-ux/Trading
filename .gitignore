@@ -65,6 +65,7 @@ strategies_summary.xlsx
 scripts/swing_screen_*.csv
 scripts/institutional_check.csv
 scripts/accumulation_scan.csv
+scripts/accumulation_chatter_*.csv
 
 # Claude scheduled-tasks lock (transient harness artifact)
 .claude/scheduled_tasks.lock
