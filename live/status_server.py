@@ -737,6 +737,54 @@ def _lottery_clients():
     return _LOTTERY["tc"], _LOTTERY["dc"]
 
 
+def _lottery_closed_today(tc) -> list[dict]:
+    """Round-trips CLOSED today on the Hype account — including MULTI-DAY holds whose entry
+    was on a prior day (the generic _gather closed_today only catches same-day round-trips,
+    which the multi-day Hype bot rarely has). A symbol counts if it had a SELL filled today
+    and is now flat; realized = matched (exit_avg - entry_avg) * qty, entry from the buy
+    fills over a trailing window. Approximate if a name was round-tripped twice in the window
+    (rare — the bot de-dups names)."""
+    from alpaca.trading.requests import GetOrdersRequest
+    from alpaca.trading.enums import QueryOrderStatus
+    today = datetime.now(ET).date()
+    start = datetime.combine(today - timedelta(days=10), dtime(0, 0, tzinfo=ET)).astimezone(UTC)
+    try:
+        req = GetOrdersRequest(status=QueryOrderStatus.CLOSED, after=start, limit=500)
+        try:
+            orders = tc.get_orders(filter=req)
+        except TypeError:
+            orders = tc.get_orders(req)
+        held = {p.symbol for p in tc.get_all_positions()}
+    except Exception:
+        return []
+    agg: dict[str, dict] = {}
+    for o in orders:
+        fap = getattr(o, "filled_avg_price", None)
+        fq = _f(o.filled_qty)
+        ft = getattr(o, "filled_at", None)
+        if fap is None or fq <= 0 or ft is None:
+            continue
+        side = str(o.side).rsplit(".", 1)[-1].lower()
+        a = agg.setdefault(o.symbol, {"bq": 0.0, "bn": 0.0, "sq": 0.0, "sn": 0.0, "sold_today": False})
+        if side == "buy":
+            a["bq"] += fq; a["bn"] += fq * _f(fap)
+        elif side == "sell":
+            a["sq"] += fq; a["sn"] += fq * _f(fap)
+            if ft.astimezone(ET).date() == today:
+                a["sold_today"] = True
+    out = []
+    for sym, a in agg.items():
+        if not a["sold_today"] or sym in held or a["bq"] <= 0 or a["sq"] <= 0:
+            continue
+        entry_avg = a["bn"] / a["bq"]
+        exit_avg = a["sn"] / a["sq"]
+        qty = min(a["bq"], a["sq"])
+        out.append({"symbol": sym, "qty": qty, "entry_avg": entry_avg,
+                    "exit_avg": exit_avg, "realized": (exit_avg - entry_avg) * qty})
+    out.sort(key=lambda r: r["realized"])
+    return out
+
+
 def _lottery_status() -> dict | None:
     """Trade-state snapshot for the Hype bot's account (the RETIRED dual-mom account).
     P/L history is clipped to HYPE_INCEPTION so dual-mom's pre-06-15 days/equity swings
@@ -747,7 +795,9 @@ def _lottery_status() -> dict | None:
     now = _time.time()
     if _lottery_cache["data"] is None or now - _lottery_cache["ts"] > CACHE_TTL:
         try:
-            _lottery_cache["data"] = _gather(tc, dc, since_date=HYPE_INCEPTION)
+            data = _gather(tc, dc, since_date=HYPE_INCEPTION)
+            data["closed_today"] = _lottery_closed_today(tc)  # multi-day-aware override
+            _lottery_cache["data"] = data
         except Exception as e:
             _lottery_cache["data"] = {"errors": [f"lottery account: {e}"]}
         _lottery_cache["ts"] = now
@@ -1627,6 +1677,14 @@ function renderLottery(ld){
       for(const p of bp) h+=row([{v:p.symbol},{v:p.qty.toFixed(0)},{v:money(p.avg_entry)},{v:money(p.current)},{v:money(p.cost_basis)},{v:`${sign(p.unrealized_pl)} <small>(${p.unrealized_plpc>=0?"+":""}${p.unrealized_plpc.toFixed(1)}%)</small>`,cls:cls(p.unrealized_pl)}]);
       h+=`</table>`;
     } else h+=`<div class="empty">flat</div>`;
+    const bct=b.closed_today||[];
+    const bpnl=bct.reduce((s,c)=>s+c.realized,0);
+    h+=`<div style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px">Closed today (${bct.length})${bct.length?` &nbsp;·&nbsp; realized <span class="${cls(bpnl)}">${sign(bpnl)}</span> &nbsp;·&nbsp; <span>${money(bpnl/bct.length)}/trade</span>`:""}</div>`;
+    if(bct.length){
+      h+=`<table><tr><th>sym</th><th>qty</th><th>entry</th><th>exit</th><th>realized</th></tr>`;
+      for(const c of bct) h+=row([{v:c.symbol},{v:c.qty.toFixed(0)},{v:money(c.entry_avg)},{v:money(c.exit_avg)},{v:sign(c.realized),cls:cls(c.realized)}]);
+      h+=`</table><div class="hint">includes multi-day holds closed today (trailing stop or T+3); realized = exit − original entry</div>`;
+    } else h+=`<div class="empty">no positions closed today</div>`;
     if(b.errors&&b.errors.length) h+=`<div class="err">⚠ ${b.errors.join(" · ")}</div>`;
     h+=`</div>`;
   } else {
