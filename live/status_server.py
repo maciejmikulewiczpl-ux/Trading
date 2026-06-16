@@ -1403,6 +1403,21 @@ function renderRegime(rd){
   const bcls = {good:"s-alive",caution:"s-warning",bad:"s-down",neutral:"s-idle"}[rd.tone]||"s-idle";
   const ss=rd.struct_score, ms=rd.mom_score;
   h+=`<div class="banner ${bcls}"><span class="dot"></span><h1>${rd.verdict}</h1><p>structure <b>${ss>=0?"+":""}${ss}</b>/±7 (${rd.struct_state}) · momentum <b>${ms>=0?"+":""}${ms}</b>/±6 (${rd.mom_state}) · daily closes through ${rd.asof} · refreshes ~15 min</p></div>`;
+  // risk-off radar — cross-asset "market-feel" safety read (descriptive, not predictive)
+  const ro=rd.risk_off||{};
+  if(ro.read){
+    const readHtml = ro.read==="NORMAL" ? `<span class="pos">NORMAL</span>`
+      : ro.read==="WATCH" ? `<span style="color:var(--orange)">WATCH</span>`
+      : `<span class="neg">ELEVATED</span>`;
+    const leanCls = l => (l==="risk-off"||l==="stress") ? "neg" : l==="risk-on" ? "pos" : "";
+    h+=`<div class="card"><h2>Risk-off radar — ${readHtml} <small style="color:var(--dim)">(${ro.n_disc||0}/2 key signals risk-off)</small></h2>`;
+    h+=`<table><tr><th style="text-align:left">signal</th><th style="text-align:left">reading</th><th>lean</th></tr>`;
+    for(const s of (ro.signals||[])){
+      const nm = s.key ? `<b>${s.name}</b>` : `<span style="color:#9aa6b4">${s.name}</span>`;
+      h+=`<tr><td style="text-align:left">${nm}</td><td style="text-align:left;color:#9aa6b4">${s.value}</td><td class="${leanCls(s.lean)}">${s.lean}</td></tr>`;
+    }
+    h+=`</table><div class="hint">${ro.note||""}</div></div>`;
+  }
   // dip read — the question the tab exists to answer
   const d=rd.dip||{};
   h+=`<div class="card"><h2>Buy-the-dip read</h2>

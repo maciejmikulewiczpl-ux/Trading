@@ -39,6 +39,11 @@ from live import config as orb_config  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
 INDEXES = ["SPY", "QQQ", "IWM"]
+# Cross-asset ETFs for the risk-off radar (Alpaca-available proxies). VIX index & the
+# yield curve are intentionally absent — correction_signals_study.py found them useless
+# (VIX coincident, curve non-discriminating); the ones kept are the discriminators
+# (defensive sectors) + descriptive context (credit/dollar/gold/oil).
+RISK_OFF_ETFS = ["XLP", "XLU", "HYG", "LQD", "UUP", "GLD", "USO"]
 LOOKBACK_CAL_DAYS = 560          # ~380 trading days: 200d MA + slope + 52wk high
 MA_WINDOWS = (50, 120, 200)
 
@@ -299,10 +304,58 @@ def watch_levels(spy: dict, br: dict) -> list[dict]:
     ]
 
 
+def risk_off(closes: dict[str, pd.Series]) -> dict:
+    """Cross-asset RISK-OFF RADAR for the Market tab. Descriptive, not predictive.
+
+    Evidence (backtest/correction_signals_study.py, 18y / 20 pullbacks): of the macro
+    tells people quote, only TWO discriminated dips that became >=10% corrections from
+    those that bounced — TREND (S&P vs 200d) and DEFENSIVE ROTATION (staples+utilities
+    leading). VIX is coincident; curve/credit/dollar/breakeven didn't discriminate. So
+    the read is driven ONLY by those two; credit/dollar/gold/oil are shown as context.
+    """
+    def chg(s, n=63):   # ~3-month change, matching the study window
+        return (float(s.iloc[-1] / s.iloc[-1 - n] - 1.0)
+                if s is not None and len(s) > n else None)
+    spy = closes.get("SPY")
+    if spy is None or len(spy) < 210:
+        return {"error": "insufficient data for risk-off radar"}
+    spy_vs_200 = float(spy.iloc[-1] / spy.rolling(200).mean().iloc[-1] - 1.0)
+    rel = lambda sym: chg(closes[sym] / spy) if sym in closes else None  # noqa: E731
+    xlp_rel, xlu_rel = rel("XLP"), rel("XLU")
+    credit = chg(closes["HYG"] / closes["LQD"]) if {"HYG", "LQD"} <= closes.keys() else None
+    dollar, gold, oil = chg(closes.get("UUP")), chg(closes.get("GLD")), chg(closes.get("USO"))
+
+    trend_broken = spy_vs_200 < 0
+    defensive_on = bool(xlp_rel and xlp_rel > 0 and xlu_rel and xlu_rel > 0)
+    n_disc = int(trend_broken) + int(defensive_on)
+    read = "ELEVATED" if n_disc == 2 else "WATCH" if n_disc == 1 else "NORMAL"
+
+    def pc(x):
+        return "—" if x is None else f"{x * 100:+.1f}%"
+    sig = [
+        {"name": "Trend — S&P vs 200d", "value": pc(spy_vs_200),
+         "lean": "risk-off" if trend_broken else "risk-on", "key": True},
+        {"name": "Defensive rotation (3m)", "value": f"staples {pc(xlp_rel)} · utils {pc(xlu_rel)} vs S&P",
+         "lean": "risk-off" if defensive_on else "risk-on", "key": True},
+        {"name": "Credit — HY/IG (3m)", "value": pc(credit),
+         "lean": "risk-off" if (credit is not None and credit < -0.01) else "risk-on" if credit is not None else "n/a", "key": False},
+        {"name": "Dollar — UUP (3m)", "value": pc(dollar),
+         "lean": "risk-off" if (dollar is not None and dollar > 0.03) else "neutral", "key": False},
+        {"name": "Gold — GLD (3m)", "value": pc(gold),
+         "lean": "haven bid" if (gold is not None and gold > 0.03) else "neutral", "key": False},
+        {"name": "Oil — USO (3m)", "value": pc(oil),
+         "lean": "stress" if (oil is not None and abs(oil) > 0.15) else "neutral", "key": False},
+    ]
+    return {"read": read, "n_disc": n_disc, "signals": sig,
+            "note": ("Trend + defensive rotation are the only two signals that historically "
+                     "told 'serious' dips from noise; credit/dollar/gold/oil are cross-asset "
+                     "context. Descriptive risk-off gauge — NOT a prediction, NOT a bot input.")}
+
+
 def snapshot() -> dict:
     """The full regime read as a JSON-safe dict (CLI + status-page Market tab)."""
     watchlist = list(orb_config.load_config()["watchlist"])
-    closes = fetch_daily(sorted(set(INDEXES + watchlist)))
+    closes = fetch_daily(sorted(set(INDEXES + watchlist + RISK_OFF_ETFS)))
     missing = [s for s in INDEXES if s not in closes]
     if missing:
         return {"error": f"missing index data: {missing}"}
@@ -326,6 +379,7 @@ def snapshot() -> dict:
         "dip": dip_assess(spy, comp["mom_state"]),
         "turn": checks,
         "n_turn_on": sum(1 for c in checks if c["on"]),
+        "risk_off": risk_off(closes),
     }
 
 
