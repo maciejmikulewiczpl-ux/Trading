@@ -1,0 +1,353 @@
+{
+  "date": "2026-06-17",
+  "logged_at": "2026-06-17T09:38:04-04:00",
+  "picks": [
+    {
+      "symbol": "QURE",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "FDA Type B meeting: 3-yr Phase I/II data acceptable as primary basis for accelerated-approval BLA for AMT-130 Huntingtons (75% slowing, p=.003); BLA filing Q3 2026. 8-K 07:10 ET. Big re-rating but +61% gap = fade risk per pre-registered bet.",
+      "sources": [
+        "edgar-8K",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "fda",
+      "control": false
+    },
+    {
+      "symbol": "ASTS",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Successfully launched 3 BlueBird satellites to orbit (dated today), +5% premarket; building space cellular-broadband network.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.1,
+      "reddit_rank": 7,
+      "earnings_day": false,
+      "theme": "space",
+      "control": false
+    },
+    {
+      "symbol": "AEHR",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Record $41M production order from lead hyperscale AI customer + H2 bookings over $92M ahead of William Blair conf; +16% gap. AI burn-in narrative already ran, fade risk.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-test",
+      "control": false
+    },
+    {
+      "symbol": "LION",
+      "signal": -1,
+      "confidence": 0.6,
+      "reason": "Netflix DENIED report it is interested in acquiring Lionsgate; -6% premarket after +14% Tuesday on the rumor. Deal-denied unwind.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ma-denied",
+      "control": false
+    },
+    {
+      "symbol": "DUOT",
+      "signal": -1,
+      "confidence": 0.45,
+      "reason": "424B5 prospectus (offering/dilution) filed 08:30 ET while ST crowd is 100% bull - contrarian dilution avoid.",
+      "sources": [
+        "edgar-424B5",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "JBL",
+      "signal": -1,
+      "confidence": 0.35,
+      "reason": "Quarter reported earnings+revenue beat but shares fell over 2% premarket = sell-the-news. 8-K 07:32 ET.",
+      "sources": [
+        "edgar-8K",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "earnings-tech",
+      "control": false
+    },
+    {
+      "symbol": "KMX",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Earnings today (8-K 06:54 ET); JPMorgan Underweight PT $37; ST sentiment 20% bull. Weak setup.",
+      "sources": [
+        "edgar-8K",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "earnings-auto",
+      "control": false
+    },
+    {
+      "symbol": "INTC",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "+3% rebound after -8.5% Tuesday; semis bouncing (AMD/AVGO/QCOM up). Price action only, no fresh named catalyst.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "semis",
+      "control": false
+    },
+    {
+      "symbol": "SNAP",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Reddit mention surge (rank 21, 31x) + ST trending but -6% gap and no confirmed catalyst; pm RVOL 15.6x abnormal but story unconfirmed. Crowding flag, not a call.",
+      "sources": [
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": 15.63,
+      "reddit_rank": 21,
+      "earnings_day": false,
+      "theme": "social",
+      "control": false
+    },
+    {
+      "symbol": "RGNX",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "+12% gap, gene-therapy sympathy with QURE / RGX-202 readthrough; no June-17 named catalyst confirmed.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech",
+      "control": false
+    },
+    {
+      "symbol": "EOSE",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "+7% energy storage, ST 100% bull (crowding); no named dated catalyst found.",
+      "sources": [
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "energy-storage",
+      "control": false
+    },
+    {
+      "symbol": "CHGG",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "8-K filed premarket 09:04 ET, content unconfirmed; ST mixed (53% bull). Logging for context.",
+      "sources": [
+        "edgar-8K",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "edtech",
+      "control": false
+    },
+    {
+      "symbol": "BTGO",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 11.72
+    },
+    {
+      "symbol": "BBBY",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -6.8
+    },
+    {
+      "symbol": "FRMI",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 6.21
+    },
+    {
+      "symbol": "UCO",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -5.97
+    },
+    {
+      "symbol": "CAPR",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 4.42
+    },
+    {
+      "symbol": "PDYN",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 4.34
+    },
+    {
+      "symbol": "SPCX",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 4.0
+    },
+    {
+      "symbol": "SRPT",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 3.93
+    }
+  ]
+}
