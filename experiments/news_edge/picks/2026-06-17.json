@@ -19,7 +19,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "fda",
-      "control": false
+      "control": false,
+      "ret_945_close": 7.271,
+      "gap_pct": 61.674
     },
     {
       "symbol": "ASTS",
@@ -38,7 +40,9 @@
       "reddit_rank": 7,
       "earnings_day": false,
       "theme": "space",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.074,
+      "gap_pct": 4.15
     },
     {
       "symbol": "AEHR",
@@ -56,7 +60,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "ai-test",
-      "control": false
+      "control": false,
+      "ret_945_close": -5.93,
+      "gap_pct": 11.855
     },
     {
       "symbol": "LION",
@@ -74,7 +80,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "ma-denied",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.098,
+      "gap_pct": -6.227
     },
     {
       "symbol": "DUOT",
@@ -92,7 +100,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "dilution",
-      "control": false
+      "control": false,
+      "ret_945_close": 4.262,
+      "gap_pct": 0.531
     },
     {
       "symbol": "JBL",
@@ -111,7 +121,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "earnings-tech",
-      "control": false
+      "control": false,
+      "ret_945_close": -8.755,
+      "gap_pct": 9.364
     },
     {
       "symbol": "KMX",
@@ -130,7 +142,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "earnings-auto",
-      "control": false
+      "control": false,
+      "ret_945_close": -3.007,
+      "gap_pct": -4.033
     },
     {
       "symbol": "INTC",
@@ -148,7 +162,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "semis",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.846,
+      "gap_pct": 3.802
     },
     {
       "symbol": "SNAP",
@@ -166,7 +182,9 @@
       "reddit_rank": 21,
       "earnings_day": false,
       "theme": "social",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.351,
+      "gap_pct": -2.716
     },
     {
       "symbol": "RGNX",
@@ -184,7 +202,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "biotech",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.249,
+      "gap_pct": 5.115
     },
     {
       "symbol": "EOSE",
@@ -201,7 +221,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "energy-storage",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.527,
+      "gap_pct": 3.671
     },
     {
       "symbol": "CHGG",
@@ -219,7 +241,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "edtech",
-      "control": false
+      "control": false,
+      "ret_945_close": -9.211,
+      "gap_pct": 1.739
     },
     {
       "symbol": "BTGO",
@@ -235,7 +259,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 11.72
+      "gap_pct": 11.72,
+      "ret_945_close": -6.864
     },
     {
       "symbol": "BBBY",
@@ -251,7 +276,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -6.8
+      "gap_pct": -6.8,
+      "ret_945_close": -1.384
     },
     {
       "symbol": "FRMI",
@@ -267,7 +293,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 6.21
+      "gap_pct": 6.21,
+      "ret_945_close": -1.188
     },
     {
       "symbol": "UCO",
@@ -283,7 +310,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -5.97
+      "gap_pct": -5.97,
+      "ret_945_close": -2.725
     },
     {
       "symbol": "CAPR",
@@ -299,7 +327,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 4.42
+      "gap_pct": 4.42,
+      "ret_945_close": 3.193
     },
     {
       "symbol": "PDYN",
@@ -315,7 +344,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 4.34
+      "gap_pct": 4.34,
+      "ret_945_close": 12.34
     },
     {
       "symbol": "SPCX",
@@ -331,7 +361,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 4.0
+      "gap_pct": 4.0,
+      "ret_945_close": -6.998
     },
     {
       "symbol": "SRPT",
@@ -347,7 +378,9 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 3.93
+      "gap_pct": 3.93,
+      "ret_945_close": 0.626
     }
-  ]
+  ],
+  "outcomes_at": "2026-06-17T16:05:10-04:00"
 }
