@@ -1,0 +1,318 @@
+{
+  "date": "2026-06-18",
+  "logged_at": "2026-06-18T09:38:40-04:00",
+  "picks": [
+    {
+      "symbol": "ACN",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Q3 EPS beat 3.80 vs 3.71 + record 22.1B bookings, raised FY guide, but gapping -15% premarket on Morgan Stanley Jun-15 downgrade + acquisition overhang; classic beat-and-fade, 26x pm volume.",
+      "sources": [
+        "edgar-8k",
+        "websearch",
+        "stocktwits",
+        "pm-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 26.53,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "earnings-it",
+      "control": false,
+      "gap_pct": -15.1
+    },
+    {
+      "symbol": "KR",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Q1 met adj EPS 1.58 but reported EPS 1.46 light, guidance only maintained; gapping -5% muted/negative reaction.",
+      "sources": [
+        "edgar-8k",
+        "websearch",
+        "stocktwits",
+        "pm-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "earnings-grocery",
+      "control": false,
+      "gap_pct": -4.98
+    },
+    {
+      "symbol": "NBIS",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Fresh GBP1.7B UK NVIDIA-deployment expansion (65MW by 2027); smaller-gap (+4%) fresh-news AI-infra name with 2x pm volume, fits the thesis.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit",
+        "pm-rvol"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 1.99,
+      "reddit_rank": 5,
+      "earnings_day": false,
+      "theme": "ai-infra",
+      "control": false,
+      "gap_pct": 4.22
+    },
+    {
+      "symbol": "UUUU",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Rare-earth/uranium momentum on production-guidance progress (1.6M lbs by mid-year + heavy-REE expansion); big +12% gap so fade risk, low conf.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit",
+        "pm-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": 54,
+      "earnings_day": false,
+      "theme": "rare-earth",
+      "control": false,
+      "gap_pct": 12.03
+    },
+    {
+      "symbol": "OMER",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Heavy retail attention into an FDA verdict expected this week + annual meeting today; binary biotech catalyst, low conf.",
+      "sources": [
+        "edgar-8k",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "fda",
+      "control": false
+    },
+    {
+      "symbol": "BIRD",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Rebrand to Smartbird + ex-Amazon exec named CEO for AI pivot; 20x WSB mention surge, meme-y, low conf.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 35,
+      "earnings_day": false,
+      "theme": "ai-pivot",
+      "control": false
+    },
+    {
+      "symbol": "INTC",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Ongoing upgrade-wave rotation, +11% gap, 3x pm volume but no single fresh dated catalyst today; momentum, neutral.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit",
+        "pm-rvol"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 3.03,
+      "reddit_rank": 13,
+      "earnings_day": false,
+      "theme": "semis-rotation",
+      "control": false,
+      "gap_pct": 11.41
+    },
+    {
+      "symbol": "AVGO",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "JPMorgan aggressive-buyers call + AI-chip timeline (Wed) and an 8-K today, but low pm volume (0.38x) so catalyst stale; neutral.",
+      "sources": [
+        "edgar-8k",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.38,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-chips",
+      "control": false
+    },
+    {
+      "symbol": "RUM",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "ST #1 trending, +12.7% gap, no named catalyst found, price action only, neutral.",
+      "sources": [
+        "stocktwits",
+        "pm-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "momentum",
+      "control": false,
+      "gap_pct": 12.72
+    },
+    {
+      "symbol": "HOOD",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Workforce-reduction + PT raises already ran +8.8% Wed; stale catalyst, neutral.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": 7,
+      "earnings_day": false,
+      "theme": "fintech",
+      "control": false
+    },
+    {
+      "symbol": "BFLY",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 31.61
+    },
+    {
+      "symbol": "SSPC",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 10.24
+    },
+    {
+      "symbol": "QS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 8.26
+    },
+    {
+      "symbol": "NUAI",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.98
+    },
+    {
+      "symbol": "LEU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.18
+    },
+    {
+      "symbol": "SPCX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -5.58
+    },
+    {
+      "symbol": "QUBT",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.53
+    }
+  ]
+}
