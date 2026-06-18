@@ -21,7 +21,8 @@
       "earnings_day": true,
       "theme": "earnings-it",
       "control": false,
-      "gap_pct": -15.1
+      "gap_pct": -15.1,
+      "ret_945_close": -2.476
     },
     {
       "symbol": "KR",
@@ -42,7 +43,8 @@
       "earnings_day": true,
       "theme": "earnings-grocery",
       "control": false,
-      "gap_pct": -4.98
+      "gap_pct": -4.98,
+      "ret_945_close": -1.559
     },
     {
       "symbol": "NBIS",
@@ -63,7 +65,8 @@
       "earnings_day": false,
       "theme": "ai-infra",
       "control": false,
-      "gap_pct": 4.22
+      "gap_pct": 4.22,
+      "ret_945_close": -1.33
     },
     {
       "symbol": "UUUU",
@@ -84,7 +87,8 @@
       "earnings_day": false,
       "theme": "rare-earth",
       "control": false,
-      "gap_pct": 12.03
+      "gap_pct": 12.03,
+      "ret_945_close": 0.091
     },
     {
       "symbol": "OMER",
@@ -103,7 +107,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "fda",
-      "control": false
+      "control": false,
+      "ret_945_close": 2.529,
+      "gap_pct": 6.386
     },
     {
       "symbol": "BIRD",
@@ -122,7 +128,9 @@
       "reddit_rank": 35,
       "earnings_day": false,
       "theme": "ai-pivot",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.724,
+      "gap_pct": 16.273
     },
     {
       "symbol": "INTC",
@@ -143,7 +151,8 @@
       "earnings_day": false,
       "theme": "semis-rotation",
       "control": false,
-      "gap_pct": 11.41
+      "gap_pct": 11.41,
+      "ret_945_close": 0.846
     },
     {
       "symbol": "AVGO",
@@ -162,7 +171,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "ai-chips",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.39,
+      "gap_pct": 4.058
     },
     {
       "symbol": "RUM",
@@ -181,7 +192,8 @@
       "earnings_day": false,
       "theme": "momentum",
       "control": false,
-      "gap_pct": 12.72
+      "gap_pct": 12.72,
+      "ret_945_close": -6.901
     },
     {
       "symbol": "HOOD",
@@ -200,7 +212,9 @@
       "reddit_rank": 7,
       "earnings_day": false,
       "theme": "fintech",
-      "control": false
+      "control": false,
+      "ret_945_close": 4.188,
+      "gap_pct": 2.505
     },
     {
       "symbol": "BFLY",
@@ -216,7 +230,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 31.61
+      "gap_pct": 31.61,
+      "ret_945_close": 15.385
     },
     {
       "symbol": "SSPC",
@@ -232,7 +247,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 10.24
+      "gap_pct": 10.24,
+      "ret_945_close": -4.715
     },
     {
       "symbol": "QS",
@@ -248,7 +264,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 8.26
+      "gap_pct": 8.26,
+      "ret_945_close": 10.392
     },
     {
       "symbol": "NUAI",
@@ -264,7 +281,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 6.98
+      "gap_pct": 6.98,
+      "ret_945_close": 2.211
     },
     {
       "symbol": "LEU",
@@ -280,7 +298,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 6.18
+      "gap_pct": 6.18,
+      "ret_945_close": 7.565
     },
     {
       "symbol": "SPCX",
@@ -296,7 +315,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -5.58
+      "gap_pct": -5.58,
+      "ret_945_close": 3.427
     },
     {
       "symbol": "QUBT",
@@ -312,7 +332,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.53
+      "gap_pct": 5.53,
+      "ret_945_close": 6.594
     }
-  ]
+  ],
+  "outcomes_at": "2026-06-18T16:05:07-04:00"
 }
