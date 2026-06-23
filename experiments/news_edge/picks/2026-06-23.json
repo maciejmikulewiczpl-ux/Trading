@@ -1,0 +1,467 @@
+{
+  "date": "2026-06-23",
+  "logged_at": "2026-06-23T08:33:14-04:00",
+  "picks": [
+    {
+      "symbol": "BE",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Bloom Energy surging toward ATH as AI power deals pile up; solid-oxide fuel-cell demand from AI datacenters (8-K/A 2026-06-22). Fresh sector catalyst, liquid large-cap.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-power",
+      "control": false
+    },
+    {
+      "symbol": "ACN",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "2B increase to FY26 buyback (total 7.5B, +62% YoY) announced in 6/23 8-K. Named/dated catalyst but slow mega-cap into a tech-selloff tape -> low confidence.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "buyback",
+      "control": false
+    },
+    {
+      "symbol": "AMC",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Fresh 424B5 + 8-K filed 6/23 right after completing a 150M ATM (~105M new shares). Continued dilution overhang; avoid the pop.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 53.49,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "QURE",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "424B5 shelf/offering filed 6/22 = dilution; biotech capital raise into a risk-off tape. Crowd is bullish (contrarian fade).",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "SPCX",
+      "signal": -1,
+      "confidence": 0.3,
+      "reason": "Heavily crowded (ST #2, Reddit 1039 mentions) and gapping -17% after a record single-session decline; tech-selloff continuation with no fresh bullish catalyst. Momentum fade, low confidence.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": 0.07,
+      "reddit_rank": 16,
+      "earnings_day": false,
+      "theme": "momentum-fade",
+      "control": false
+    },
+    {
+      "symbol": "GETY",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "OpenAI search-licensing deal (8-K 6/22) is a genuine fresh catalyst, but +125% sub-5 mega-gap (~1.62, ~18x premkt vol). Registered bet = big gappers fade -> logged neutral for measurement.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.01,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-licensing",
+      "control": false
+    },
+    {
+      "symbol": "KDP",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Coffee-unit head departing end-July + separation prep (8-K 6/23). Mild-negative governance item, not strongly tradeable.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "mgmt-change",
+      "control": false
+    },
+    {
+      "symbol": "NVAX",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "8-K filed 6/23, content unconfirmed; crowd bullish but no named catalyst -> neutral per rules.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-news",
+      "control": false
+    },
+    {
+      "symbol": "LAC",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Thacker Pass progress / DOE-funded Phase 1 (8-K 6/23) but already-known story; ST 94% bull (crowded). No fresh edge.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "lithium",
+      "control": false
+    },
+    {
+      "symbol": "HOOD",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "8-K filed 6/23 with no clear catalyst; Reddit/ST crowded (PLTR-adjacent). No directional edge.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.72,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "crowding",
+      "control": false
+    },
+    {
+      "symbol": "MLTX",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "424B5 offering 6/22 (raise after this weeks Phase 3 HS data) = dilution, but the dilution theme is already at 2 directional picks (AMC, QURE) so logged neutral per the 2-per-theme cap.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "KORU",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -32.56
+    },
+    {
+      "symbol": "SOXL",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -12.43
+    },
+    {
+      "symbol": "PLTR",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -6.87
+    },
+    {
+      "symbol": "ABBV",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 6.24
+    },
+    {
+      "symbol": "SLV",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -6.21
+    },
+    {
+      "symbol": "FRMI",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -5.93
+    },
+    {
+      "symbol": "NFLX",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -5.75
+    },
+    {
+      "symbol": "ALAB",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 5.65
+    },
+    {
+      "symbol": "AMZN",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -5.6
+    },
+    {
+      "symbol": "INFQ",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 4.91
+    },
+    {
+      "symbol": "SOXX",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -3.86
+    },
+    {
+      "symbol": "CCL",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -3.76
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -3.56
+    },
+    {
+      "symbol": "TTD",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -3.35
+    },
+    {
+      "symbol": "IONQ",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 3.1
+    },
+    {
+      "symbol": "QQQ",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -3.07
+    }
+  ]
+}
