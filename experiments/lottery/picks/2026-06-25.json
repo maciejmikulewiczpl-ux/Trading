@@ -21,7 +21,7 @@
         "ignition": 0
       },
       "combined_score": 0.36,
-      "ret_945_close": null,
+      "ret_945_close": 0.038,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -40,7 +40,7 @@
         "ignition": 0
       },
       "combined_score": 0.0931,
-      "ret_945_close": null,
+      "ret_945_close": 4.899,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -61,7 +61,7 @@
         "ignition": 0
       },
       "combined_score": 0.5402,
-      "ret_945_close": null,
+      "ret_945_close": 0.097,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -80,7 +80,7 @@
         "ignition": 1
       },
       "combined_score": 0.6234,
-      "ret_945_close": null,
+      "ret_945_close": -3.935,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -99,7 +99,7 @@
         "ignition": 0
       },
       "combined_score": 0.2334,
-      "ret_945_close": null,
+      "ret_945_close": -0.341,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -118,7 +118,7 @@
         "ignition": 0
       },
       "combined_score": 0.0604,
-      "ret_945_close": null,
+      "ret_945_close": 0.981,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -137,7 +137,7 @@
         "ignition": 1
       },
       "combined_score": 0.5695,
-      "ret_945_close": null,
+      "ret_945_close": -2.999,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -156,7 +156,7 @@
         "ignition": 0
       },
       "combined_score": 0.0,
-      "ret_945_close": null,
+      "ret_945_close": 1.995,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -175,7 +175,7 @@
         "ignition": 0
       },
       "combined_score": 0.4577,
-      "ret_945_close": null,
+      "ret_945_close": -1.139,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -194,7 +194,7 @@
         "ignition": 0
       },
       "combined_score": 0.0,
-      "ret_945_close": null,
+      "ret_945_close": -0.338,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -216,7 +216,7 @@
         "ignition": 2
       },
       "combined_score": 0.6567,
-      "ret_945_close": null,
+      "ret_945_close": 1.823,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -235,7 +235,7 @@
         "ignition": 1
       },
       "combined_score": 0.65,
-      "ret_945_close": null,
+      "ret_945_close": 0.502,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -254,7 +254,7 @@
         "ignition": 1
       },
       "combined_score": 0.65,
-      "ret_945_close": null,
+      "ret_945_close": -2.958,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -275,7 +275,7 @@
         "ignition": 1
       },
       "combined_score": 0.6567,
-      "ret_945_close": null,
+      "ret_945_close": -4.934,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -296,7 +296,7 @@
         "ignition": 0
       },
       "combined_score": 0.5573,
-      "ret_945_close": null,
+      "ret_945_close": -1.778,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -317,7 +317,7 @@
         "ignition": 0
       },
       "combined_score": 0.36,
-      "ret_945_close": null,
+      "ret_945_close": -4.483,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -339,7 +339,7 @@
         "ignition": 0
       },
       "combined_score": 0.6096,
-      "ret_945_close": null,
+      "ret_945_close": -0.858,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -358,7 +358,7 @@
         "ignition": 0
       },
       "combined_score": 0.4203,
-      "ret_945_close": null,
+      "ret_945_close": -1.909,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -377,7 +377,7 @@
         "ignition": 2
       },
       "combined_score": 0.6069,
-      "ret_945_close": null,
+      "ret_945_close": 3.248,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -398,7 +398,7 @@
         "ignition": 0
       },
       "combined_score": 0.3689,
-      "ret_945_close": null,
+      "ret_945_close": -0.416,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -419,7 +419,7 @@
         "ignition": 0
       },
       "combined_score": 0.4611,
-      "ret_945_close": null,
+      "ret_945_close": -0.518,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -438,7 +438,7 @@
         "ignition": 0
       },
       "combined_score": 0.0,
-      "ret_945_close": null,
+      "ret_945_close": -0.795,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -460,7 +460,7 @@
         "ignition": 0
       },
       "combined_score": 0.4828,
-      "ret_945_close": null,
+      "ret_945_close": -1.284,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -481,7 +481,7 @@
         "ignition": 0
       },
       "combined_score": 0.4309,
-      "ret_945_close": null,
+      "ret_945_close": -1.804,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -502,7 +502,7 @@
         "ignition": 0
       },
       "combined_score": 0.5022,
-      "ret_945_close": null,
+      "ret_945_close": -1.314,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -521,7 +521,7 @@
         "ignition": 1
       },
       "combined_score": 0.325,
-      "ret_945_close": null,
+      "ret_945_close": -0.043,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -542,7 +542,7 @@
         "ignition": 0
       },
       "combined_score": 0.5669,
-      "ret_945_close": null,
+      "ret_945_close": 4.297,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -563,7 +563,7 @@
         "ignition": 0
       },
       "combined_score": 0.27,
-      "ret_945_close": null,
+      "ret_945_close": 1.26,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -582,7 +582,7 @@
         "ignition": 0
       },
       "combined_score": 0.2,
-      "ret_945_close": null,
+      "ret_945_close": -5.459,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -601,7 +601,7 @@
         "ignition": 0
       },
       "combined_score": 0.0,
-      "ret_945_close": null,
+      "ret_945_close": 2.159,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -622,7 +622,7 @@
         "ignition": 3
       },
       "combined_score": 0.628,
-      "ret_945_close": null,
+      "ret_945_close": -5.882,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -644,7 +644,7 @@
         "ignition": 1
       },
       "combined_score": 0.4441,
-      "ret_945_close": null,
+      "ret_945_close": -2.986,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -665,7 +665,7 @@
         "ignition": 2
       },
       "combined_score": 0.7686,
-      "ret_945_close": null,
+      "ret_945_close": -17.654,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -684,9 +684,10 @@
         "ignition": 0
       },
       "combined_score": 0.0,
-      "ret_945_close": null,
+      "ret_945_close": -0.893,
       "ret_1d": null,
       "ret_3d": null
     }
-  ]
+  ],
+  "scored_at": "2026-06-25T16:10:04-04:00"
 }
