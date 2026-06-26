@@ -19,7 +19,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "earnings-beat",
-      "control": false
+      "control": false,
+      "ret_945_close": 4.11,
+      "gap_pct": 7.365
     },
     {
       "symbol": "CRMT",
@@ -37,7 +39,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -21.374,
+      "gap_pct": -10.209
     },
     {
       "symbol": "DOMO",
@@ -55,7 +59,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "software",
-      "control": false
+      "control": false,
+      "ret_945_close": 10.943,
+      "gap_pct": 6.996
     },
     {
       "symbol": "BBIO",
@@ -73,7 +79,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "biotech",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.246,
+      "gap_pct": 0.452
     },
     {
       "symbol": "CLDX",
@@ -91,7 +99,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "biotech",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.039,
+      "gap_pct": -0.029
     },
     {
       "symbol": "SNDK",
@@ -109,7 +119,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "ai-memory-fade",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.988,
+      "gap_pct": -7.08
     },
     {
       "symbol": "LULU",
@@ -127,7 +139,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "retail",
-      "control": false
+      "control": false,
+      "ret_945_close": 2.088,
+      "gap_pct": 0.058
     },
     {
       "symbol": "NKE",
@@ -146,7 +160,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "retail-preearnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.395,
+      "gap_pct": -2.223
     },
     {
       "symbol": "SCCO",
@@ -165,7 +181,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "materials",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.368,
+      "gap_pct": -0.63
     },
     {
       "symbol": "GRPN",
@@ -181,7 +199,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 24.82
+      "gap_pct": 24.82,
+      "ret_945_close": 1.282
     },
     {
       "symbol": "SLS",
@@ -197,7 +216,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 15.0
+      "gap_pct": 15.0,
+      "ret_945_close": 11.206
     },
     {
       "symbol": "BE",
@@ -213,7 +233,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -10.2
+      "gap_pct": -10.2,
+      "ret_945_close": -10.683
     },
     {
       "symbol": "MSTR",
@@ -229,7 +250,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -9.45
+      "gap_pct": -9.45,
+      "ret_945_close": -1.474
     },
     {
       "symbol": "BMNR",
@@ -245,7 +267,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -7.99
+      "gap_pct": -7.99,
+      "ret_945_close": 2.066
     },
     {
       "symbol": "BABA",
@@ -261,7 +284,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -7.62
+      "gap_pct": -7.62,
+      "ret_945_close": 1.409
     },
     {
       "symbol": "MU",
@@ -277,7 +301,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 7.41
+      "gap_pct": 7.41,
+      "ret_945_close": -1.029
     },
     {
       "symbol": "AAPL",
@@ -293,7 +318,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -5.97
+      "gap_pct": -5.97,
+      "ret_945_close": 3.127
     },
     {
       "symbol": "DKNG",
@@ -309,7 +335,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -5.77
+      "gap_pct": -5.77,
+      "ret_945_close": 5.535
     },
     {
       "symbol": "AAOI",
@@ -325,7 +352,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -5.77
+      "gap_pct": -5.77,
+      "ret_945_close": 5.13
     },
     {
       "symbol": "IREN",
@@ -341,7 +369,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -5.11
+      "gap_pct": -5.11,
+      "ret_945_close": 3.885
     },
     {
       "symbol": "SMCX",
@@ -357,7 +386,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -5.04
+      "gap_pct": -5.04,
+      "ret_945_close": -4.171
     },
     {
       "symbol": "COIN",
@@ -373,7 +403,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -5.03
+      "gap_pct": -5.03,
+      "ret_945_close": 3.273
     },
     {
       "symbol": "BOIL",
@@ -389,7 +420,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 4.3
+      "gap_pct": 4.3,
+      "ret_945_close": -1.05
     },
     {
       "symbol": "TSM",
@@ -405,7 +437,8 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": -3.92
+      "gap_pct": -3.92,
+      "ret_945_close": 2.524
     },
     {
       "symbol": "CAPR",
@@ -421,7 +454,9 @@
       "earnings_day": false,
       "theme": "control",
       "control": true,
-      "gap_pct": 3.05
+      "gap_pct": 3.05,
+      "ret_945_close": -0.15
     }
-  ]
+  ],
+  "outcomes_at": "2026-06-26T16:05:12-04:00"
 }
