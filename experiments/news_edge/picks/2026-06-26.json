@@ -1,0 +1,427 @@
+{
+  "date": "2026-06-26",
+  "logged_at": "2026-06-26T09:22:18-04:00",
+  "picks": [
+    {
+      "symbol": "APOG",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Apogee Q1 FY27 beat this morning (8-K 9:03): adj EPS $0.57 vs $0.41 consensus, sales $342.7M, FY27 guide reaffirmed, Kalwall deal on track for early-July close. Fresh dated earnings beat; cleanest catalyst of the day.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "earnings-beat",
+      "control": false
+    },
+    {
+      "symbol": "CRMT",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "America's Car-Mart reported after close 6/25 (two 8-Ks today). StockTwits 93% bull (n=15) into the print suggests a positive reaction. Direction inferred from crowd, not confirmed by me -> moderate confidence. Small-cap.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "earnings",
+      "control": false
+    },
+    {
+      "symbol": "DOMO",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Domo 8-K filed after close 6/25; StockTwits 83% bull (n=12). Likely an earnings/guidance print with positive crowd read, content unconfirmed by me -> low confidence. Small-cap software.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "software",
+      "control": false
+    },
+    {
+      "symbol": "BBIO",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "BridgeBio 8-K filed 8:30 today; StockTwits 100% bull (n=16). Filing of unconfirmed content + unanimous bullish crowd -> low-confidence positive read; kept at the 2-per-theme biotech cap.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech",
+      "control": false
+    },
+    {
+      "symbol": "CLDX",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Celldex 8-K filed 8:43 today; StockTwits 100% bull (n=7). Same low-confidence filing+crowd read as BBIO; second of the 2 biotech directional picks.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech",
+      "control": false
+    },
+    {
+      "symbol": "SNDK",
+      "signal": -1,
+      "confidence": 0.3,
+      "reason": "SanDisk already ran ~+22% Thursday 6/25 on Micron blowout; that catalyst is now a day stale and the StockTwits crowd has flipped bearish (36% bull, n=11). Post-spike fade -> avoid the chase. Price-action-driven so confidence capped low.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": 0.76,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-memory-fade",
+      "control": false
+    },
+    {
+      "symbol": "LULU",
+      "signal": -1,
+      "confidence": 0.3,
+      "reason": "lululemon 8-K filed after close 6/25; StockTwits bearish (33% bull, n=9). Negative crowd into a fresh filing on a risk-off tape -> low-confidence avoid.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "retail",
+      "control": false
+    },
+    {
+      "symbol": "NKE",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Nike trending (ST/Reddit) but earnings are 6/30, not today -> pre-earnings positioning, no fresh catalyst. Crowd split (44% bull). Logged neutral for measurement.",
+      "sources": [
+        "stocktwits",
+        "websearch",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "retail-preearnings",
+      "control": false
+    },
+    {
+      "symbol": "SCCO",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Southern Copper 8-K today ties to a $1.25B senior-notes offering (debt, not equity) into declining copper prices. ST 100% bull but no fresh equity catalyst and weak commodity backdrop -> neutral.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "materials",
+      "control": false
+    },
+    {
+      "symbol": "GRPN",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 24.82
+    },
+    {
+      "symbol": "SLS",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": 20,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 15.0
+    },
+    {
+      "symbol": "BE",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -10.2
+    },
+    {
+      "symbol": "MSTR",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -9.45
+    },
+    {
+      "symbol": "BMNR",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -7.99
+    },
+    {
+      "symbol": "BABA",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": 36,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -7.62
+    },
+    {
+      "symbol": "MU",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 7.41
+    },
+    {
+      "symbol": "AAPL",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": 10,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -5.97
+    },
+    {
+      "symbol": "DKNG",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -5.77
+    },
+    {
+      "symbol": "AAOI",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": 47,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -5.77
+    },
+    {
+      "symbol": "IREN",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -5.11
+    },
+    {
+      "symbol": "SMCX",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -5.04
+    },
+    {
+      "symbol": "COIN",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -5.03
+    },
+    {
+      "symbol": "BOIL",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 4.3
+    },
+    {
+      "symbol": "TSM",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -3.92
+    },
+    {
+      "symbol": "CAPR",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 3.05
+    }
+  ]
+}
