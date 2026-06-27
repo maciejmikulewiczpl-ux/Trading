@@ -46,6 +46,24 @@ def make_scorer():
     return lambda text: a.polarity_scores(text)["compound"]  # [-1, +1]
 
 
+def finbert_scores(headlines: list[str]) -> dict:
+    """Batch-score unique headlines with finance-tuned FinBERT -> {headline: compound}
+    where compound = +prob(positive) / -prob(negative) / 0(neutral)."""
+    import warnings
+    warnings.filterwarnings("ignore")
+    from transformers import pipeline
+    nlp = pipeline("sentiment-analysis", model="ProsusAI/finbert", truncation=True)
+    uniq = sorted({h for h in headlines if h})
+    out, B = {}, 64
+    for i in range(0, len(uniq), B):
+        chunk = uniq[i:i + B]
+        for h, r in zip(chunk, nlp(chunk, batch_size=B)):
+            lab = r["label"].lower()
+            out[h] = r["score"] if lab == "positive" else -r["score"] if lab == "negative" else 0.0
+        print(f"  finbert {min(i + B, len(uniq))}/{len(uniq)}", flush=True)
+    return out
+
+
 def fetch_news(symbols) -> dict:
     if NEWS_CACHE.exists():
         print(f"using cached news: {NEWS_CACHE.name}")
@@ -87,10 +105,18 @@ def fetch_daily(symbols) -> pd.DataFrame:
 
 def main() -> int:
     load_env()
-    score = make_scorer()
-    print(f"news-sentiment probe (VADER): {len(UNIVERSE)} names since {START.date()}\n")
+    use_finbert = "--finbert" in sys.argv
+    lbl = "FinBERT" if use_finbert else "VADER"
+    print(f"news-sentiment probe ({lbl}): {len(UNIVERSE)} names since {START.date()}\n")
     news = fetch_news(UNIVERSE)
     bars = fetch_daily(UNIVERSE)
+    if use_finbert:
+        allh = [h for items in news.values() for (_, h) in items]
+        print(f"scoring {len({h for h in allh if h})} unique headlines with FinBERT (CPU) ...", flush=True)
+        fb = finbert_scores(allh)
+        score = lambda text: fb.get(text, 0.0)  # noqa: E731
+    else:
+        score = make_scorer()
 
     rows = []
     for sym in UNIVERSE:
