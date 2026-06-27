@@ -101,6 +101,12 @@ def build_board() -> dict:
     gap_rows = [g for g in gappers if isinstance(g, dict) and "symbol" in g]
     gap_syms = [g["symbol"] for g in gap_rows]
     random_syms = S.random_basket()       # seeded by YYYYMMDD
+    # v1.1 (2026-06-27): extra subreddits as NEW MEASURED signals (additive — they get their
+    # own scoreboard clock but do NOT enter combined_score, so the bot's traded picks are
+    # unchanged until they prove out). r/pennystocks + r/Shortsqueeze surface explosive
+    # small-cap/squeeze names WSB misses.
+    penny_rows = [r for r in S.reddit_sub_trending("pennystocks", 25) if isinstance(r, dict)]
+    squeeze_rows = [r for r in S.reddit_sub_trending("Shortsqueeze", 25) if isinstance(r, dict)]
 
     candidates = sorted(set(wsb_syms) | set(st_syms) | set(gap_syms))
     print(f"candidates: WSB {len(wsb_syms)}, ST {len(st_syms)}, gappers {len(gap_syms)} "
@@ -113,6 +119,14 @@ def build_board() -> dict:
 
     # all names we want signals for: tradable candidates + random + gapper-control
     all_syms = sorted(set(tradable) | set(random_syms) | set(gap_syms))
+
+    # v1.1 extra-subreddit signals, tradable-filtered SEPARATELY so they do NOT enter
+    # all_syms — keeps existing signals / combined_score / the bot's picks identical.
+    penny_surge = {r["ticker"]: r.get("surge") for r in penny_rows}
+    squeeze_sub_surge = {r["ticker"]: r.get("surge") for r in squeeze_rows}
+    _sub_names = sorted(set(penny_surge) | set(squeeze_sub_surge))
+    _sub_extra_prices = _tradable_filter([s for s in _sub_names if s not in prices]) if _sub_names else {}
+    sub_eligible = (set(prices) | set(_sub_extra_prices)) & set(_sub_names)   # tradable >= $1
 
     # --- 3. signals ---
     print("computing signals (ignition + premarket rvol live; squeeze/uoa graceful-None) ...")
@@ -148,6 +162,8 @@ def build_board() -> dict:
             "squeeze": sqv.get("squeeze"),
             "uoa_z": uv.get("uoa_z"),
             "ignition": igv.get("ignition"),
+            "penny_surge": penny_surge.get(sym),          # v1.1 measured-only (not in combined)
+            "squeeze_sub_surge": squeeze_sub_surge.get(sym),
         }
 
     # --- 4. combined_score: mean percentile rank across non-null signals ---
@@ -197,11 +213,21 @@ def build_board() -> dict:
         "uoa": set(top_k(sig_pools["uoa_z"])),
         "ignition": set(top_k(sig_pools["ignition"])),
     }
+    # v1.1 NEW measured signals (additive): top-K by mention surge over tradable sub names.
+    def _topk_surge(surge_map: dict, k: int = TOP_K) -> set:
+        scored = [(s, v) for s, v in surge_map.items() if v is not None and s in sub_eligible]
+        scored.sort(key=lambda x: -x[1])
+        return {s for s, _ in scored[:k]}
+    signal_topk["pennystocks"] = _topk_surge(penny_surge)
+    signal_topk["shortsqueeze"] = _topk_surge(squeeze_sub_surge)
+    basket_members["pennystocks"] = signal_topk["pennystocks"]
+    basket_members["shortsqueeze"] = signal_topk["shortsqueeze"]
 
     # build the pick list. A symbol gets ONE row; basket = its primary basket (priority
     # wsb > stocktwits > gappers > random > control), top_k_of lists ALL signals that
     # flagged it.
-    basket_priority = ["wsb", "stocktwits", "gappers", "random", "control"]
+    basket_priority = ["wsb", "stocktwits", "gappers", "random", "control",
+                       "pennystocks", "shortsqueeze"]   # new baskets lowest priority
     all_picks_syms = sorted(set().union(*basket_members.values()))
     picks = []
     for sym in all_picks_syms:

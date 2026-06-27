@@ -45,6 +45,41 @@ def load_universe() -> list[str]:
     return [s.strip().upper() for s in UNIVERSE_FILE.read_text().splitlines() if s.strip()]
 
 
+# --------------------------------------------------------------- extra subreddits (v1.1)
+# Same apewisdom API as the news-edge reddit_trending (WSB), but for OTHER subreddits that
+# surface different, more lottery-relevant names — r/pennystocks and r/Shortsqueeze carry
+# explosive small/micro-cap + squeeze candidates WSB misses. Added 2026-06-27 as NEW
+# MEASURED signals (own scoreboard clock); NOT folded into combined_score until they prove
+# out (the bot's traded score is unchanged). Mirrors reddit_trending's parse verbatim.
+_APEWISDOM_SUB = "https://apewisdom.io/api/v1.0/filter/{sub}/page/1"
+_SUB_UA = {"User-Agent": "Mozilla/5.0 (lottery research)"}
+
+
+def reddit_sub_trending(subreddit: str, limit: int = 25) -> list:
+    """Top tickers by mention SURGE (mentions / mentions_24h_ago, min 10 mentions) on a
+    given subreddit. [{ticker, rank, mentions, mentions_24h_ago, surge, upvotes}] — same
+    shape as news_edge.reddit_trending so it drops into the board identically."""
+    import urllib.request
+    try:
+        req = urllib.request.Request(_APEWISDOM_SUB.format(sub=subreddit), headers=_SUB_UA)
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = json.load(r)
+    except Exception as e:
+        return [f"_error: {e}"]
+    out = []
+    for it in data.get("results", []):
+        try:
+            m, m24 = int(it["mentions"]), int(it.get("mentions_24h_ago") or 0)
+            out.append({"ticker": it["ticker"], "rank": int(it["rank"]), "mentions": m,
+                        "mentions_24h_ago": m24,
+                        "surge": round(m / m24, 1) if m24 > 0 else None,
+                        "upvotes": int(it.get("upvotes") or 0)})
+        except (KeyError, ValueError, TypeError):
+            continue
+    out.sort(key=lambda x: (-(x["surge"] or 0) if x["mentions"] >= 10 else 0, -x["mentions"]))
+    return out[:limit]
+
+
 # --------------------------------------------------------------- random baseline
 def random_basket(seed: int | None = None, n: int = 10) -> list[str]:
     """Seeded random basket from the liquid universe. seed defaults to YYYYMMDD (ET)
