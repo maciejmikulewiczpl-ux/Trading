@@ -142,6 +142,9 @@ def build_board() -> dict:
     uoa = S.uoa_snapshot(all_syms, update_state=True)
     if "_error" in uoa:
         uoa = {}
+    # v1.2 Google Trends search-attention spike (measured-only; graceful-None on rate-limit)
+    gtrends = S.google_trends_spike(all_syms)
+    print(f"google trends: {len(gtrends)}/{len(all_syms)} names returned a spike")
 
     wsb_surge = {r["ticker"]: r.get("surge") for r in wsb_rows}
     wsb_rank = {r["ticker"]: r.get("rank") for r in wsb_rows}
@@ -164,6 +167,7 @@ def build_board() -> dict:
             "ignition": igv.get("ignition"),
             "penny_surge": penny_surge.get(sym),          # v1.1 measured-only (not in combined)
             "squeeze_sub_surge": squeeze_sub_surge.get(sym),
+            "gtrends_spike": gtrends.get(sym),            # v1.2 measured-only (not in combined)
         }
 
     # --- 4. combined_score: mean percentile rank across non-null signals ---
@@ -222,12 +226,17 @@ def build_board() -> dict:
     signal_topk["shortsqueeze"] = _topk_surge(squeeze_sub_surge)
     basket_members["pennystocks"] = signal_topk["pennystocks"]
     basket_members["shortsqueeze"] = signal_topk["shortsqueeze"]
+    # v1.2 Google Trends: top-K by search-attention spike among tradable candidates
+    _gt = {s for s, _ in sorted(((s, v) for s, v in gtrends.items()
+           if v is not None and s in set(tradable)), key=lambda x: -x[1])[:TOP_K]}
+    signal_topk["gtrends"] = _gt
+    basket_members["gtrends"] = _gt
 
     # build the pick list. A symbol gets ONE row; basket = its primary basket (priority
     # wsb > stocktwits > gappers > random > control), top_k_of lists ALL signals that
     # flagged it.
     basket_priority = ["wsb", "stocktwits", "gappers", "random", "control",
-                       "pennystocks", "shortsqueeze"]   # new baskets lowest priority
+                       "pennystocks", "shortsqueeze", "gtrends"]   # new baskets lowest priority
     all_picks_syms = sorted(set().union(*basket_members.values()))
     picks = []
     for sym in all_picks_syms:

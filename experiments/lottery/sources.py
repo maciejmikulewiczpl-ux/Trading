@@ -80,6 +80,39 @@ def reddit_sub_trending(subreddit: str, limit: int = 25) -> list:
     return out[:limit]
 
 
+# --------------------------------------------------------------- Google Trends (v1.2)
+# Search-interest SPIKE per ticker = recent / trailing-baseline interest (a retail-ATTENTION
+# surge, orthogonal to social posts). Uses trendspy (Google's new Trends backend; the old
+# pytrends 429s). Batched + sleeps + graceful-None on rate-limit so it can NEVER break the
+# board. Added 2026-06-28 as a NEW MEASURED signal (own scoreboard clock; not in combined_score).
+def google_trends_spike(tickers: list[str], batch: int = 5, sleep_s: float = 3.0) -> dict:
+    """{ticker: spike_ratio} where spike = mean(last 3 obs) / mean(prior obs) over ~1 month.
+    >1 = rising search attention. Missing/rate-limited names -> absent (graceful)."""
+    try:
+        from trendspy import Trends
+    except Exception:
+        return {}
+    import time as _t
+    tr = Trends()
+    syms = [t.upper() for t in tickers]
+    out: dict = {}
+    for i in range(0, len(syms), batch):
+        grp = syms[i:i + batch]
+        terms = [f"{s} stock" for s in grp]
+        try:
+            df = tr.interest_over_time(terms, timeframe="today 1-m")
+            for s, term in zip(grp, terms):
+                if term in getattr(df, "columns", []):
+                    col = df[term].astype(float)
+                    recent = float(col.iloc[-3:].mean())
+                    base = max(float(col.iloc[:-3].mean()), 1.0)
+                    out[s] = round(recent / base, 2)
+        except Exception:
+            pass   # rate-limited / failed batch -> those names just have no trends signal today
+        _t.sleep(sleep_s)
+    return out
+
+
 # --------------------------------------------------------------- random baseline
 def random_basket(seed: int | None = None, n: int = 10) -> list[str]:
     """Seeded random basket from the liquid universe. seed defaults to YYYYMMDD (ET)
