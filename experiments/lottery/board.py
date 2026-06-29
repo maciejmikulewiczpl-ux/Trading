@@ -145,6 +145,13 @@ def build_board() -> dict:
     # v1.2 Google Trends search-attention spike (measured-only; graceful-None on rate-limit)
     gtrends = S.google_trends_spike(all_syms)
     print(f"google trends: {len(gtrends)}/{len(all_syms)} names returned a spike")
+    # v1.3 (2026-06-29) FINRA short-volume ratio + Nasdaq trading halts — NEW MEASURED signals
+    # (own scoreboard clock; NOT in combined_score). Restricted to candidate-net names so they
+    # rank the hype candidates rather than flooding the board with market-wide tickers.
+    finra_sv = S.finra_short_volume()
+    print(f"FINRA short-vol: {len(finra_sv)} symbols in latest daily file")
+    halts = S.trading_halts()
+    print(f"trading halts: {len(halts)} symbols in feed")
 
     wsb_surge = {r["ticker"]: r.get("surge") for r in wsb_rows}
     wsb_rank = {r["ticker"]: r.get("rank") for r in wsb_rows}
@@ -168,6 +175,8 @@ def build_board() -> dict:
             "penny_surge": penny_surge.get(sym),          # v1.1 measured-only (not in combined)
             "squeeze_sub_surge": squeeze_sub_surge.get(sym),
             "gtrends_spike": gtrends.get(sym),            # v1.2 measured-only (not in combined)
+            "finra_short_ratio": finra_sv.get(sym),       # v1.3 measured-only (not in combined)
+            "halt_reason": halts.get(sym),                # v1.3 measured-only (not in combined)
         }
 
     # --- 4. combined_score: mean percentile rank across non-null signals ---
@@ -231,12 +240,22 @@ def build_board() -> dict:
            if v is not None and s in set(tradable)), key=lambda x: -x[1])[:TOP_K]}
     signal_topk["gtrends"] = _gt
     basket_members["gtrends"] = _gt
+    # v1.3 FINRA short-volume: top-K by short ratio among tradable candidates
+    _finra = {s for s, _ in sorted(((s, v) for s, v in finra_sv.items()
+              if v is not None and s in set(tradable)), key=lambda x: -x[1])[:TOP_K]}
+    signal_topk["finra_shortvol"] = _finra
+    basket_members["finra_shortvol"] = _finra
+    # v1.3 trading halts: every tradable candidate currently in the halt feed (binary basket)
+    _halted = {s for s in halts if s in set(tradable)}
+    signal_topk["halts"] = _halted
+    basket_members["halts"] = _halted
 
     # build the pick list. A symbol gets ONE row; basket = its primary basket (priority
     # wsb > stocktwits > gappers > random > control), top_k_of lists ALL signals that
     # flagged it.
     basket_priority = ["wsb", "stocktwits", "gappers", "random", "control",
-                       "pennystocks", "shortsqueeze", "gtrends"]   # new baskets lowest priority
+                       "pennystocks", "shortsqueeze", "gtrends",
+                       "finra_shortvol", "halts"]   # new baskets lowest priority
     all_picks_syms = sorted(set().union(*basket_members.values()))
     picks = []
     for sym in all_picks_syms:

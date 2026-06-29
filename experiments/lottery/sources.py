@@ -113,6 +113,71 @@ def google_trends_spike(tickers: list[str], batch: int = 5, sleep_s: float = 3.0
     return out
 
 
+# --------------------------------------------------------------- FINRA short volume (v1.3)
+# Daily Reg SHO short-sale volume (free public file). Signal = ShortVolume/TotalVolume per
+# symbol = how short-skewed the day's tape was = potential squeeze fuel. T+1 (yesterday's
+# session; the file for the latest trading day publishes overnight — walk back over
+# weekends/holidays). Added 2026-06-29 as a NEW MEASURED signal (own scoreboard clock; NOT
+# in combined_score). Graceful-{} so it can never break the board.
+_FINRA_URL = "https://cdn.finra.org/equity/regsho/daily/CNMSshvol{d}.txt"
+
+
+def finra_short_volume(max_back: int = 6) -> dict:
+    """{ticker: short_ratio} where short_ratio = ShortVolume/TotalVolume from FINRA's most
+    recent daily Reg SHO file. High = heavy short-side activity. Graceful-{} on failure."""
+    import urllib.request
+    for back in range(max_back):
+        d = (datetime.now(ET).date() - timedelta(days=back)).strftime("%Y%m%d")
+        try:
+            req = urllib.request.Request(_FINRA_URL.format(d=d), headers=_SUB_UA)
+            with urllib.request.urlopen(req, timeout=20) as r:
+                txt = r.read().decode("utf-8", "ignore")
+        except Exception:
+            continue   # 403 = not published for that date yet -> walk back
+        out: dict = {}
+        for line in txt.strip().splitlines()[1:]:
+            parts = line.split("|")
+            if len(parts) < 5:
+                continue
+            sym = parts[1].strip().upper()
+            try:
+                sv, tv = float(parts[2]), float(parts[4])
+            except ValueError:
+                continue
+            if tv > 0 and sym.isalpha():
+                out[sym] = round(sv / tv, 4)
+        if out:
+            return out
+    return {}
+
+
+# --------------------------------------------------------------- trading halts (v1.3)
+# Nasdaq trade-halt RSS feed. A name in the feed (esp. 'LUDP' LULD volatility pause, or
+# news/regulatory halts) is by definition an explosive/volatile name = on-theme for lottery.
+# Feed shows recent halts (current/prior session). Added 2026-06-29 as a NEW MEASURED signal
+# (own scoreboard clock; NOT in combined_score). Graceful-{} so it can never break the board.
+_HALTS_URL = "http://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
+
+
+def trading_halts() -> dict:
+    """{ticker: reason_code} for symbols currently in the Nasdaq trade-halt feed."""
+    import re
+    import urllib.request
+    try:
+        req = urllib.request.Request(_HALTS_URL, headers=_SUB_UA)
+        with urllib.request.urlopen(req, timeout=20) as r:
+            xml = r.read().decode("utf-8", "ignore")
+    except Exception:
+        return {}
+    out: dict = {}
+    for item in re.findall(r"<item>(.*?)</item>", xml, re.S):
+        m = re.search(r"<ndaq:IssueSymbol>([^<]+)</ndaq:IssueSymbol>", item)
+        rc = re.search(r"<ndaq:ReasonCode>([^<]*)</ndaq:ReasonCode>", item)
+        if m and m.group(1).strip().isalpha():
+            out[m.group(1).strip().upper()] = (rc.group(1).strip() if rc else "?")
+    return out
+
+
 # --------------------------------------------------------------- random baseline
 def random_basket(seed: int | None = None, n: int = 10) -> list[str]:
     """Seeded random basket from the liquid universe. seed defaults to YYYYMMDD (ET)
@@ -322,6 +387,15 @@ def main(argv) -> int:
     if cmd == "uoa" and len(argv) >= 3:
         toks = [t.strip().upper() for t in argv[2].split(",") if t.strip()]
         print(json.dumps(uoa_snapshot(toks, update_state=False), indent=2))
+        return 0
+    if cmd == "finra":
+        sv = finra_short_volume()
+        top = sorted(sv.items(), key=lambda kv: -kv[1])[:20]
+        print(f"{len(sv)} symbols in latest FINRA daily file; top short-ratio:")
+        print(json.dumps(dict(top), indent=2))
+        return 0
+    if cmd == "halts":
+        print(json.dumps(trading_halts(), indent=2))
         return 0
     if cmd == "random":
         print(json.dumps(random_basket(), indent=2))
