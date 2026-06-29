@@ -188,19 +188,20 @@ def main() -> int:
         hold = _weekdays(entry_date, exit_date or today)
 
         # bar-derived outcome metrics over the hold window
-        mfe = mae = post5 = None
+        mfe = mae = post5 = post10 = post20 = None
         sb = bars.get(sym)
         if sb is not None and entry_avg > 0:
             end = exit_date or today
             win = sb[(sb.index >= entry_date) & (sb.index <= end)]
             if len(win):
-                mfe = round((float(win["high"].max()) / entry_avg - 1) * 100, 2)
-                mae = round((float(win["low"].min()) / entry_avg - 1) * 100, 2)
+                mfe = round((float(win["high"].max()) / entry_avg - 1) * 100, 2)   # best the trade ever showed
+                mae = round((float(win["low"].min()) / entry_avg - 1) * 100, 2)    # worst drawdown vs entry
+            # post-exit drift: did we exit too early? (the SLS question) at 5/10/20 sessions
             if exit_date and exit_avg:
                 after = sb[sb.index > exit_date]
-                if len(after):
-                    ref = after.iloc[min(4, len(after) - 1)]["close"]
-                    post5 = round((float(ref) / exit_avg - 1) * 100, 2)
+                def _drift(n):
+                    return round((float(after.iloc[min(n - 1, len(after) - 1)]["close"]) / exit_avg - 1) * 100, 2) if len(after) else None
+                post5, post10, post20 = _drift(5), _drift(10), _drift(20)
 
         c = ctx.get((sym, entry_date.isoformat()), {})
         sig = c.get("signals", {})
@@ -213,7 +214,8 @@ def main() -> int:
                "realized_pct": round((exit_avg / entry_avg - 1) * 100, 2) if exit_avg else "",
                "hold_days": hold, "combined_score": c.get("combined_score"),
                "top_k_of": c.get("top_k_of", ""), "basket": c.get("basket", ""),
-               "mfe_pct": mfe, "mae_pct": mae, "post_exit_5d_pct": post5}
+               "mfe_pct": mfe, "mae_pct": mae, "post_exit_5d_pct": post5,
+               "post_exit_10d_pct": post10, "post_exit_20d_pct": post20}
         for s in SIG_COLS:
             row[f"sig_{s}"] = sig.get(s)
         rows.append(row)
@@ -224,7 +226,8 @@ def main() -> int:
     cols = (["symbol", "entry_date", "entry_avg", "qty", "status", "exit_date", "exit_avg",
              "exit_reason", "sold_qty", "open_qty", "realized", "unrealized", "realized_pct",
              "hold_days", "combined_score", "top_k_of", "basket", "mfe_pct", "mae_pct",
-             "post_exit_5d_pct"] + [f"sig_{s}" for s in SIG_COLS])
+             "post_exit_5d_pct", "post_exit_10d_pct", "post_exit_20d_pct"]
+            + [f"sig_{s}" for s in SIG_COLS])
     with open(OUT, "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=cols)
         w.writeheader()
