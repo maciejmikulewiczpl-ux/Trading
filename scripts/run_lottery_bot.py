@@ -45,6 +45,7 @@ TRAIL_PCT = 10.0           # native trailing stop %
 TOP_N = 3                  # top-3 by combined_score
 TIME_STOP_DAYS = 3         # close at T+3 trading-ish days if still open
 STATE_FILE = ROOT / "logs" / "lottery_positions.json"
+EXEC_LOG = ROOT / "logs" / "lottery_execution.csv"   # intended-quote vs actual-fill (slippage/capacity)
 
 log = logging.getLogger("lottery_bot")
 
@@ -106,6 +107,40 @@ def _latest_prices(symbols: list[str]) -> dict[str, float]:
     except Exception as e:
         print(f"latest-price fetch failed: {e}")
         return {}
+
+
+def _latest_quotes(symbols: list[str]) -> dict[str, tuple]:
+    """Latest NBBO (bid, ask) per symbol at trade time -- spread/slippage context."""
+    try:
+        from alpaca.data.historical import StockHistoricalDataClient
+        from alpaca.data.requests import StockLatestQuoteRequest
+        from alpaca.data.enums import DataFeed
+        dc = StockHistoricalDataClient(os.environ["ALPACA_API_KEY"],
+                                       os.environ["ALPACA_SECRET_KEY"])
+        res = dc.get_stock_latest_quote(StockLatestQuoteRequest(
+            symbol_or_symbols=symbols, feed=DataFeed.IEX))
+        return {s: (float(q.bid_price), float(q.ask_price)) for s, q in res.items()
+                if q and q.bid_price and q.ask_price}
+    except Exception as e:
+        print(f"quote fetch failed: {e}")
+        return {}
+
+
+def _log_execution(row: dict) -> None:
+    """Append one trade-time execution record (intended vs fill) to lottery_execution.csv."""
+    import csv
+    cols = ["date", "submit_ts", "symbol", "qty", "intended_px", "bid", "ask", "mid",
+            "spread_bps", "fill_avg", "slip_vs_intended_bps", "slip_vs_mid_bps", "order_id"]
+    EXEC_LOG.parent.mkdir(exist_ok=True)
+    new = not EXEC_LOG.exists()
+    try:
+        with open(EXEC_LOG, "a", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=cols)
+            if new:
+                w.writeheader()
+            w.writerow({k: row.get(k) for k in cols})
+    except Exception as e:
+        print(f"  exec-log write failed: {e}")
 
 
 def _trading_days_since(entry_iso: str) -> int:
@@ -194,7 +229,9 @@ def run_entries(tc, dry_run: bool) -> int:
     except Exception:
         held = set()
 
-    prices = _latest_prices([p["symbol"] for p in picks])
+    pick_syms = [p["symbol"] for p in picks]
+    prices = _latest_prices(pick_syms)
+    quotes = _latest_quotes(pick_syms)   # bid/ask at trade time for slippage/capacity analysis
     placed = 0
     for p in picks:
         sym = p["symbol"]
@@ -219,9 +256,13 @@ def run_entries(tc, dry_run: bool) -> int:
                 symbol=sym, qty=qty, side=OrderSide.BUY,
                 time_in_force=TimeInForce.DAY))
             print(f"  BUY submitted {sym} {qty} sh @ ~${px:.2f} (order {order.id}).")
+            bid, ask = quotes.get(sym, (None, None))
             state[sym] = {"entry_date": date_str, "qty": qty, "ref_price": px,
                           "combined_score": p["combined_score"], "trail_attached": False,
-                          "buy_order_id": str(order.id)}
+                          "buy_order_id": str(order.id),
+                          "exec": {"submit_ts": datetime.now(ET).isoformat(timespec="seconds"),
+                                   "intended_px": px, "bid": bid, "ask": ask, "qty": qty},
+                          "exec_logged": False}
             placed += 1
         except Exception as e:
             print(f"  {sym} BUY FAILED: {e}")
@@ -230,25 +271,29 @@ def run_entries(tc, dry_run: bool) -> int:
     return placed
 
 
-def _filled_qty_when_done(tc, order_id: str, max_wait_s: int = 12) -> int:
-    """Poll a buy order until it's terminally filled, returning its FULL filled_qty.
+def _filled_qty_when_done(tc, order_id: str, max_wait_s: int = 12) -> tuple:
+    """Poll a buy order until it's terminally filled, returning (full filled_qty, fill_avg).
     A market order on a thin name can fill progressively over several seconds; reading the
     position too early (the old fixed 3s sleep) left late-settling shares with NO stop —
     that's how SLS ended up with 178 bought but only 170 trailed (2026-06-29). Poll the
     order itself so the trail always covers the complete fill."""
     import time as _t
-    best = 0
+    best, avg = 0, None
     for _ in range(max_wait_s):
         try:
             o = tc.get_order_by_id(order_id)
-            best = max(best, int(float(getattr(o, "filled_qty", 0) or 0)))
+            fq = int(float(getattr(o, "filled_qty", 0) or 0))
+            if fq >= best:
+                best = fq
+                fap = getattr(o, "filled_avg_price", None)
+                avg = float(fap) if fap else avg
             st = str(getattr(o, "status", "")).rsplit(".", 1)[-1].lower()
             if st in ("filled", "canceled", "cancelled", "expired", "rejected"):
-                return best
+                return best, avg
         except Exception:
             pass
         _t.sleep(1)
-    return best
+    return best, avg
 
 
 def attach_trailing_stops(tc, dry_run: bool) -> int:
@@ -265,8 +310,24 @@ def attach_trailing_stops(tc, dry_run: bool) -> int:
     for sym, info in state.items():
         if info.get("trail_attached"):
             continue
-        # full filled qty from the buy order (handles slow/partial market fills)
-        filled = _filled_qty_when_done(tc, info["buy_order_id"]) if info.get("buy_order_id") else 0
+        # full filled qty + avg price from the buy order (handles slow/partial market fills)
+        filled, fill_avg = (_filled_qty_when_done(tc, info["buy_order_id"])
+                            if info.get("buy_order_id") else (0, None))
+        # log execution quality (intended quote vs actual fill) once per trade
+        ex = info.get("exec")
+        if ex and not info.get("exec_logged") and fill_avg:
+            bid, ask, intended = ex.get("bid"), ex.get("ask"), ex.get("intended_px")
+            mid = ((bid + ask) / 2) if (bid and ask) else None
+            _log_execution({
+                "date": info.get("entry_date"), "submit_ts": ex.get("submit_ts"),
+                "symbol": sym, "qty": filled, "intended_px": intended, "bid": bid, "ask": ask,
+                "mid": round(mid, 4) if mid else None,
+                "spread_bps": round((ask - bid) / mid * 10000, 1) if mid else None,
+                "fill_avg": round(fill_avg, 4),
+                "slip_vs_intended_bps": round((fill_avg / intended - 1) * 10000, 1) if intended else None,
+                "slip_vs_mid_bps": round((fill_avg / mid - 1) * 10000, 1) if mid else None,
+                "order_id": info.get("buy_order_id")})
+            info["exec_logged"] = True
         try:
             pos = {p.symbol: p for p in tc.get_all_positions()}.get(sym)
             held_qty = int(float(pos.qty)) if pos else 0
