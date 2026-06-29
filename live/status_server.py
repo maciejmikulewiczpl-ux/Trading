@@ -905,11 +905,18 @@ def _source_daily(days_limit: int = 14) -> dict:
     cum = {src: {"n": len(v), "avg": round(sum(v) / len(v), 2),
                  "hit": round(sum(1 for x in v if x >= WIN1) / len(v), 3)}
            for src, v in pool.items()}
+    # classify: online SOURCES (a place publishing data) vs computed FEATURES (price/volume).
+    kind = {"wsb": "src", "stocktwits": "src", "pennystocks": "src", "shortsqueeze": "src",
+            "gtrends": "src", "finra_shortvol": "src", "halts": "src",
+            "ignition": "feat", "pm_rvol": "feat", "squeeze": "feat", "uoa": "feat",
+            "gappers": "feat", "combined3": "bench", "random": "bench"}
     bench = [s for s in ("combined3", "random") if s in cum]
-    sigs = sorted([s for s in cum if s not in ("combined3", "random")],
-                  key=lambda s: -cum[s]["avg"])
-    return {"dates": dates_list[:days_limit], "sources": bench + sigs,
-            "grid": grid, "cum": cum}
+    rest = [s for s in cum if s not in ("combined3", "random")]
+    srcs = sorted([s for s in rest if kind.get(s) == "src"], key=lambda s: -cum[s]["avg"])
+    feats = sorted([s for s in rest if kind.get(s) == "feat"], key=lambda s: -cum[s]["avg"])
+    other = sorted([s for s in rest if s not in kind], key=lambda s: -cum[s]["avg"])
+    return {"dates": dates_list[:days_limit], "sources": bench + srcs + feats + other,
+            "kinds": {s: kind.get(s, "src") for s in cum}, "grid": grid, "cum": cum}
 
 
 def _lottery() -> dict:
@@ -1797,7 +1804,7 @@ function renderLottery(ld){
     h+=`</tr>`;
     for(const src of (sd.sources||[])){
       const c=(sd.cum||{})[src]||{};
-      const nm=(src==="combined3"||src==="random")?`<b>${src}</b>`:src;
+      const nm=srcLabel(src,sd.kinds);
       h+=`<tr><td style="text-align:left">${nm}</td>`+
          `<td class="${cls(c.avg)}" title="${c.n||0} picks total">${c.avg==null?"—":((c.avg>=0?"+":"")+c.avg.toFixed(1))}</td>`;
       for(const dt of sd.dates) h+=dcell((sd.grid[src]||{})[dt]);
@@ -1856,6 +1863,13 @@ function basketBadge(b){
            control:["#7c8694","ctrl"],random:["#7c8694","rand"]};
   const x=m[b]||["#7c8694",b||"?"];
   return `<span style="color:${x[0]};font-size:11px;font-weight:600">${x[1]}</span>`;
+}
+function srcLabel(src,kinds){
+  if(src==="combined3"||src==="random") return `<b>${src}</b>`;
+  const k=(kinds||{})[src]||"src";
+  const tag = k==="feat"?`<span title="computed price/volume feature">📈</span> `
+                        :`<span title="online source">📡</span> `;
+  return `${tag}${src}`;
 }
 async function fetchSummary(){
   try{ const r=await fetch("/api/summary",{cache:"no-store"}); lastSummary=await r.json(); if(topView==="summary") renderSummary(lastSummary); }
@@ -1931,7 +1945,7 @@ function renderSummary(sd){
     }
     h+=`<tr><td colspan="${dates.length+1}" style="text-align:left;color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding-top:10px">source picks — avg 9:45→close %</td></tr>`;
     for(const src of sdg.sources){
-      const nm=(src==="combined3"||src==="random")?`<b>${src}</b>`:src;
+      const nm=srcLabel(src,sdg.kinds);
       h+=`<tr><td style="text-align:left">${nm}</td>`;
       for(const d of dates){ const o=(sdg.grid[src]||{})[d];
         h+= o==null?`<td style="color:var(--dim)">·</td>`:`<td class="${cls(o.avg)}" title="${o.n} picks · ${(o.hit*100).toFixed(0)}% W1 hit">${o.avg>=0?"+":""}${o.avg.toFixed(1)}</td>`; }
