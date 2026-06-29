@@ -76,7 +76,7 @@ def regime_section(panel: pd.DataFrame, perms: int, rng) -> None:
 
 def harvest_section(data: dict, panel: pd.DataFrame, trail: float, max_days: int) -> None:
     bars = {s: df.sort_index() for s, df in data["symbols"].items() if df is not None}
-    grs = []
+    grs, prices, vols = [], [], []
     ev = panel[panel["ignition"] >= 3][["sym", "date"]].itertuples(index=False)
     for sym, T in ev:
         df = bars.get(sym)
@@ -86,6 +86,12 @@ def harvest_section(data: dict, panel: pd.DataFrame, trail: float, max_days: int
             pos = df.index.get_loc(T)
         except KeyError:
             continue
+        if pos < 21:
+            continue
+        cl_all = df["Close"].values
+        rets = np.diff(cl_all[pos - 20:pos + 1]) / cl_all[pos - 20:pos]   # 20 rets thru T
+        vol = float(np.std(rets))                                        # realized daily vol
+        price = float(cl_all[pos])
         fut = df.iloc[pos + 1: pos + 2 + max_days]          # T+1 .. T+1+max_days
         if len(fut) < 2:
             continue
@@ -102,8 +108,8 @@ def harvest_section(data: dict, panel: pd.DataFrame, trail: float, max_days: int
             hw = max(hw, h[i])
             if i >= max_days:
                 exit_px = float(cl[i]); break
-        grs.append(exit_px / entry - 1.0)
-    g = np.array(grs)
+        grs.append(exit_px / entry - 1.0); prices.append(price); vols.append(vol)
+    g = np.array(grs); pr = np.array(prices); vo = np.array(vols)
     if g.size == 0:
         print("=== (2) COST sensitivity: no harvestable events ==="); return
     print(f"=== (2) COST sensitivity of the trailing-stop harvest "
@@ -113,11 +119,30 @@ def harvest_section(data: dict, panel: pd.DataFrame, trail: float, max_days: int
           f"median {np.median(g)*100:+.3f}%")
     print(f"  {'round-trip cost':>18}{'net avg/trade':>16}{'still +?':>10}")
     for bps in (0, 25, 50, 100):
-        net = g - bps / 10000.0          # round-trip cost in return terms
-        m = net.mean() * 100
+        m = (g - bps / 10000.0).mean() * 100
         print(f"  {str(bps)+' bps':>18}{m:>+15.3f}%{('yes' if m > 0 else 'NO'):>10}")
-    print("  READ: the trailing harvest is the bot's real engine (tail capture). Find the "
-          "cost level where net avg/trade crosses 0 — that's the slippage budget.\n")
+
+    # --- (3) does the edge CONCENTRATE in cheaper / more-volatile names? ---
+    def buckets(key, label, edges_pct):
+        qs = np.quantile(key, edges_pct)
+        print(f"\n=== (3) harvest by {label} quartile (does the edge concentrate?) ===")
+        print(f"  {'quartile':>22}{'n':>8}{'gross avg':>11}{'win%':>7}{'breakeven cost':>16}")
+        lo_edge = -np.inf
+        names = ["Q1 (low)", "Q2", "Q3", "Q4 (high)"]
+        for q, hi_edge in enumerate(list(qs) + [np.inf]):
+            m = (key > lo_edge) & (key <= hi_edge)
+            if m.sum() == 0:
+                lo_edge = hi_edge; continue
+            gm = g[m].mean()
+            print(f"  {names[q]:>22}{m.sum():>8,}{gm*100:>+10.3f}%{np.mean(g[m] > 0)*100:>6.0f}%"
+                  f"{gm*10000:>+13.0f}bps")
+            lo_edge = hi_edge
+    buckets(pr, "PRICE", [0.25, 0.50, 0.75])
+    buckets(vo, "realized-VOLATILITY", [0.25, 0.50, 0.75])
+    print("\n  READ: 'breakeven cost' = gross avg in bps = the round-trip cost that bucket can")
+    print("  absorb before going negative. If high-vol / low-price buckets have a MUCH bigger")
+    print("  budget, that supports a volatility/expected-move FILTER (drop the sluggish names).")
+    print("  Caveat: liquid cache can't see micro-caps OR their wider real spreads.\n")
 
 
 def main() -> int:
