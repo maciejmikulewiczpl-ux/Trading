@@ -1,0 +1,1204 @@
+{
+  "date": "2026-06-29",
+  "logged_at": "2026-06-29T09:26:24-04:00",
+  "n_candidates": 51,
+  "n_tradable": 48,
+  "picks": [
+    {
+      "symbol": "ABCL",
+      "basket": "gappers",
+      "top_k_of": [
+        "gtrends",
+        "ignition"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 20,
+        "pm_rvol": null,
+        "gap_pct": 10.83,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 3,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 1.21,
+        "finra_short_ratio": 0.6179,
+        "halt_reason": null
+      },
+      "combined_score": 0.6215,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "ACN",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 29.1,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.4,
+        "finra_short_ratio": 0.1738,
+        "halt_reason": null
+      },
+      "combined_score": 0.4421,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "ASML",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 0.38,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.43,
+        "finra_short_ratio": 0.4371,
+        "halt_reason": null
+      },
+      "combined_score": 0.0,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "ASTN",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 28,
+        "pm_rvol": null,
+        "gap_pct": -18.28,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.4465,
+        "halt_reason": null
+      },
+      "combined_score": 0.2822,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "BE",
+      "basket": "wsb",
+      "top_k_of": [
+        "pm_rvol",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 10.0,
+        "wsb_rank": 28,
+        "st_rank": null,
+        "pm_rvol": 2.1,
+        "gap_pct": null,
+        "squeeze": 34.02,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.52,
+        "finra_short_ratio": 0.338,
+        "halt_reason": null
+      },
+      "combined_score": 0.4964,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "BHVN",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 10,
+        "pm_rvol": null,
+        "gap_pct": 3.07,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.3268,
+        "halt_reason": null
+      },
+      "combined_score": 0.4496,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CADL",
+      "basket": "gappers",
+      "top_k_of": [
+        "ignition"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 12,
+        "pm_rvol": null,
+        "gap_pct": 3.38,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 3,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.419,
+        "halt_reason": null
+      },
+      "combined_score": 0.521,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CHTR",
+      "basket": "gappers",
+      "top_k_of": [
+        "gtrends",
+        "squeeze"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 6,
+        "pm_rvol": null,
+        "gap_pct": 31.93,
+        "squeeze": 340.57,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 1.27,
+        "finra_short_ratio": 0.4187,
+        "halt_reason": null
+      },
+      "combined_score": 0.7482,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CMCSA",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "gtrends",
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 5,
+        "pm_rvol": null,
+        "gap_pct": 21.88,
+        "squeeze": 8.21,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 1.47,
+        "finra_short_ratio": 0.3866,
+        "halt_reason": null
+      },
+      "combined_score": 0.5251,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "COHR",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 29,
+        "pm_rvol": 0.29,
+        "gap_pct": -6.83,
+        "squeeze": 8.09,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.3,
+        "finra_short_ratio": 0.6123,
+        "halt_reason": null
+      },
+      "combined_score": 0.2964,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CVNA",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": 1.79,
+        "gap_pct": null,
+        "squeeze": 100.39,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.33,
+        "finra_short_ratio": 0.4776,
+        "halt_reason": null
+      },
+      "combined_score": 0.6214,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "DDOG",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 12.11,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.34,
+        "finra_short_ratio": 0.4692,
+        "halt_reason": null
+      },
+      "combined_score": 0.4169,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "DE",
+      "basket": "shortsqueeze",
+      "top_k_of": [
+        "shortsqueeze"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": null,
+        "penny_surge": null,
+        "squeeze_sub_surge": 1.0,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.6161,
+        "halt_reason": null
+      },
+      "combined_score": null,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "EQIX",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 7.59,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.33,
+        "finra_short_ratio": 0.5038,
+        "halt_reason": null
+      },
+      "combined_score": 0.3276,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "ES",
+      "basket": "shortsqueeze",
+      "top_k_of": [
+        "shortsqueeze"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": null,
+        "penny_surge": null,
+        "squeeze_sub_surge": 1.0,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.5444,
+        "halt_reason": null
+      },
+      "combined_score": null,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "EU",
+      "basket": "finra_shortvol",
+      "top_k_of": [
+        "finra_shortvol"
+      ],
+      "signals": {
+        "wsb_surge": 1.1,
+        "wsb_rank": 27,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.32,
+        "finra_short_ratio": 0.7349,
+        "halt_reason": null
+      },
+      "combined_score": 0.0133,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "FCEL",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 25,
+        "pm_rvol": 0.0,
+        "gap_pct": 22.16,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.53,
+        "finra_short_ratio": 0.3224,
+        "halt_reason": null
+      },
+      "combined_score": 0.3378,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "FLY",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 15,
+        "pm_rvol": 0.0,
+        "gap_pct": 3.25,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.33,
+        "finra_short_ratio": 0.55,
+        "halt_reason": null
+      },
+      "combined_score": 0.2068,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "IBM",
+      "basket": "pennystocks",
+      "top_k_of": [
+        "pennystocks"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": null,
+        "penny_surge": 1.0,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.6182,
+        "halt_reason": null
+      },
+      "combined_score": null,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "IBRX",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 3,
+        "pm_rvol": null,
+        "gap_pct": 11.62,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.59,
+        "finra_short_ratio": 0.4553,
+        "halt_reason": null
+      },
+      "combined_score": 0.6179,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "IRDM",
+      "basket": "gappers",
+      "top_k_of": [
+        "finra_shortvol",
+        "gtrends",
+        "halts"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 8,
+        "pm_rvol": null,
+        "gap_pct": 4.11,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 1.15,
+        "finra_short_ratio": 0.703,
+        "halt_reason": "T3"
+      },
+      "combined_score": 0.3975,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "JNJ",
+      "basket": "gappers",
+      "top_k_of": [
+        "ignition"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 26,
+        "pm_rvol": null,
+        "gap_pct": 3.91,
+        "squeeze": 4.22,
+        "uoa_z": null,
+        "ignition": 3,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.5,
+        "finra_short_ratio": 0.538,
+        "halt_reason": null
+      },
+      "combined_score": 0.3452,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "KDP",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 30.14,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.35,
+        "finra_short_ratio": 0.5598,
+        "halt_reason": null
+      },
+      "combined_score": 0.466,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "KLAR",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 22,
+        "pm_rvol": null,
+        "gap_pct": 6.01,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.5088,
+        "halt_reason": null
+      },
+      "combined_score": 0.4214,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "MNDY",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 52.32,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.5717,
+        "halt_reason": null
+      },
+      "combined_score": 0.5776,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "MSFT",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 3.4,
+        "wsb_rank": 3,
+        "st_rank": null,
+        "pm_rvol": 0.33,
+        "gap_pct": null,
+        "squeeze": 3.25,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.2248,
+        "halt_reason": null
+      },
+      "combined_score": 0.4877,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "MSTR",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "pm_rvol",
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": 5.3,
+        "wsb_rank": 6,
+        "st_rank": 1,
+        "pm_rvol": 1.15,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.3261,
+        "halt_reason": null
+      },
+      "combined_score": 0.6532,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "MU",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 2.1,
+        "wsb_rank": 1,
+        "st_rank": null,
+        "pm_rvol": 0.14,
+        "gap_pct": null,
+        "squeeze": 2.8,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.47,
+        "finra_short_ratio": 0.5473,
+        "halt_reason": null
+      },
+      "combined_score": 0.3871,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "NOK",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 7,
+        "pm_rvol": 0.27,
+        "gap_pct": -7.99,
+        "squeeze": 0.6,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.39,
+        "finra_short_ratio": 0.2064,
+        "halt_reason": null
+      },
+      "combined_score": 0.3857,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "NVR",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 29.86,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.3615,
+        "halt_reason": null
+      },
+      "combined_score": 0.4706,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "PENG",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 14,
+        "pm_rvol": 0.0,
+        "gap_pct": -6.39,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.3582,
+        "halt_reason": null
+      },
+      "combined_score": 0.2129,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "PINS",
+      "basket": "gappers",
+      "top_k_of": [
+        "squeeze"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 17,
+        "pm_rvol": 0.0,
+        "gap_pct": 6.73,
+        "squeeze": 73.65,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.32,
+        "finra_short_ratio": 0.5574,
+        "halt_reason": null
+      },
+      "combined_score": 0.4054,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "RDDT",
+      "basket": "gappers",
+      "top_k_of": [
+        "squeeze"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 24,
+        "pm_rvol": 0.42,
+        "gap_pct": 7.07,
+        "squeeze": 36.47,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.28,
+        "finra_short_ratio": 0.6047,
+        "halt_reason": null
+      },
+      "combined_score": 0.507,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "RKLB",
+      "basket": "wsb",
+      "top_k_of": [
+        "stocktwits",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 22.0,
+        "wsb_rank": 11,
+        "st_rank": 4,
+        "pm_rvol": 0.13,
+        "gap_pct": 15.67,
+        "squeeze": 7.31,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.39,
+        "finra_short_ratio": 0.4402,
+        "halt_reason": null
+      },
+      "combined_score": 0.6031,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SHW",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 14.46,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.5518,
+        "halt_reason": null
+      },
+      "combined_score": 0.4348,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SLS",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "ignition",
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": 7.5,
+        "wsb_rank": 10,
+        "st_rank": 2,
+        "pm_rvol": null,
+        "gap_pct": 17.55,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 3,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.33,
+        "finra_short_ratio": 0.5005,
+        "halt_reason": null
+      },
+      "combined_score": 0.8,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SOXL",
+      "basket": "finra_shortvol",
+      "top_k_of": [
+        "finra_shortvol"
+      ],
+      "signals": {
+        "wsb_surge": 3.4,
+        "wsb_rank": 18,
+        "st_rank": null,
+        "pm_rvol": 0.07,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.29,
+        "finra_short_ratio": 0.6632,
+        "halt_reason": null
+      },
+      "combined_score": 0.321,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SPY",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 1.9,
+        "wsb_rank": 4,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.32,
+        "finra_short_ratio": 0.4747,
+        "halt_reason": null
+      },
+      "combined_score": 0.3446,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SRPT",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 27,
+        "pm_rvol": null,
+        "gap_pct": 5.28,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.5761,
+        "halt_reason": null
+      },
+      "combined_score": 0.2035,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SYK",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 3.61,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.7084,
+        "halt_reason": null
+      },
+      "combined_score": 0.449,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "TD",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 11.0,
+        "wsb_rank": 24,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.28,
+        "finra_short_ratio": 0.3985,
+        "halt_reason": null
+      },
+      "combined_score": 0.4194,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "TNXP",
+      "basket": "shortsqueeze",
+      "top_k_of": [
+        "shortsqueeze"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": null,
+        "penny_surge": null,
+        "squeeze_sub_surge": 1.0,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.6907,
+        "halt_reason": null
+      },
+      "combined_score": null,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "UI",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 25.0,
+        "wsb_rank": 5,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.3,
+        "finra_short_ratio": 0.6019,
+        "halt_reason": null
+      },
+      "combined_score": 0.5867,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "WDC",
+      "basket": "wsb",
+      "top_k_of": [
+        "squeeze",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 20.0,
+        "wsb_rank": 15,
+        "st_rank": null,
+        "pm_rvol": 0.29,
+        "gap_pct": null,
+        "squeeze": 34.12,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.52,
+        "finra_short_ratio": 0.257,
+        "halt_reason": null
+      },
+      "combined_score": 0.6042,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "WEN",
+      "basket": "wsb",
+      "top_k_of": [
+        "gtrends",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 2.1,
+        "wsb_rank": 2,
+        "st_rank": 23,
+        "pm_rvol": 0.0,
+        "gap_pct": 6.41,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 1.05,
+        "finra_short_ratio": 0.5628,
+        "halt_reason": null
+      },
+      "combined_score": 0.4271,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "XBI",
+      "basket": "finra_shortvol",
+      "top_k_of": [
+        "finra_shortvol",
+        "ignition"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 16,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 3,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.7485,
+        "halt_reason": null
+      },
+      "combined_score": 0.6784,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "YOU",
+      "basket": "finra_shortvol",
+      "top_k_of": [
+        "finra_shortvol"
+      ],
+      "signals": {
+        "wsb_surge": 3.4,
+        "wsb_rank": 19,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.51,
+        "finra_short_ratio": 0.7194,
+        "halt_reason": null
+      },
+      "combined_score": 0.4931,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    }
+  ]
+}
