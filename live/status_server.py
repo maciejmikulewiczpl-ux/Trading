@@ -861,6 +861,57 @@ def _lottery_live(symbols: list[str]) -> dict:
     return out
 
 
+def _source_daily(days_limit: int = 14) -> dict:
+    """Per-source daily performance grid (descriptive) for the Hype + Summary tabs.
+    For each SCORED day, the average 9:45->close return of the names each source flagged
+    (top_k_of), plus 'combined3' (the Hype bot's traded top-3) and 'random' (luck baseline).
+    Returns {dates (newest-first), sources (benchmarks then by cum avg), grid:{src:{date:
+    {n,avg,hit}}}, cum:{src:{n,avg,hit}}}. Shared so both tabs read one source of truth."""
+    out = {"dates": [], "sources": [], "grid": {}, "cum": {}}
+    if not LOTTERY_PICKS_DIR.exists():
+        return out
+    recs = []
+    for f in sorted(LOTTERY_PICKS_DIR.glob("*.json")):
+        try:
+            r = json.load(open(f))
+            recs.append((r.get("date", f.stem), r.get("picks", [])))
+        except Exception:
+            continue
+    recs.sort(key=lambda x: x[0], reverse=True)   # newest first
+    WIN1 = 5.0
+    grid: dict = {}
+    pool: dict = {}
+    dates_list: list = []
+    for date, ps in recs:
+        if not any(p.get("ret_945_close") is not None for p in ps):
+            continue       # skip unscored days (e.g. today before the 1:10pm scorer)
+        dates_list.append(date)
+        groups: dict = {}
+        ranked = sorted([p for p in ps if p.get("combined_score") is not None],
+                        key=lambda x: -x["combined_score"])
+        groups["combined3"] = ranked[:3]
+        groups["random"] = [p for p in ps if p.get("basket") == "random"]
+        for p in ps:
+            for sig in p.get("top_k_of", []):
+                groups.setdefault(sig, []).append(p)
+        for src, gp in groups.items():
+            vals = [p["ret_945_close"] for p in gp if p.get("ret_945_close") is not None]
+            if not vals:
+                continue
+            grid.setdefault(src, {})[date] = {
+                "n": len(vals), "avg": round(sum(vals) / len(vals), 2),
+                "hit": round(sum(1 for x in vals if x >= WIN1) / len(vals), 3)}
+            pool.setdefault(src, []).extend(vals)
+    cum = {src: {"n": len(v), "avg": round(sum(v) / len(v), 2),
+                 "hit": round(sum(1 for x in v if x >= WIN1) / len(v), 3)}
+           for src, v in pool.items()}
+    bench = [s for s in ("combined3", "random") if s in cum]
+    sigs = sorted([s for s in cum if s not in ("combined3", "random")],
+                  key=lambda s: -cum[s]["avg"])
+    return {"dates": dates_list[:days_limit], "sources": bench + sigs,
+            "grid": grid, "cum": cum}
+
+
 def _lottery() -> dict:
     """Summarize the lottery forward-test for its web tab (read-only).
 
@@ -941,43 +992,9 @@ def _lottery() -> dict:
     except Exception as e:
         out["scoreboard"] = {"error": f"scoreboard unavailable: {e}"}
 
-    # --- daily source-performance grid (descriptive: avg 9:45->close % per source per day) ---
-    # Lets you see day-by-day how each source's flagged names did vs the random baseline,
-    # without waiting for the 30-day verdict. Pure color; the lift table above is the verdict.
+    # --- daily source-performance grid (descriptive; shared helper, also used by Summary) ---
     try:
-        WIN1 = 5.0
-        grid: dict = {}        # src -> {date -> {n, avg, hit}}
-        pool: dict = {}        # src -> [all ret_945_close] (cumulative)
-        dates_list: list = []
-        for d in days:         # newest-first already
-            ps = d.get("picks", [])
-            if not any(p.get("ret_945_close") is not None for p in ps):
-                continue       # skip unscored days (e.g. today before the 1:10pm scorer)
-            dates_list.append(d["date"])
-            groups: dict = {}
-            ranked = sorted([p for p in ps if p.get("combined_score") is not None],
-                            key=lambda x: -x["combined_score"])
-            groups["combined3"] = ranked[:3]
-            groups["random"] = [p for p in ps if p.get("basket") == "random"]
-            for p in ps:
-                for sig in p.get("top_k_of", []):
-                    groups.setdefault(sig, []).append(p)
-            for src, gp in groups.items():
-                vals = [p["ret_945_close"] for p in gp if p.get("ret_945_close") is not None]
-                if not vals:
-                    continue
-                grid.setdefault(src, {})[d["date"]] = {
-                    "n": len(vals), "avg": round(sum(vals) / len(vals), 2),
-                    "hit": round(sum(1 for x in vals if x >= WIN1) / len(vals), 3)}
-                pool.setdefault(src, []).extend(vals)
-        cum = {src: {"n": len(v), "avg": round(sum(v) / len(v), 2),
-                     "hit": round(sum(1 for x in v if x >= WIN1) / len(v), 3)}
-               for src, v in pool.items()}
-        bench = [s for s in ("combined3", "random") if s in cum]
-        sigs = sorted([s for s in cum if s not in ("combined3", "random")],
-                      key=lambda s: -cum[s]["avg"])
-        out["source_daily"] = {"dates": dates_list[:12], "sources": bench + sigs,
-                               "grid": grid, "cum": cum}
+        out["source_daily"] = _source_daily(days_limit=12)
     except Exception as e:
         out["source_daily"] = {"error": f"source_daily unavailable: {e}"}
 
@@ -1101,6 +1118,11 @@ def _summary(tc, dc=None) -> dict:
     _add("orb", "ORB baseline", lambda: _status(tc, dc))
     _add("news", "News-Edge", _news_status)
     _add("lottery", "Lottery", _lottery_status)
+    # source-pick daily performance (measured-only signals) for the bots-vs-sources grid
+    try:
+        out["source_daily"] = _source_daily()
+    except Exception:
+        out["source_daily"] = {}
     return out
 
 
@@ -1892,6 +1914,32 @@ function renderSummary(sd){
   }
   h+=`</table></div>`;
   h+=`<div class="hint">inv = capital deployed that day (gross buy notional) · % = that bot's P/L ÷ its invested · S&P 500 % = SPY close-to-close · "Σ window" = totals over all days shown (S&P compounded). Each bot trades its own paper account.</div></div>`;
+
+  // --- bots vs source picks — one daily-% lens ---
+  const sdg=sd.source_daily||{};
+  if(sdg.sources && sdg.sources.length){
+    h+=`<div class="card"><h2>Daily % — bots vs source picks</h2>`;
+    h+=`<div class="hint" style="margin-bottom:8px"><b>Bot</b> rows = that bot's account return (P/L ÷ invested). <b>Source</b> rows = the average 9:45→close return of the names that source flagged that day (measured only — not traded). combined3 = the Hype bot's traded top-3 · random = luck baseline. Compare any source against the bots, day by day · hover a source cell for pick-count &amp; hit-rate.</div>`;
+    h+=`<div class="scrollx" style="overflow-x:auto"><table><tr><th style="text-align:left">row</th>`;
+    for(const d of dates) h+=`<th>${d.slice(5)}</th>`;
+    h+=`</tr>`;
+    const num=(v)=>v==null?`<td style="color:var(--dim)">·</td>`:`<td class="${cls(v)}">${v>=0?"+":""}${v.toFixed(1)}</td>`;
+    for(const k of keys){
+      h+=`<tr><td style="text-align:left"><b>${names[k]}</b> <small style="color:var(--dim)">bot</small></td>`;
+      for(const d of dates){ const r=(map[d]||{})[k]; h+=num(r?r.pnl_pct_inv:null); }
+      h+=`</tr>`;
+    }
+    h+=`<tr><td colspan="${dates.length+1}" style="text-align:left;color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding-top:10px">source picks — avg 9:45→close %</td></tr>`;
+    for(const src of sdg.sources){
+      const nm=(src==="combined3"||src==="random")?`<b>${src}</b>`:src;
+      h+=`<tr><td style="text-align:left">${nm}</td>`;
+      for(const d of dates){ const o=(sdg.grid[src]||{})[d];
+        h+= o==null?`<td style="color:var(--dim)">·</td>`:`<td class="${cls(o.avg)}" title="${o.n} picks · ${(o.hit*100).toFixed(0)}% W1 hit">${o.avg>=0?"+":""}${o.avg.toFixed(1)}</td>`; }
+      h+=`</tr>`;
+    }
+    h+=`</table></div>`;
+    h+=`<div class="hint">bot % and source % aren't the same unit — a bot row is whole-account return (sizing, cash drag, exits); a source row is the raw average move of its flagged names. Use it for direction/feel, not a precise head-to-head. Green up / red down · "·" = no scored picks that day.</div></div>`;
+  }
   h+=`<div class="foot"><span>summary · ${sd.generated||''}</span><span></span></div>`;
   setRoot(h);
 }
