@@ -34,6 +34,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 from institutional_check import check  # noqa: E402  (yfinance-only, no alpaca)
 from accumulation_scan import UNIVERSE, EXPANSION, price_since  # noqa: E402
+from insider_collect import collect as insider_collect, summary_30d as insider_30d  # noqa: E402  (edgartools)
 
 ET = ZoneInfo("America/New_York")
 _UA = {"User-Agent": "Mozilla/5.0 (accumulation-scan research)"}
@@ -131,6 +132,17 @@ def main(argv) -> int:
              & (df["top_adding"] > df["top_trimming"])].copy()
     print(f"\n{len(acc)} real-accumulation names; checking chatter ...", flush=True)
 
+    # INSIDER BUYS (measured data collection — fresher than 13F; Form 4 files in ~2 days).
+    # Updates the persistent append-only log across the FULL universe, then enriches the
+    # overlap rows below with a measured-only column. Research data, NOT a trade input.
+    try:
+        n_ins = insider_collect(universe, lookback_days=14, progress=False)
+        ins30 = insider_30d()
+        print(f"insider-buy log updated (+{n_ins} new; {len(ins30)} names with buys in last 30d)", flush=True)
+    except Exception as e:
+        print(f"insider collect skipped: {str(e)[:80]}")
+        ins30 = {}
+
     wsb = reddit_trending(100)
     stt = st_trending(40)
     accset = set(acc["symbol"])
@@ -144,10 +156,12 @@ def main(argv) -> int:
     for s in overlap:
         r = wsb.get(s, {}); se = sent.get(s, {}); a = acc.loc[s]
         ret = ps.get(s, (None, None))[1]
+        ib = ins30.get(s, (0, 0))
         rows.append({"symbol": s, "add": int(a.top_adding), "trim": int(a.top_trimming),
                      "ret_since_13f": round(ret * 100, 1) if ret is not None else None,
                      "wsb_surge": r.get("surge"), "wsb_mentions": r.get("mentions"),
-                     "st_trending": s in stt, "st_bull%": se.get("bull_pct"), "st_msgs": se.get("n")})
+                     "st_trending": s in stt, "st_bull%": se.get("bull_pct"), "st_msgs": se.get("n"),
+                     "insider_buys_30d": ib[0], "insider_usd_30d": int(ib[1])})
     out = pd.DataFrame(rows)
     if not out.empty:
         out["fresh"] = out["ret_since_13f"].abs() <= MAX_MOVE * 100  # not already run away
@@ -166,8 +180,9 @@ def main(argv) -> int:
         lines = [f"{len(out)} accumulation+chatter overlaps ({len(fresh)} not-yet-run):"]
         for _, r in top.iterrows():
             tag = "ST" if r["st_trending"] else (f"WSB{r['wsb_surge']}x" if pd.notna(r["wsb_surge"]) else "")
+            ins = f" +{int(r['insider_buys_30d'])}insider" if r.get("insider_buys_30d") else ""
             lines.append(f"{r['symbol']} {int(r['add'])}/{int(r['trim'])} "
-                         f"{'' if pd.isna(r['ret_since_13f']) else f'{r.ret_since_13f:+.0f}%'} {tag}")
+                         f"{'' if pd.isna(r['ret_since_13f']) else f'{r.ret_since_13f:+.0f}%'} {tag}{ins}")
         msg = "\n".join(lines)
     elif not out.empty:
         msg = (f"{len(out)} accumulation+chatter overlaps, but all already moved "

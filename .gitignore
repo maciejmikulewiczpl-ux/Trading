@@ -66,6 +66,8 @@ scripts/swing_screen_*.csv
 scripts/institutional_check.csv
 scripts/accumulation_scan.csv
 scripts/accumulation_chatter_*.csv
+# Insider-buy event log (regenerable from EDGAR Form 4s; collected by scripts/insider_collect.py)
+scripts/insider_buys_log.csv
 
 # Claude scheduled-tasks lock (transient harness artifact)
 .claude/scheduled_tasks.lock
