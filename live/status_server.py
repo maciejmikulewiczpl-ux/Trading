@@ -941,6 +941,46 @@ def _lottery() -> dict:
     except Exception as e:
         out["scoreboard"] = {"error": f"scoreboard unavailable: {e}"}
 
+    # --- daily source-performance grid (descriptive: avg 9:45->close % per source per day) ---
+    # Lets you see day-by-day how each source's flagged names did vs the random baseline,
+    # without waiting for the 30-day verdict. Pure color; the lift table above is the verdict.
+    try:
+        WIN1 = 5.0
+        grid: dict = {}        # src -> {date -> {n, avg, hit}}
+        pool: dict = {}        # src -> [all ret_945_close] (cumulative)
+        dates_list: list = []
+        for d in days:         # newest-first already
+            ps = d.get("picks", [])
+            if not any(p.get("ret_945_close") is not None for p in ps):
+                continue       # skip unscored days (e.g. today before the 1:10pm scorer)
+            dates_list.append(d["date"])
+            groups: dict = {}
+            ranked = sorted([p for p in ps if p.get("combined_score") is not None],
+                            key=lambda x: -x["combined_score"])
+            groups["combined3"] = ranked[:3]
+            groups["random"] = [p for p in ps if p.get("basket") == "random"]
+            for p in ps:
+                for sig in p.get("top_k_of", []):
+                    groups.setdefault(sig, []).append(p)
+            for src, gp in groups.items():
+                vals = [p["ret_945_close"] for p in gp if p.get("ret_945_close") is not None]
+                if not vals:
+                    continue
+                grid.setdefault(src, {})[d["date"]] = {
+                    "n": len(vals), "avg": round(sum(vals) / len(vals), 2),
+                    "hit": round(sum(1 for x in vals if x >= WIN1) / len(vals), 3)}
+                pool.setdefault(src, []).extend(vals)
+        cum = {src: {"n": len(v), "avg": round(sum(v) / len(v), 2),
+                     "hit": round(sum(1 for x in v if x >= WIN1) / len(v), 3)}
+               for src, v in pool.items()}
+        bench = [s for s in ("combined3", "random") if s in cum]
+        sigs = sorted([s for s in cum if s not in ("combined3", "random")],
+                      key=lambda s: -cum[s]["avg"])
+        out["source_daily"] = {"dates": dates_list[:12], "sources": bench + sigs,
+                               "grid": grid, "cum": cum}
+    except Exception as e:
+        out["source_daily"] = {"error": f"source_daily unavailable: {e}"}
+
     bot = _lottery_status()
     if bot is not None:
         out["bot"] = bot
@@ -1723,6 +1763,26 @@ function renderLottery(ld){
     h+=`</table>`;
   }
   h+=`<div class="hint">W1 = 9:45→close ≥+5% · W2 = next-day ≥+10% · W3 = 3-day ≥+20%. Lift = signal hit-rate ÷ random base rate. ≥2× and growing with the sample = a real winner-picker. One good week is noise.</div></div>`;
+  // --- daily source performance grid (descriptive day-by-day comparison) ---
+  const sd=ld.source_daily||{};
+  if(sd.error){ h+=`<div class="card"><h2>Daily source performance</h2><div class="err">${sd.error}</div></div>`; }
+  else if(sd.dates && sd.dates.length){
+    h+=`<div class="card"><h2>Daily source performance — avg 9:45→close % per source</h2>`;
+    h+=`<div class="hint" style="margin-bottom:8px">Each cell = the average same-day return (9:45→close) of the names that source flagged that day. <b>combined3</b> = the bot's traded top-3 · <b>random</b> = the luck baseline. Scan a row left-to-right for a source's daily trend; compare each against random. Newest day first · hover a cell for pick-count &amp; W1 hit-rate.</div>`;
+    const dcell=o=>o==null?`<td style="color:var(--dim)">·</td>`:`<td class="${cls(o.avg)}" title="${o.n} picks · ${(o.hit*100).toFixed(0)}% W1 hit">${o.avg>=0?"+":""}${o.avg.toFixed(1)}</td>`;
+    h+=`<table><tr><th style="text-align:left">source</th><th>cum avg</th>`;
+    for(const dt of sd.dates) h+=`<th>${dt.slice(5)}</th>`;
+    h+=`</tr>`;
+    for(const src of (sd.sources||[])){
+      const c=(sd.cum||{})[src]||{};
+      const nm=(src==="combined3"||src==="random")?`<b>${src}</b>`:src;
+      h+=`<tr><td style="text-align:left">${nm}</td>`+
+         `<td class="${cls(c.avg)}" title="${c.n||0} picks total">${c.avg==null?"—":((c.avg>=0?"+":"")+c.avg.toFixed(1))}</td>`;
+      for(const dt of sd.dates) h+=dcell((sd.grid[src]||{})[dt]);
+      h+=`</tr>`;
+    }
+    h+=`</table><div class="hint">descriptive daily color only (green up / red down) — the statistical verdict is the lift table above, which needs ≥30 days. A source beating random here day after day is what eventually shows up there.</div></div>`;
+  }
   // --- today's picks live behavior ---
   if(ld.live && Object.keys(ld.live).length){
     const held=new Set(((ld.bot||{}).positions||[]).map(p=>p.symbol));
