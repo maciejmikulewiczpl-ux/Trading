@@ -42,15 +42,24 @@ def _load_env():
             os.environ[k.strip()] = v.strip().strip('"').strip("'")
 
 
+def _ff(x):
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return None
+
+
 def _trades() -> list[dict]:
-    """Traded names from the ledger: symbol, entry_date, entry_avg."""
+    """Traded names from the ledger + their ENTRY signals (for signal-conditioned exits)."""
     if not LEDGER.exists():
         return []
     out = []
     for r in csv.DictReader(open(LEDGER)):
         try:
             out.append({"symbol": r["symbol"], "entry_date": r["entry_date"],
-                        "entry": float(r["entry_avg"])})
+                        "entry": float(r["entry_avg"]),
+                        "ign": _ff(r.get("sig_ignition")), "gap": _ff(r.get("sig_gap_pct")),
+                        "topk": set((r.get("top_k_of") or "").split(",")) - {""}})
         except (ValueError, KeyError):
             continue
     return out
@@ -98,7 +107,9 @@ def sim_one(bars_from_entry, entry, trail_pct, max_days):
     return last[4] / entry - 1.0, len(path) - 1, "end"
 
 
-def run_variant(trades, bars, trail_pct, max_days):
+def _walk(trades, bars, choose):
+    """Run the sim where choose(trade) -> (trail_pct, max_days) per trade."""
+    import statistics
     rs, reasons = [], {"trail": 0, "time": 0, "end": 0}
     for t in trades:
         b = bars.get(t["symbol"])
@@ -107,17 +118,50 @@ def run_variant(trades, bars, trail_pct, max_days):
         frm = [x for x in b if x[0] >= datetime.fromisoformat(t["entry_date"]).date()]
         if len(frm) < 2:
             continue
-        r, _i, why = sim_one(frm, t["entry"], trail_pct, max_days)
+        trail, days = choose(t)
+        r, _i, why = sim_one(frm, t["entry"], trail, days)
         rs.append(r * 100)
         reasons[why] += 1
     if not rs:
         return None
-    import statistics
     return {"n": len(rs), "avg_%": round(statistics.mean(rs), 2),
             "median_%": round(statistics.median(rs), 2),
             "win_%": round(sum(1 for x in rs if x > 0) / len(rs) * 100),
             "total_%": round(sum(rs), 1),
             "exits": f"{reasons['trail']}tr/{reasons['time']}ti"}
+
+
+def run_variant(trades, bars, trail_pct, max_days):
+    return _walk(trades, bars, lambda t: (trail_pct, max_days))
+
+
+# --- signal-conditioned exit policies (the hypothesis: hold momentum, dump gaps/hype) ---
+def pol_momentum(t):
+    """Hold strong multi-day momentum longer (ignition>=3 -> T+5)."""
+    return (10.0, 5) if (t.get("ign") is not None and t["ign"] >= 3) else (10.0, 3)
+
+
+def pol_gapfade(t):
+    """Dump big premarket gaps fast (gap>=10% -> T+1)."""
+    return (10.0, 1) if (t.get("gap") is not None and t["gap"] >= 10) else (10.0, 3)
+
+
+def pol_full(t):
+    """Combined: momentum holds, gaps fade, social-only spikes sell early, else default."""
+    if t.get("ign") is not None and t["ign"] >= 3:
+        return (10.0, 5)
+    if t.get("gap") is not None and t["gap"] >= 10:
+        return (10.0, 1)
+    tk = t.get("topk") or set()
+    if ("wsb" in tk or "stocktwits" in tk) and "ignition" not in tk:
+        return (10.0, 1)
+    return (10.0, 3)
+
+
+def _routing(trades, policy):
+    from collections import Counter
+    c = Counter(policy(t) for t in trades)
+    return ", ".join(f"{t[1]}d:{n}" for t, n in sorted(c.items()))
 
 
 def _print(title, rows):
@@ -158,8 +202,19 @@ def main():
             ("12% / T+4", run_variant(trades, bars, 12, 4)),
             ("15% / T+5", run_variant(trades, bars, 15, 5))])
 
+    # SIGNAL-CONDITIONED exits: let the entry hype/indicators set the hold length
+    _print("SIGNAL-CONDITIONED exits  (vs fixed T+3)",
+           [("fixed 10%/T+3 *cur", run_variant(trades, bars, 10, 3)),
+            ("momentum-hold", _walk(trades, bars, pol_momentum)),
+            ("gap-fade", _walk(trades, bars, pol_gapfade)),
+            ("full conditioned", _walk(trades, bars, pol_full))])
+    print("  routing (hold-days:count): momentum [{}] | gap-fade [{}] | full [{}]".format(
+        _routing(trades, pol_momentum), _routing(trades, pol_gapfade), _routing(trades, pol_full)))
+    print("  rules: ignition>=3 -> hold T+5 | gap>=10% -> sell T+1 | social-only -> sell T+1 | else T+3")
+
     print("\n[reminder] daily-resolution approximation, thin IEX bars on micro-caps, tiny "
-          "sample. Re-run at the ~30-day base before trusting any ranking.")
+          "sample. The conditioned rules are a HYPOTHESIS from 136-candidate trajectories; "
+          "re-run at the ~30-day base before trusting any ranking or changing the bot.")
     return 0
 
 
