@@ -11,6 +11,8 @@ $log = Join-Path $ROOT "logs\lottery_score_$stamp.log"
 New-Item -ItemType Directory -Force -Path (Join-Path $ROOT 'logs') | Out-Null
 "=== lottery score START $((Get-Date).ToString('o')) ===" | Add-Content -Path $log -Encoding utf8
 & (Join-Path $ROOT '.venv\Scripts\python.exe') (Join-Path $ROOT 'experiments\lottery\notify_score.py') *>> $log 2>&1
+# rebuild the per-trade outcome ledger (logs/lottery_trade_ledger.csv) for deep-dive analysis
+& (Join-Path $ROOT '.venv\Scripts\python.exe') (Join-Path $ROOT 'experiments\lottery\trade_ledger.py') *>> $log 2>&1
 & git -C $ROOT add experiments/lottery/picks *>> $log 2>&1
 & git -C $ROOT commit -q -m "lottery outcomes $stamp" *>> $log 2>&1
 & git -C $ROOT push origin main *>> $log 2>&1
