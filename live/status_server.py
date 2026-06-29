@@ -765,22 +765,28 @@ def _lottery_closed_today(tc) -> list[dict]:
         if fap is None or fq <= 0 or ft is None:
             continue
         side = str(o.side).rsplit(".", 1)[-1].lower()
-        a = agg.setdefault(o.symbol, {"bq": 0.0, "bn": 0.0, "sq": 0.0, "sn": 0.0, "sold_today": False})
+        a = agg.setdefault(o.symbol, {"bq": 0.0, "bn": 0.0, "sq": 0.0, "sn": 0.0,
+                                      "tsq": 0.0, "tsn": 0.0})
         if side == "buy":
             a["bq"] += fq; a["bn"] += fq * _f(fap)
         elif side == "sell":
             a["sq"] += fq; a["sn"] += fq * _f(fap)
             if ft.astimezone(ET).date() == today:
-                a["sold_today"] = True
+                a["tsq"] += fq; a["tsn"] += fq * _f(fap)   # today's sells only
     out = []
     for sym, a in agg.items():
-        if not a["sold_today"] or sym in held or a["bq"] <= 0 or a["sq"] <= 0:
+        # any name with a SELL filled TODAY against a known entry — full OR partial.
+        # (A trailing stop can sell part of a position and leave a remnant held; the old
+        # "must be flat" gate hid those exits + their realized P/L entirely.)
+        if a["tsq"] <= 0 or a["bq"] <= 0:
             continue
         entry_avg = a["bn"] / a["bq"]
-        exit_avg = a["sn"] / a["sq"]
-        qty = min(a["bq"], a["sq"])
+        exit_avg = a["tsn"] / a["tsq"]
+        qty = a["tsq"]                                   # shares sold today
+        partial = (sym in held) or (a["sq"] + 1e-9 < a["bq"])
         out.append({"symbol": sym, "qty": qty, "entry_avg": entry_avg,
-                    "exit_avg": exit_avg, "realized": (exit_avg - entry_avg) * qty})
+                    "exit_avg": exit_avg, "realized": (exit_avg - entry_avg) * qty,
+                    "partial": partial})
     out.sort(key=lambda r: r["realized"])
     return out
 
@@ -1751,8 +1757,8 @@ function renderLottery(ld){
     h+=`<div style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px">Closed today (${bct.length})${bct.length?` &nbsp;·&nbsp; realized <span class="${cls(bpnl)}">${sign(bpnl)}</span> &nbsp;·&nbsp; <span>${money(bpnl/bct.length)}/trade</span>`:""}</div>`;
     if(bct.length){
       h+=`<table><tr><th>sym</th><th>qty</th><th>entry</th><th>exit</th><th>realized</th></tr>`;
-      for(const c of bct) h+=row([{v:c.symbol},{v:c.qty.toFixed(0)},{v:money(c.entry_avg)},{v:money(c.exit_avg)},{v:sign(c.realized),cls:cls(c.realized)}]);
-      h+=`</table><div class="hint">includes multi-day holds closed today (trailing stop or T+3); realized = exit − original entry</div>`;
+      for(const c of bct) h+=row([{v:c.symbol+(c.partial?` <small style="color:var(--dim)">partial</small>`:"")},{v:c.qty.toFixed(0)},{v:money(c.entry_avg)},{v:money(c.exit_avg)},{v:sign(c.realized),cls:cls(c.realized)}]);
+      h+=`</table><div class="hint">includes multi-day holds closed today + PARTIAL trailing-stop exits (tagged "partial" — some shares may still be held); realized = (exit − entry) × shares sold today</div>`;
     } else h+=`<div class="empty">no positions closed today</div>`;
     if(b.errors&&b.errors.length) h+=`<div class="err">⚠ ${b.errors.join(" · ")}</div>`;
     h+=`</div>`;
