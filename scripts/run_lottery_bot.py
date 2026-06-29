@@ -220,7 +220,8 @@ def run_entries(tc, dry_run: bool) -> int:
                 time_in_force=TimeInForce.DAY))
             print(f"  BUY submitted {sym} {qty} sh @ ~${px:.2f} (order {order.id}).")
             state[sym] = {"entry_date": date_str, "qty": qty, "ref_price": px,
-                          "combined_score": p["combined_score"], "trail_attached": False}
+                          "combined_score": p["combined_score"], "trail_attached": False,
+                          "buy_order_id": str(order.id)}
             placed += 1
         except Exception as e:
             print(f"  {sym} BUY FAILED: {e}")
@@ -229,36 +230,61 @@ def run_entries(tc, dry_run: bool) -> int:
     return placed
 
 
+def _filled_qty_when_done(tc, order_id: str, max_wait_s: int = 12) -> int:
+    """Poll a buy order until it's terminally filled, returning its FULL filled_qty.
+    A market order on a thin name can fill progressively over several seconds; reading the
+    position too early (the old fixed 3s sleep) left late-settling shares with NO stop —
+    that's how SLS ended up with 178 bought but only 170 trailed (2026-06-29). Poll the
+    order itself so the trail always covers the complete fill."""
+    import time as _t
+    best = 0
+    for _ in range(max_wait_s):
+        try:
+            o = tc.get_order_by_id(order_id)
+            best = max(best, int(float(getattr(o, "filled_qty", 0) or 0)))
+            st = str(getattr(o, "status", "")).rsplit(".", 1)[-1].lower()
+            if st in ("filled", "canceled", "cancelled", "expired", "rejected"):
+                return best
+        except Exception:
+            pass
+        _t.sleep(1)
+    return best
+
+
 def attach_trailing_stops(tc, dry_run: bool) -> int:
-    """For any tracked position that's filled but has no trailing stop yet, attach a
-    10% native trailing stop. Idempotent (skips ones already attached)."""
+    """For any tracked position with no trailing stop yet, attach a 10% native trailing
+    stop covering the FULL filled quantity. Waits for the buy order to finish filling
+    (not a fixed sleep) so no shares are left unprotected; tops up if the held position
+    still exceeds what we trailed. Idempotent (skips ones already attached)."""
     from alpaca.trading.requests import TrailingStopOrderRequest
     from alpaca.trading.enums import OrderSide, TimeInForce
     if dry_run:
         return 0
     state = _load_state()
-    try:
-        positions = {p.symbol: p for p in tc.get_all_positions()}
-    except Exception as e:
-        print(f"trailing: get_all_positions failed: {e}")
-        return 0
     attached = 0
     for sym, info in state.items():
         if info.get("trail_attached"):
             continue
-        pos = positions.get(sym)
-        if pos is None:
+        # full filled qty from the buy order (handles slow/partial market fills)
+        filled = _filled_qty_when_done(tc, info["buy_order_id"]) if info.get("buy_order_id") else 0
+        try:
+            pos = {p.symbol: p for p in tc.get_all_positions()}.get(sym)
+            held_qty = int(float(pos.qty)) if pos else 0
+        except Exception:
+            held_qty = 0
+        qty = max(filled, held_qty)        # cover everything that actually landed
+        qty = min(qty, held_qty) if held_qty else qty   # never exceed what's held
+        if qty <= 0:
+            print(f"  {sym}: no filled shares to protect yet -- skip.")
             continue
         try:
-            qty = int(float(pos.qty))   # whole shares (entries are whole-share now)
-            if qty <= 0:
-                continue
             to = tc.submit_order(TrailingStopOrderRequest(
                 symbol=sym, qty=qty, side=OrderSide.SELL,
                 time_in_force=TimeInForce.GTC, trail_percent=TRAIL_PCT))
             info["trail_attached"] = True
             info["trail_order_id"] = str(to.id)
-            print(f"  trailing stop attached {sym}: {TRAIL_PCT:.0f}% (order {to.id}).")
+            info["trail_qty"] = qty
+            print(f"  trailing stop attached {sym}: {TRAIL_PCT:.0f}% on {qty} sh (order {to.id}).")
             attached += 1
         except Exception as e:
             print(f"  {sym} trailing attach FAILED: {e}")
