@@ -425,6 +425,7 @@ def _gather(tc, dc=None, since_date=None) -> dict:
     # that day. Lets each day's P/L be shown as a return on what was actually at
     # risk, not as a near-zero fraction of the mostly-cash account equity.
     invested_by_day: dict[str, float] = {}
+    deployed_eod: dict[str, float] = {}   # date -> concurrent cost basis of open positions at EOD
     try:
         win_start = datetime.combine(today - timedelta(days=370), dtime(0, 0, tzinfo=ET)).astimezone(UTC)
         req = GetOrdersRequest(status=QueryOrderStatus.ALL, after=win_start, limit=500)
@@ -432,16 +433,29 @@ def _gather(tc, dc=None, since_date=None) -> dict:
             hist = tc.get_orders(filter=req)
         except TypeError:
             hist = tc.get_orders(req)
+        all_fills = []
         for o in hist:
             fap = getattr(o, "filled_avg_price", None)
             fqty = _f(o.filled_qty)
             ft = getattr(o, "filled_at", None)
             if fap is None or fqty <= 0 or ft is None:
                 continue
-            if str(o.side).rsplit(".", 1)[-1].lower() != "buy":
-                continue
+            side = str(o.side).rsplit(".", 1)[-1].lower()
             d = ft.astimezone(ET).date().isoformat()
-            invested_by_day[d] = invested_by_day.get(d, 0.0) + fqty * _f(fap)
+            all_fills.append((ft, d, o.symbol, side, fqty, _f(fap)))
+            if side == "buy":
+                invested_by_day[d] = invested_by_day.get(d, 0.0) + fqty * _f(fap)
+        # concurrent deployed capital (cost basis of open positions) per day, from ALL fills
+        all_fills.sort(key=lambda x: x[0])
+        runpos: dict = {}   # sym -> [qty, cost]
+        for (_ft, d, sym, side, fq, px) in all_fills:
+            st = runpos.setdefault(sym, [0.0, 0.0])
+            if side == "buy":
+                st[0] += fq; st[1] += fq * px
+            elif st[0] > 0:                                  # sell: avg-cost removal
+                st[1] -= min(fq, st[0]) / st[0] * st[1]
+                st[0] = max(0.0, st[0] - fq)
+            deployed_eod[d] = sum(c for _q, c in runpos.values())
     except Exception as e:
         out["errors"].append(f"orders history: {e}")
 
@@ -505,6 +519,17 @@ def _gather(tc, dc=None, since_date=None) -> dict:
         # and daily list are built, so every figure reflects only this bot's history.
         if since_date:
             rows = [r for r in rows if r["date"] >= since_date]
+
+        # Return on CONCURRENT capital deployed (the strategy-quality denominator, not the
+        # idle account balance): carry the EOD cost basis forward across no-fill days.
+        dep_series, _last = [], 0.0
+        for r in sorted(rows, key=lambda x: x["date"]):
+            _last = deployed_eod.get(r["date"], _last)
+            dep_series.append(_last)
+        _active = [x for x in dep_series if x > 0]
+        out["deployed_avg"] = (sum(_active) / len(_active)) if _active else 0.0
+        out["deployed_peak"] = max(dep_series) if dep_series else 0.0
+        out["window_pnl"] = sum(r["pnl"] for r in rows)
 
         # Trailing-window roll-ups for the stat cards (calendar windows incl. today).
         def _window(days: int) -> dict:
@@ -1126,6 +1151,9 @@ def _summary(tc, dc=None) -> dict:
             "daily_pnl": data.get("daily_pnl", []),
             "week_pnl": data.get("week_pnl"),
             "month_pnl": data.get("month_pnl"),
+            "deployed_avg": data.get("deployed_avg"),
+            "deployed_peak": data.get("deployed_peak"),
+            "window_pnl": data.get("window_pnl"),
         })
 
     _add("orb", "ORB baseline", lambda: _status(tc, dc))
@@ -1934,6 +1962,20 @@ function renderSummary(sd){
   }
   h+=`</table></div>`;
   h+=`<div class="hint">inv = capital deployed that day (gross buy notional) · % = that bot's P/L ÷ its invested · S&P 500 % = SPY close-to-close · "Σ window" = totals over all days shown (S&P compounded). Each bot trades its own paper account.</div></div>`;
+
+  // --- return on CAPITAL ACTUALLY DEPLOYED (the strategy-quality denominator) ---
+  h+=`<div class="card"><h2>Return on capital deployed (window shown)</h2>`;
+  h+=`<div class="hint" style="margin-bottom:8px">P/L vs the capital actually <b>at work</b> — the avg / peak concurrent cost basis of open positions — <b>not</b> the idle account balance. This is the strategy-quality number (e.g. a small book turning over efficiently).</div>`;
+  h+=`<table><tr><th style="text-align:left">bot</th><th>avg deployed</th><th>peak deployed</th><th>P/L</th><th>% on avg deployed</th></tr>`;
+  for(const k of keys){
+    const b=byKey[k]; if(!b||b.absent||b.error) continue;
+    const dep=b.deployed_avg, pk=b.deployed_peak, pnl=b.window_pnl;
+    const roc=(dep&&dep>0&&pnl!=null)?(pnl/dep*100):null;
+    h+=row([{v:names[k]},{v:dep?money(dep):"—"},{v:pk?money(pk):"—"},
+            {v:pnl!=null?sign(pnl):"—",cls:cls(pnl)},
+            {v:roc!=null?`${roc>=0?"+":""}${roc.toFixed(1)}%`:"—",cls:cls(roc)}]);
+  }
+  h+=`</table><div class="hint">avg/peak deployed = mean/max concurrent position cost basis over the days shown · % on avg deployed = total window P/L ÷ avg deployed. Holds multi-day (Hype/News) keep capital at work; the ORB baseline flattens daily so its deployed reading is choppier. Small sample — read the magnitude with caution.</div></div>`;
 
   // --- bots vs source picks — one daily-% lens ---
   const sdg=sd.source_daily||{};
