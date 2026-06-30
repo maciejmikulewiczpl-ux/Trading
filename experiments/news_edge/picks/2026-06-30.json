@@ -19,7 +19,9 @@
       "reddit_rank": 30,
       "earnings_day": false,
       "theme": "chip-equip",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.906,
+      "gap_pct": 0.484
     },
     {
       "symbol": "LRCX",
@@ -37,7 +39,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "chip-equip",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.297,
+      "gap_pct": 1.331
     },
     {
       "symbol": "SRPT",
@@ -55,7 +59,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "biotech-fda",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.839,
+      "gap_pct": 2.468
     },
     {
       "symbol": "SOC",
@@ -74,7 +80,8 @@
       "earnings_day": false,
       "theme": "dilution",
       "control": false,
-      "gap_pct": -44.55
+      "gap_pct": -44.55,
+      "ret_945_close": -26.258
     },
     {
       "symbol": "EOSE",
@@ -92,7 +99,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "dilution",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.748,
+      "gap_pct": -2.295
     },
     {
       "symbol": "ASTS",
@@ -112,7 +121,9 @@
       "reddit_rank": 5,
       "earnings_day": false,
       "theme": "space",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.77,
+      "gap_pct": -5.535
     },
     {
       "symbol": "JACK",
@@ -130,7 +141,9 @@
       "reddit_rank": 16,
       "earnings_day": false,
       "theme": "restaurant-meme",
-      "control": false
+      "control": false,
+      "ret_945_close": -7.67,
+      "gap_pct": 3.311
     },
     {
       "symbol": "SMCI",
@@ -148,7 +161,9 @@
       "reddit_rank": 13,
       "earnings_day": false,
       "theme": "ai-server",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.091,
+      "gap_pct": 0.995
     },
     {
       "symbol": "AVAV",
@@ -167,7 +182,8 @@
       "earnings_day": false,
       "theme": "defense-drone",
       "control": false,
-      "gap_pct": 17.99
+      "gap_pct": 17.99,
+      "ret_945_close": -1.722
     },
     {
       "symbol": "SLS",
@@ -185,7 +201,8 @@
       "earnings_day": false,
       "theme": "biotech",
       "control": false,
-      "gap_pct": -7.2
+      "gap_pct": -7.2,
+      "ret_945_close": 2.669
     },
     {
       "symbol": "ABVX",
@@ -201,7 +218,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 36.31
+      "gap_pct": 36.31,
+      "ret_945_close": 1.28
     },
     {
       "symbol": "MSTX",
@@ -217,7 +235,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -16.74
+      "gap_pct": -16.74,
+      "ret_945_close": 2.913
     },
     {
       "symbol": "AVEX",
@@ -233,7 +252,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 9.51
+      "gap_pct": 9.51,
+      "ret_945_close": 4.952
     },
     {
       "symbol": "MSTR",
@@ -249,7 +269,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -8.23
+      "gap_pct": -8.23,
+      "ret_945_close": 1.307
     },
     {
       "symbol": "BCRX",
@@ -265,7 +286,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.65
+      "gap_pct": 5.65,
+      "ret_945_close": -0.249
     },
     {
       "symbol": "OUST",
@@ -281,7 +303,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.27
+      "gap_pct": 5.27,
+      "ret_945_close": 8.969
     },
     {
       "symbol": "AMPX",
@@ -297,7 +320,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 4.77
+      "gap_pct": 4.77,
+      "ret_945_close": -3.465
     },
     {
       "symbol": "ENPH",
@@ -313,7 +337,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.66
+      "gap_pct": 3.66,
+      "ret_945_close": -0.071
     }
-  ]
+  ],
+  "outcomes_at": "2026-06-30T16:05:08-04:00"
 }
