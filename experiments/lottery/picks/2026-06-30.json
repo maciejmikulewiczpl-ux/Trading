@@ -27,7 +27,7 @@
         "realized_vol": 0.1216
       },
       "combined_score": 0.0128,
-      "ret_945_close": null,
+      "ret_945_close": 1.28,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -57,7 +57,7 @@
         "realized_vol": 0.0608
       },
       "combined_score": 0.6979,
-      "ret_945_close": null,
+      "ret_945_close": 1.906,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -82,7 +82,7 @@
         "realized_vol": 0.062
       },
       "combined_score": 0.3352,
-      "ret_945_close": null,
+      "ret_945_close": -3.465,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -107,7 +107,7 @@
         "realized_vol": 0.0238
       },
       "combined_score": 0.3928,
-      "ret_945_close": null,
+      "ret_945_close": 0.671,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -137,7 +137,7 @@
         "realized_vol": 0.0898
       },
       "combined_score": 0.7123,
-      "ret_945_close": null,
+      "ret_945_close": 3.77,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -167,7 +167,7 @@
         "realized_vol": 0.0439
       },
       "combined_score": 0.642,
-      "ret_945_close": null,
+      "ret_945_close": -1.722,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -194,7 +194,7 @@
         "realized_vol": 0.0746
       },
       "combined_score": 0.6042,
-      "ret_945_close": null,
+      "ret_945_close": 4.952,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -219,7 +219,7 @@
         "realized_vol": 0.0277
       },
       "combined_score": 0.4503,
-      "ret_945_close": null,
+      "ret_945_close": -0.249,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -246,7 +246,7 @@
         "realized_vol": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": 1.544,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -275,7 +275,7 @@
         "realized_vol": 0.0422
       },
       "combined_score": 0.7099,
-      "ret_945_close": null,
+      "ret_945_close": -2.451,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -302,7 +302,7 @@
         "realized_vol": 0.0547
       },
       "combined_score": 0.1943,
-      "ret_945_close": null,
+      "ret_945_close": 2.969,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -329,7 +329,7 @@
         "realized_vol": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": 2.026,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -356,7 +356,7 @@
         "realized_vol": 0.0678
       },
       "combined_score": 0.5232,
-      "ret_945_close": null,
+      "ret_945_close": -0.071,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -383,7 +383,7 @@
         "realized_vol": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": -0.247,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -408,7 +408,7 @@
         "realized_vol": 0.0101
       },
       "combined_score": 0.1071,
-      "ret_945_close": null,
+      "ret_945_close": 0.763,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -433,7 +433,7 @@
         "realized_vol": 0.0181
       },
       "combined_score": 0.2321,
-      "ret_945_close": null,
+      "ret_945_close": 0.521,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -458,7 +458,7 @@
         "realized_vol": 0.0235
       },
       "combined_score": 0.5182,
-      "ret_945_close": null,
+      "ret_945_close": 1.831,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -483,7 +483,7 @@
         "realized_vol": 0.0299
       },
       "combined_score": 0.3572,
-      "ret_945_close": null,
+      "ret_945_close": -1.991,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -510,7 +510,7 @@
         "realized_vol": 0.039
       },
       "combined_score": 0.3711,
-      "ret_945_close": null,
+      "ret_945_close": 0.371,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -537,7 +537,7 @@
         "realized_vol": 0.072
       },
       "combined_score": 0.7011,
-      "ret_945_close": null,
+      "ret_945_close": -7.67,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -564,7 +564,7 @@
         "realized_vol": 0.1016
       },
       "combined_score": 0.4346,
-      "ret_945_close": null,
+      "ret_945_close": 5.164,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -589,7 +589,7 @@
         "realized_vol": 0.06
       },
       "combined_score": 0.3317,
-      "ret_945_close": null,
+      "ret_945_close": 1.307,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -614,7 +614,7 @@
         "realized_vol": 0.1195
       },
       "combined_score": 0.3655,
-      "ret_945_close": null,
+      "ret_945_close": 2.913,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -641,7 +641,7 @@
         "realized_vol": 0.0802
       },
       "combined_score": 0.332,
-      "ret_945_close": null,
+      "ret_945_close": 1.474,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -668,7 +668,7 @@
         "realized_vol": 0.0527
       },
       "combined_score": 0.5611,
-      "ret_945_close": null,
+      "ret_945_close": -1.613,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -695,7 +695,7 @@
         "realized_vol": 0.094
       },
       "combined_score": 0.5137,
-      "ret_945_close": null,
+      "ret_945_close": 8.969,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -722,7 +722,7 @@
         "realized_vol": 0.0447
       },
       "combined_score": 0.4221,
-      "ret_945_close": null,
+      "ret_945_close": -3.22,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -753,7 +753,7 @@
         "realized_vol": 0.0858
       },
       "combined_score": 0.9109,
-      "ret_945_close": null,
+      "ret_945_close": 2.669,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -780,7 +780,7 @@
         "realized_vol": 0.0905
       },
       "combined_score": 0.5677,
-      "ret_945_close": null,
+      "ret_945_close": 1.091,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -807,7 +807,7 @@
         "realized_vol": 0.0853
       },
       "combined_score": 0.4086,
-      "ret_945_close": null,
+      "ret_945_close": 5.909,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -834,7 +834,7 @@
         "realized_vol": 0.0494
       },
       "combined_score": 0.5722,
-      "ret_945_close": null,
+      "ret_945_close": -26.258,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -861,7 +861,7 @@
         "realized_vol": 0.037
       },
       "combined_score": 0.4423,
-      "ret_945_close": null,
+      "ret_945_close": 1.839,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -886,7 +886,7 @@
         "realized_vol": 0.0204
       },
       "combined_score": 0.1276,
-      "ret_945_close": null,
+      "ret_945_close": -3.302,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -911,7 +911,7 @@
         "realized_vol": 0.0349
       },
       "combined_score": 0.3511,
-      "ret_945_close": null,
+      "ret_945_close": -0.698,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -938,7 +938,7 @@
         "realized_vol": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": -0.156,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -965,7 +965,7 @@
         "realized_vol": 0.0361
       },
       "combined_score": 0.476,
-      "ret_945_close": null,
+      "ret_945_close": 2.933,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -990,7 +990,7 @@
         "realized_vol": 0.0234
       },
       "combined_score": 0.3539,
-      "ret_945_close": null,
+      "ret_945_close": 1.218,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1015,7 +1015,7 @@
         "realized_vol": 0.0168
       },
       "combined_score": 0.4415,
-      "ret_945_close": null,
+      "ret_945_close": -0.007,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1042,7 +1042,7 @@
         "realized_vol": 0.0205
       },
       "combined_score": 0.2087,
-      "ret_945_close": null,
+      "ret_945_close": -1.808,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1067,7 +1067,7 @@
         "realized_vol": 0.0984
       },
       "combined_score": 0.1498,
-      "ret_945_close": null,
+      "ret_945_close": 9.743,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1092,9 +1092,10 @@
         "realized_vol": 0.0117
       },
       "combined_score": 0.4545,
-      "ret_945_close": null,
+      "ret_945_close": -0.362,
       "ret_1d": null,
       "ret_3d": null
     }
-  ]
+  ],
+  "scored_at": "2026-06-30T16:10:16-04:00"
 }
