@@ -1,0 +1,319 @@
+{
+  "date": "2026-06-30",
+  "logged_at": "2026-06-30T09:38:19-04:00",
+  "picks": [
+    {
+      "symbol": "AMAT",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Chip-equip analyst PT hikes 6/29 (Cantor $850, Keybanc $750, Wells $740), +3% premarket, pm RVOL 2.5x. Smaller-gap fresh-news leader of the semicap move.",
+      "sources": [
+        "edgar",
+        "stocktwits",
+        "websearch"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 2.54,
+      "reddit_rank": 30,
+      "earnings_day": false,
+      "theme": "chip-equip",
+      "control": false
+    },
+    {
+      "symbol": "LRCX",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Semicap peer; BofA PT raise to $480, +9% premarket. Same AI-memory demand catalyst as AMAT but already up 9% (fade risk vs the smaller-gap name).",
+      "sources": [
+        "stocktwits",
+        "websearch"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "chip-equip",
+      "control": false
+    },
+    {
+      "symbol": "SRPT",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "FDA draft guidance (6/26) streamlining cell/gene-therapy approvals = rare-disease tailwind; RBC notes Elevidys sales stabilizing. ST 100% bull. Catalyst recent but not today-dated.",
+      "sources": [
+        "stocktwits",
+        "websearch"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-fda",
+      "control": false
+    },
+    {
+      "symbol": "SOC",
+      "signal": -1,
+      "confidence": 0.7,
+      "reason": "Sable Offshore priced a 424B5 offering this morning (dilution); gapping -44.6%. Clear bearish catalyst confirmed by the gap.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false,
+      "gap_pct": -44.55
+    },
+    {
+      "symbol": "EOSE",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Eos Energy filed 8-K + 424B5 offering (dilution) premarket. ST crowd still 100% bull (hasn't priced the raise) - contrarian bearish.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "ASTS",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "BlueBird 8/9/10 satellites launched, already ran ~+9.6%; next catalyst (BlueBird 11-13) is early August. Heavy crowding (ST #5, Reddit 174 mentions) without a fresh today catalyst.",
+      "sources": [
+        "edgar",
+        "stocktwits",
+        "reddit",
+        "websearch"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 3.02,
+      "reddit_rank": 5,
+      "earnings_day": false,
+      "theme": "space",
+      "control": false
+    },
+    {
+      "symbol": "JACK",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Reddit mention surge (rank 16) + ST trending, but no fresh catalyst - June filings were a debt refinancing (6/10), Q2 earnings back in April. Crowding, not a catalyst.",
+      "sources": [
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 16,
+      "earnings_day": false,
+      "theme": "restaurant-meme",
+      "control": false
+    },
+    {
+      "symbol": "SMCI",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Reddit mention surge 97x (rank 13) overnight - crowding flag, no confirmed fresh catalyst. ST 72% bull. Find-the-catalyst, not a signal.",
+      "sources": [
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.06,
+      "reddit_rank": 13,
+      "earnings_day": false,
+      "theme": "ai-server",
+      "control": false
+    },
+    {
+      "symbol": "AVAV",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "AeroVironment gapping +18% with Reddit surge 40x + ST trending - likely earnings/contract but catalyst unconfirmed at scan time. Big gapper = fade risk per pre-registered bet.",
+      "sources": [
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 19,
+      "earnings_day": false,
+      "theme": "defense-drone",
+      "control": false,
+      "gap_pct": 17.99
+    },
+    {
+      "symbol": "SLS",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "SELLAS - ST #1 trending and 93% bull, but gapping DOWN 7.2%. Crowd/price divergence with no confirmed catalyst = unclear.",
+      "sources": [
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech",
+      "control": false,
+      "gap_pct": -7.2
+    },
+    {
+      "symbol": "ABVX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 36.31
+    },
+    {
+      "symbol": "MSTX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -16.74
+    },
+    {
+      "symbol": "AVEX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 9.51
+    },
+    {
+      "symbol": "MSTR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -8.23
+    },
+    {
+      "symbol": "BCRX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.65
+    },
+    {
+      "symbol": "OUST",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.27
+    },
+    {
+      "symbol": "AMPX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.77
+    },
+    {
+      "symbol": "ENPH",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.66
+    }
+  ]
+}
