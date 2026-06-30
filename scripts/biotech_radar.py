@@ -118,6 +118,88 @@ def enrich_short(symbols: list[str]) -> dict:
     return out
 
 
+def company_names(tickers: list[str]) -> dict:
+    """{ticker: company name} via yfinance (for clinicaltrials sponsor matching)."""
+    import yfinance as yf
+    out = {}
+    for t in tickers:
+        try:
+            info = yf.Ticker(t).info
+            out[t] = info.get("longName") or info.get("shortName") or t
+        except Exception:
+            out[t] = t
+    return out
+
+
+_CT_URL = "https://clinicaltrials.gov/api/v2/studies"
+_CT_OK = ("RECRUITING", "ACTIVE_NOT_RECRUITING", "ENROLLING_BY_INVITATION", "NOT_YET_RECRUITING")
+
+
+def upcoming_catalysts(sponsor: str, max_n: int = 3) -> list:
+    """Soonest FUTURE Phase 2/3 trial completions for a sponsor (clinicaltrials.gov).
+    NOTE: primary-completion date is an APPROXIMATE proxy — it lags the actual data readout,
+    and this misses PDUFA/AdCom/conference catalysts. Context, not a precise readout date."""
+    import json
+    import urllib.parse
+    import urllib.request
+    from datetime import date
+    sp = sponsor                       # trim corporate suffixes -> better sponsor match
+    for suf in (", Inc.", " Inc.", " Inc", ", Corp.", " Corporation", " Corp", " Ltd",
+                " plc", " Co.", " Company", ", Ltd."):
+        sp = sp.replace(suf, "")
+    sp = sp.strip().rstrip(",")
+    # include Phase 1 too — early-stage data readouts are major catalysts for small biotech
+    term = f'AREA[LeadSponsorName]"{sp}" AND (AREA[Phase]PHASE1 OR AREA[Phase]PHASE2 OR AREA[Phase]PHASE3)'
+    params = {"query.term": term, "pageSize": "40", "format": "json",
+              "fields": "BriefTitle,Phase,OverallStatus,PrimaryCompletionDate"}
+    try:
+        url = _CT_URL + "?" + urllib.parse.urlencode(params)
+        with urllib.request.urlopen(urllib.request.Request(url, headers=_UA), timeout=20) as r:
+            d = json.load(r)
+    except Exception:
+        return []
+    today = date.today().isoformat()
+    rows = []
+    for s in d.get("studies", []):
+        p = s.get("protocolSection", {})
+        st = p.get("statusModule", {})
+        pcd = st.get("primaryCompletionDateStruct", {}).get("date")
+        if pcd and pcd >= today and st.get("overallStatus") in _CT_OK:
+            ph = ",".join(p.get("designModule", {}).get("phases", []))
+            rows.append((pcd, ph, p.get("identificationModule", {}).get("briefTitle", "")[:46]))
+    return sorted(rows)[:max_n]
+
+
+def render_cards(top: pd.DataFrame, names: dict, n: int = 8) -> None:
+    """Per top candidate: why it's flagged, upcoming catalysts, and a SUGGESTED risk structure."""
+    print(f"\n{'='*72}\nTRADE CARDS — top {n} heating-up biotechs  (SPECULATIVE — read the risk note)\n{'='*72}")
+    for _, r in top.head(n).iterrows():
+        s = r["symbol"]; nm = names.get(s, s); px = float(r["price"])
+        why = []
+        if r["vol_build"] and r["vol_build"] >= 1.3:
+            why.append(f"volume building {r['vol_build']:.1f}x")
+        if r["ret_5d"] and r["ret_5d"] > 0:
+            why.append(f"+{r['ret_5d']:.0f}% 5d")
+        if r["ret_20d"] and r["ret_20d"] > 0:
+            why.append(f"+{r['ret_20d']:.0f}% 20d")
+        if pd.notna(r.get("short%float")) and r.get("short%float"):
+            why.append(f"{r['short%float']*100:.0f}% short float")
+        extended = r["near_high"] >= 0.95
+        print(f"\n{s}  ({nm})  ${px:.2f}   heat {r['heat']:.2f}")
+        print(f"  why flagged: {', '.join(why) or '—'}  ·  near 52w-high {r['near_high']:.2f} "
+              f"{'(EXTENDED — wait for a pullback, less room)' if extended else '(room to run)'}")
+        cats = upcoming_catalysts(nm)
+        if cats:
+            print("  catalysts (est. trial-completion — LAGS actual readout):")
+            for pcd, ph, title in cats:
+                print(f"     {pcd}  {ph:12} {title}")
+        else:
+            print("  catalysts: none via clinicaltrials (may have PDUFA/AdCom/data-update catalysts not listed)")
+        print("  SUGGESTED STRUCTURE (speculative capital only — expect most to lose):")
+        print(f"     hard stop -25% (~${px*0.75:.2f})  ·  trailing stop 28% (WIDE — let a moonshot run)")
+        print(f"     size tiny (~$200-300, <=5 names concurrent)  ·  time-stop ~10-15 sessions if flat")
+
+
 def _ntfy(msg: str, title: str) -> None:
     f = ROOT / ".env"
     topic = None
@@ -161,6 +243,15 @@ def main(argv) -> int:
     df.to_csv(out, index=False)
     print(f"\n-> {out.name} (full {len(df)} ranked). HEAT = volume-building + momentum + vol "
           "+ near-high (percentile blend). Surge-PRONE, NOT direction — binary catalyst risk.")
+
+    if "--no-cards" not in argv:
+        names = company_names(list(top["symbol"].head(8)))
+        render_cards(top, names, n=8)
+        print(f"\n{'-'*72}")
+        print("RISK NOTE: biotech catalysts are BINARY (good data +100-300%, bad data -60-90%).")
+        print("This flags WHERE a surge may brew + the trial timeline — NOT direction. Backtest")
+        print("showed positive expectancy ONLY on survivorship-biased data (real edge likely ~0).")
+        print("Treat as SPECULATION: size you can lose, hard stop every position, no averaging down.")
 
     if push and not top.empty:
         lines = [f"Biotech radar {date} — heating up:"]
