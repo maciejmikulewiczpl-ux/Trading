@@ -30,6 +30,7 @@ HERE = Path(__file__).resolve().parent
 PICKS_DIR = HERE / "picks"
 TOP_K = 5
 MIN_PRICE = 1.0
+VOL_FLOOR = 0.04   # v1.4 realized-daily-vol floor for the measured "filtered3" exit variant
 
 
 def _tradable_filter(symbols: list[str]) -> dict:
@@ -177,6 +178,7 @@ def build_board() -> dict:
             "gtrends_spike": gtrends.get(sym),            # v1.2 measured-only (not in combined)
             "finra_short_ratio": finra_sv.get(sym),       # v1.3 measured-only (not in combined)
             "halt_reason": halts.get(sym),                # v1.3 measured-only (not in combined)
+            "realized_vol": igv.get("realized_vol"),      # v1.4 measured-only (filter variant)
         }
 
     # --- 4. combined_score: mean percentile rank across non-null signals ---
@@ -249,13 +251,24 @@ def build_board() -> dict:
     _halted = {s for s in halts if s in set(tradable)}
     signal_topk["halts"] = _halted
     basket_members["halts"] = _halted
+    # v1.4 (2026-06-29) FILTERED variant: top-3 by combined_score among names clearing a
+    # realized-vol floor (the "expected move" filter — drop sluggish high-price names that
+    # can't beat costs; see backtest/lottery_robustness.py). MEASURED-only: tagged so
+    # analyze.py + the status grids score "filtered3" vs the actual combined top-3. The bot's
+    # traded picks are UNCHANGED (it still buys top-3 combined_score over all tradable names).
+    _vol = {s: ig.get(s, {}).get("realized_vol") for s in all_syms}
+    _filt_elig = [s for s in tradable if (_vol.get(s) is not None and _vol[s] >= VOL_FLOOR
+                                          and combined(s) is not None)]
+    _filt_top3 = set(sorted(_filt_elig, key=lambda s: -combined(s))[:3])
+    signal_topk["filtered3"] = _filt_top3
+    basket_members["filtered3"] = _filt_top3
 
     # build the pick list. A symbol gets ONE row; basket = its primary basket (priority
     # wsb > stocktwits > gappers > random > control), top_k_of lists ALL signals that
     # flagged it.
     basket_priority = ["wsb", "stocktwits", "gappers", "random", "control",
                        "pennystocks", "shortsqueeze", "gtrends",
-                       "finra_shortvol", "halts"]   # new baskets lowest priority
+                       "finra_shortvol", "halts", "filtered3"]   # new baskets lowest priority
     all_picks_syms = sorted(set().union(*basket_members.values()))
     picks = []
     for sym in all_picks_syms:

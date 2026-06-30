@@ -940,9 +940,10 @@ def _source_daily(days_limit: int = 14) -> dict:
     kind = {"wsb": "src", "stocktwits": "src", "pennystocks": "src", "shortsqueeze": "src",
             "gtrends": "src", "finra_shortvol": "src", "halts": "src",
             "ignition": "feat", "pm_rvol": "feat", "squeeze": "feat", "uoa": "feat",
-            "gappers": "feat", "combined3": "bench", "random": "bench"}
-    bench = [s for s in ("combined3", "random") if s in cum]
-    rest = [s for s in cum if s not in ("combined3", "random")]
+            "gappers": "feat", "combined3": "bench", "filtered3": "bench", "random": "bench"}
+    _bench_names = ("combined3", "filtered3", "random")
+    bench = [s for s in _bench_names if s in cum]
+    rest = [s for s in cum if s not in _bench_names]
     srcs = sorted([s for s in rest if kind.get(s) == "src"], key=lambda s: -cum[s]["avg"])
     feats = sorted([s for s in rest if kind.get(s) == "feat"], key=lambda s: -cum[s]["avg"])
     other = sorted([s for s in rest if s not in kind], key=lambda s: -cum[s]["avg"])
@@ -1900,6 +1901,7 @@ function basketBadge(b){
 }
 function srcLabel(src,kinds){
   if(src==="combined3"||src==="random") return `<b>${src}</b>`;
+  if(src==="filtered3") return `<b>filtered3</b> <small style="color:var(--dim)">vol-filter</small>`;
   const k=(kinds||{})[src]||"src";
   const tag = k==="feat"?`<span title="computed price/volume feature">📈</span> `
                         :`<span title="online source">📡</span> `;

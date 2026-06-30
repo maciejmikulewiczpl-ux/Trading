@@ -246,10 +246,16 @@ def ignition_scores(tickers: list[str]) -> dict:
             ig += 1 if (volaccel is not None and volaccel >= 1.5) else 0
             ig += 1 if (high_prox is not None and high_prox >= 0.95) else 0
             ig += prevwin
+            # realized daily volatility (20d std of close-to-close returns) = the "expected
+            # move" -- used by the board's price/vol FILTER variant (measured-only). 2026-06-29.
+            import statistics as _stats
+            rr = [closes[i] / closes[i - 1] - 1.0 for i in range(len(closes) - 20, len(closes))
+                  if closes[i - 1]]
+            rvol = round(_stats.pstdev(rr), 4) if len(rr) >= 10 else None
             out[t] = {"ignition": ig, "streak": streak,
                       "volaccel": round(volaccel, 2) if volaccel is not None else None,
                       "high_prox": round(high_prox, 3) if high_prox is not None else None,
-                      "prevwin": prevwin}
+                      "prevwin": prevwin, "realized_vol": rvol}
         except Exception:
             out[t] = {"ignition": None}
     return out
