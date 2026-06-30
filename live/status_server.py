@@ -2198,10 +2198,14 @@ function render(d){
 function capStr(cap){ return !cap?'cap ?':(cap>=1e9?('$'+(cap/1e9).toFixed(2)+'B'):('$'+Math.round(cap/1e6)+'M')); }
 function bioCard(c, fwd){
   const pu=c.p_up!=null?(c.p_up*100).toFixed(0)+'%':'?', pdn=c.p_down!=null?(c.p_down*100).toFixed(0)+'%':'?';
+  const CV={HIGH:['#1f7a3d','★ HIGH — coil + insider + catalyst (the SLS profile)'],MED:['#7c6a1f','MED conviction'],LOW:['#3a3f48','technical only']};
+  const cv=CV[c.conviction]||CV.LOW;
   let h=`<div style="border-top:1px solid #243; padding:8px 0; margin-top:6px">`;
   h+=`<div><b>${c.symbol}</b> <small style="color:var(--dim)">${c.name||''}</small> · $${c.price.toFixed(2)} · ${capStr(c.market_cap)} `
     +`${c.in_band?'<span class="pos">✓ band</span>':'<span style="color:var(--dim)">(outside $200M-$1B)</span>'}`
-    +`<span style="float:right">setup ${c.setup.toFixed(2)} · heat ${c.heat.toFixed(2)}</span></div>`;
+    +`<span style="float:right;background:${cv[0]};padding:1px 6px;border-radius:3px;font-size:11px">${cv[1]}</span></div>`;
+  if(c.insider_buys)
+    h+=`<div class="hint" style="margin:3px 0">💰 <b>insider buying</b>: ${c.insider_buys} Form-4 buy(s), $${(c.insider_usd/1000).toFixed(0)}k, latest ${c.insider_recent} (smart money in)</div>`;
   h+=`<div class="hint" style="margin:3px 0">odds [${c.bucket_label}]: <span class="pos">~${pu} +30%</span> / <span class="neg">~${pdn} −30%</span> (${fwd}d, hist) · ${c.why}</div>`;
   const QB={phase2:['#1f7a3d','P2 efficacy — run-up sweet spot'],phase1_platform:['#7c6a1f','P1 PLATFORM — can re-rate pipeline'],phase1_weak:['#6b3b3b','P1 safety only — WEAK run-up'],phase3:['#7c5a1f','P3 — priced in / gap risk']};
   if(c.cat_quality && QB[c.cat_quality])

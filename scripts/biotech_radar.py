@@ -148,6 +148,23 @@ def market_caps(tickers: list[str]) -> dict:
     return out
 
 
+def insider_buys_recent(symbols: list[str], lookback_days: int = 90) -> dict:
+    """{sym: [{filing_date, insider, usd}]} open-market insider BUYS (Form 4 Code P) in the
+    lookback — the 'smart money positioning' layer (SLS had a director buy @ $1.59 ~4wk
+    before its +114% surge). Reuses scripts/insider_collect.recent_insider_buys."""
+    try:
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from insider_collect import recent_insider_buys
+        evs = recent_insider_buys(symbols, lookback_days=lookback_days, progress=False)
+    except Exception as e:
+        print(f"[warn] insider fetch failed ({str(e)[:60]})")
+        return {}
+    out: dict = {}
+    for e in evs:
+        out.setdefault(e["symbol"], []).append(e)
+    return out
+
+
 def company_names(tickers: list[str]) -> dict:
     """{ticker: company name} via yfinance (for clinicaltrials sponsor matching)."""
     import yfinance as yf
@@ -242,9 +259,10 @@ def _parse_ct_date(s: str):
         return None
 
 
-def build_card(r: dict, nm: str, cap, probs: dict) -> dict:
+def build_card(r: dict, nm: str, cap, ins_list: list, probs: dict) -> dict:
     """One enriched card: odds, market-cap band, nearest (Phase-2-preferred) catalyst +
-    days-away + run-up exit-by date, and the suggested run-up structure."""
+    days-away + run-up exit-by date, the conviction STACK (coil+insider+catalyst), and the
+    suggested run-up structure."""
     from datetime import date, timedelta
     s = r["symbol"]; px = float(r["price"])
     bkt = classify_bucket(r["vol_build"], r["ret_5d"], r["near_high"])
@@ -306,6 +324,19 @@ def build_card(r: dict, nm: str, cap, probs: dict) -> dict:
         else:
             structure = "no near-term Phase-2 catalyst - momentum/heat play only (higher uncertainty)."
     cats = [{"date": x["date"], "phase": x["phase"], "title": x["title"]} for x in dated]
+    # CONVICTION STACK (the "next SLS" intersection): coil (this is already a setup) +
+    # recent insider BUYING + a near-term catalyst. Each alone is weak; the stack is rare.
+    n_ins = len(ins_list)
+    ins_usd = round(sum(b.get("usd") or 0 for b in ins_list), 0)
+    ins_recent = max((b.get("filing_date") for b in ins_list), default=None)
+    has_insider = n_ins > 0
+    has_catalyst = cat_quality in ("phase2", "phase3", "phase1_platform")
+    if has_insider and has_catalyst:
+        conviction = "HIGH"        # full stack: coil + insider + catalyst (the SLS profile)
+    elif has_insider or has_catalyst:
+        conviction = "MED"
+    else:
+        conviction = "LOW"
     return {
         "symbol": s, "name": nm, "price": px,
         "heat": round(float(r["heat"]), 2), "setup": round(float(r.get("setup") or 0), 2),
@@ -316,6 +347,8 @@ def build_card(r: dict, nm: str, cap, probs: dict) -> dict:
         "why": ", ".join(why) or "—",
         "days_to_catalyst": days, "nearest_phase": nearest_phase, "exit_by": exit_by,
         "cat_quality": cat_quality, "platform": platform, "catalysts": cats[:4],
+        "insider_buys": n_ins, "insider_usd": ins_usd, "insider_recent": ins_recent,
+        "conviction": conviction,
         "stop": round(px * 0.75, 2), "trail_pct": 28, "structure": structure,
     }
 
@@ -344,7 +377,13 @@ def _print_one(c, fwd):
     pu = f"{c['p_up']*100:.0f}%" if c.get("p_up") is not None else "?"
     pdn = f"{c['p_down']*100:.0f}%" if c.get("p_down") is not None else "?"
     band = "[in $200M-$1B band]" if c["in_band"] else "[outside band]"
-    print(f"\n{c['symbol']}  ({c['name']})  ${c['price']:.2f}  ·  {_cap_str(c['market_cap'])}  {band}")
+    conv = c.get("conviction", "LOW")
+    cflag = {"HIGH": "*** HIGH CONVICTION (coil+insider+catalyst) ***", "MED": "[MED conviction]",
+             "LOW": ""}.get(conv, "")
+    print(f"\n{c['symbol']}  ({c['name']})  ${c['price']:.2f}  ·  {_cap_str(c['market_cap'])}  {band}  {cflag}")
+    if c.get("insider_buys"):
+        print(f"  INSIDER BUYING: {c['insider_buys']} Form-4 buy(s), ${c['insider_usd']:,.0f}, "
+              f"latest {c['insider_recent']}  (smart money positioning)")
     print(f"  ODDS [{c['bucket_label']}]: ~{pu} +30% / ~{pdn} -30% within {fwd}d (historical)")
     print(f"  setup {c['setup']:.2f} · heat {c['heat']:.2f} · {c['why']} · range-pos {c.get('pos_in_range')}")
     if c["days_to_catalyst"] is not None:
@@ -406,18 +445,19 @@ def main(argv) -> int:
     prows["short%float"] = prows["symbol"].map(lambda s: (sh.get(s) or {}).get("short_pct_float"))
     names = company_names(pool)
     caps = market_caps(pool)
+    insider = insider_buys_recent(pool, 90)   # smart-money layer (Form 4 buys, last 90d)
     probs = load_probs()
-    cards = [build_card(r, names.get(r["symbol"], r["symbol"]), caps.get(r["symbol"]), probs)
+    cards = [build_card(r, names.get(r["symbol"], r["symbol"]), caps.get(r["symbol"]),
+                        insider.get(r["symbol"], []), probs)
              for r in prows.to_dict("records")]
 
-    # RUN-UP SETUPS (the advice's play): coiled pre-breakout, prefer in-band + not extended,
-    # ranked so in-band names with a near-term catalyst float to the top.
+    # RUN-UP SETUPS: rank by the CONVICTION STACK first (full coil+insider+catalyst = next-SLS
+    # profile), then Phase-2 catalyst, then in-band, then setup score.
+    conv_rank = {"HIGH": 0, "MED": 1, "LOW": 2}
     def _setup_key(c):
-        # the run-up ENGINE is a near-term Phase 2 catalyst -> tier it first, then platform
-        # Phase 1, then coiled-no-catalyst; within each tier prefer in-band, then setup score.
         q = c["cat_quality"]
         tier = 0 if q == "phase2" else (1 if q == "phase1_platform" else 2)
-        return (tier, not c["in_band"], -c["setup"])
+        return (conv_rank.get(c["conviction"], 3), tier, not c["in_band"], -c["setup"])
     setups = sorted([c for c in cards if not c["extended"]], key=_setup_key)[:8]
     heat = sorted(cards, key=lambda c: -c["heat"])[:8]
 
