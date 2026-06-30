@@ -154,6 +154,22 @@ def market_caps(tickers: list[str]) -> dict:
     return out
 
 
+def cash_runways(tickers: list[str]) -> dict:
+    """{ticker: runway_months} = total cash / monthly cash burn (yfinance info). None if
+    profitable/unknown. Small-caps with <6mo runway often do a DILUTIVE raise INTO a run-up
+    (ATM/S-3), cutting the move short — so a thin runway is a real risk on the conviction stack."""
+    import yfinance as yf
+    out = {}
+    for t in tickers:
+        try:
+            info = yf.Ticker(t).info
+            cash = info.get("totalCash"); ocf = info.get("operatingCashflow")
+            out[t] = round(float(cash) / (abs(float(ocf)) / 12.0), 1) if (cash and ocf and ocf < 0) else None
+        except Exception:
+            out[t] = None
+    return out
+
+
 def insider_buys_recent(symbols: list[str], lookback_days: int = 90) -> dict:
     """{sym: [{filing_date, insider, usd}]} open-market insider BUYS (Form 4 Code P) in the
     lookback — the 'smart money positioning' layer (SLS had a director buy @ $1.59 ~4wk
@@ -265,7 +281,7 @@ def _parse_ct_date(s: str):
         return None
 
 
-def build_card(r: dict, nm: str, cap, ins_list: list, probs: dict) -> dict:
+def build_card(r: dict, nm: str, cap, ins_list: list, runway, probs: dict) -> dict:
     """One enriched card: odds, market-cap band, nearest (Phase-2-preferred) catalyst +
     days-away + run-up exit-by date, the conviction STACK (coil+insider+catalyst), and the
     suggested run-up structure."""
@@ -345,7 +361,12 @@ def build_card(r: dict, nm: str, cap, ins_list: list, probs: dict) -> dict:
         conviction = "MED"
     else:
         conviction = "LOW"
+    # DILUTION RISK: <6mo cash runway -> a raise can cut the run-up short (Gemini's catch).
+    dilution_risk = runway is not None and runway < 6
+    if dilution_risk:
+        structure += "  ⚠ DILUTION RISK: <6mo cash — a secondary/ATM could cut the run-up."
     return {
+        "cash_runway_months": runway, "dilution_risk": dilution_risk,
         "symbol": s, "name": nm, "price": px,
         "heat": round(float(r["heat"]), 2), "setup": round(float(r.get("setup") or 0), 2),
         "near_high": round(float(r["near_high"]), 3), "extended": bool(r["near_high"] >= 0.95),
@@ -395,6 +416,9 @@ def _print_one(c, fwd):
     if c.get("insider_buys"):
         print(f"  INSIDER BUYING: {c['insider_buys']} Form-4 buy(s), ${c['insider_usd']:,.0f}, "
               f"latest {c['insider_recent']}  (smart money positioning)")
+    if c.get("cash_runway_months") is not None:
+        rw = c["cash_runway_months"]
+        print(f"  cash runway: ~{rw:.0f} months" + ("  ⚠ DILUTION RISK (<6mo)" if c.get("dilution_risk") else ""))
     print(f"  ODDS [{c['bucket_label']}]: ~{pu} +30% / ~{pdn} -30% within {fwd}d (historical)")
     print(f"  setup {c['setup']:.2f} · heat {c['heat']:.2f} · {c['why']} · range-pos {c.get('pos_in_range')}")
     if c["days_to_catalyst"] is not None:
@@ -457,9 +481,10 @@ def main(argv) -> int:
     names = company_names(pool)
     caps = market_caps(pool)
     insider = insider_buys_recent(pool, 90)   # smart-money layer (Form 4 buys, last 90d)
+    runways = cash_runways(pool)              # dilution-risk layer (cash runway in months)
     probs = load_probs()
     cards = [build_card(r, names.get(r["symbol"], r["symbol"]), caps.get(r["symbol"]),
-                        insider.get(r["symbol"], []), probs)
+                        insider.get(r["symbol"], []), runways.get(r["symbol"]), probs)
              for r in prows.to_dict("records")]
 
     # RUN-UP SETUPS: rank by the CONVICTION STACK first (full coil+insider+catalyst = next-SLS

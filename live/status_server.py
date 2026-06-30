@@ -2208,6 +2208,8 @@ function bioCard(c, fwd){
     h+=`<div class="hint" style="margin:3px 0">liquidity: $${(c.dollar_vol/1e6).toFixed(1)}M/day${c.liquid?'':' <span class="neg">⚠ ILLIQUID — wide spreads, hard to exit on bad data</span>'}</div>`;
   if(c.insider_buys)
     h+=`<div class="hint" style="margin:3px 0">💰 <b>insider buying</b>: ${c.insider_buys} Form-4 buy(s), $${(c.insider_usd/1000).toFixed(0)}k, latest ${c.insider_recent} (smart money in)</div>`;
+  if(c.cash_runway_months!=null)
+    h+=`<div class="hint" style="margin:3px 0">cash runway: ~${Math.round(c.cash_runway_months)}mo${c.dilution_risk?' <span class="neg">⚠ DILUTION RISK (&lt;6mo — a raise could cut the run-up)</span>':''}</div>`;
   h+=`<div class="hint" style="margin:3px 0">odds [${c.bucket_label}]: <span class="pos">~${pu} +30%</span> / <span class="neg">~${pdn} −30%</span> (${fwd}d, hist) · ${c.why}</div>`;
   const QB={phase2:['#1f7a3d','P2 efficacy — run-up sweet spot'],phase1_platform:['#7c6a1f','P1 PLATFORM — can re-rate pipeline'],phase1_weak:['#6b3b3b','P1 safety only — WEAK run-up'],phase3:['#7c5a1f','P3 — priced in / gap risk']};
   if(c.cat_quality && QB[c.cat_quality])

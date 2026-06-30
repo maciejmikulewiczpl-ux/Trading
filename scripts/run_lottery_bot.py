@@ -42,6 +42,7 @@ ET = ZoneInfo("America/New_York")
 
 NOTIONAL = 2000.0          # $ per pick (matches news-edge ORB_NOTIONAL_PER_TRADE for a direct PnL comparison)
 TRAIL_PCT = 10.0           # native trailing stop %
+MAX_SPREAD_PCT = 3.0       # skip names whose bid/ask spread is wider than this (illiquid / heavy slippage)
 TOP_N = 3                  # top-3 by combined_score
 TIME_STOP_DAYS = 3         # close at T+3 trading-ish days if still open
 STATE_FILE = ROOT / "logs" / "lottery_positions.json"
@@ -247,6 +248,16 @@ def run_entries(tc, dry_run: bool) -> int:
             print(f"  {sym}: price ${px:.2f} > ${NOTIONAL:.0f} budget -- skip "
                   f"(whole-share constraint).")
             continue
+        # LIQUIDITY guard (market-impact): skip names with an absurdly wide quote spread =
+        # untradeable / heavy slippage. Spread is the reliable signal on the free IEX feed
+        # (IEX volume understates true ADV, so an ADV-participation check would over-reject).
+        bid, ask = quotes.get(sym, (None, None))
+        if bid and ask and ask > 0:
+            spread_pct = (ask - bid) / ((ask + bid) / 2.0) * 100
+            if spread_pct > MAX_SPREAD_PCT:
+                print(f"  {sym}: spread {spread_pct:.1f}% > {MAX_SPREAD_PCT:.0f}% -- illiquid, "
+                      f"skip (market-impact guard).")
+                continue
         if dry_run:
             print(f"  [DRY-RUN] WOULD BUY {sym} {qty} sh @ ~${px:.2f} (~${qty*px:.0f}) "
                   f"+ {TRAIL_PCT:.0f}% GTC trailing stop on fill")
