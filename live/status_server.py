@@ -951,6 +951,70 @@ def _source_daily(days_limit: int = 14) -> dict:
             "kinds": {s: kind.get(s, "src") for s in cum}, "grid": grid, "cum": cum}
 
 
+def _driver_text(pick: dict) -> str:
+    """Plain-English 'why was this name picked' from its signals + top_k_of flags."""
+    sg = pick.get("signals", {}) or {}
+    tk = pick.get("top_k_of", []) or []
+    parts = []
+    if "ignition" in tk and sg.get("ignition") is not None:
+        parts.append(f"price momentum (ignition {int(sg['ignition'])}/4)")
+    if "wsb" in tk:
+        s = sg.get("wsb_surge")
+        parts.append(f"Reddit WSB surge{f' {s:.0f}x' if s else ''}")
+    if "stocktwits" in tk:
+        parts.append("StockTwits trending")
+    if "pennystocks" in tk:
+        parts.append("r/pennystocks buzz")
+    if "shortsqueeze" in tk:
+        parts.append("r/Shortsqueeze buzz")
+    if "squeeze" in tk:
+        sq = sg.get("squeeze")
+        parts.append(f"short-squeeze setup{f' ({sq:.1f})' if sq else ''}")
+    if "pm_rvol" in tk:
+        rv = sg.get("pm_rvol")
+        parts.append(f"high premarket volume{f' {rv:.1f}x' if rv else ''}")
+    if "gtrends" in tk:
+        parts.append("Google-Trends spike")
+    if "finra_shortvol" in tk:
+        parts.append("heavy short volume")
+    if "halts" in tk:
+        parts.append("trading halt")
+    gp = sg.get("gap_pct")
+    if gp is not None and abs(gp) >= 2 and not any("gap" in p for p in parts):
+        parts.append(f"premarket gap {gp:+.0f}%")
+    if not parts:
+        # no single hype signal flagged it — it made the cut on the blended composite alone
+        cs = pick.get("combined_score")
+        parts.append("broad composite strength, no single hype signal stood out"
+                     if cs is not None else "—")
+        if pick.get("basket") == "random":
+            parts.append("from the random-control basket")
+    return ", ".join(parts)
+
+
+def _lottery_drivers(symbols: list[str]) -> dict:
+    """{symbol: {date, why, score}} — the most recent board pick record per held symbol,
+    translated into a plain-English driver string."""
+    want = set(symbols)
+    out: dict = {}
+    if not LOTTERY_PICKS_DIR.exists():
+        return out
+    for f in sorted(LOTTERY_PICKS_DIR.glob("*.json"), reverse=True):   # newest first
+        if not want:
+            break
+        try:
+            rec = json.load(open(f))
+        except Exception:
+            continue
+        for p in rec.get("picks", []):
+            s = p.get("symbol")
+            if s in want:
+                out[s] = {"date": rec.get("date"), "why": _driver_text(p),
+                          "score": p.get("combined_score")}
+                want.discard(s)
+    return out
+
+
 def _lottery() -> dict:
     """Summarize the lottery forward-test for its web tab (read-only).
 
@@ -1040,6 +1104,11 @@ def _lottery() -> dict:
     bot = _lottery_status()
     if bot is not None:
         out["bot"] = bot
+        try:
+            if bot.get("positions"):
+                out["drivers"] = _lottery_drivers([p["symbol"] for p in bot["positions"]])
+        except Exception:
+            pass
     today_iso = datetime.now(ET).date().isoformat()
     tday = next((d for d in days if d["date"] == today_iso), None)
     if tday:
@@ -1780,6 +1849,15 @@ function renderLottery(ld){
       h+=`<table><tr><th>sym</th><th>qty</th><th>avg</th><th>last</th><th>invested</th><th>unreal P/L</th></tr>`;
       for(const p of bp) h+=row([{v:p.symbol},{v:p.qty.toFixed(0)},{v:money(p.avg_entry)},{v:money(p.current)},{v:money(p.cost_basis)},{v:`${sign(p.unrealized_pl)} <small>(${p.unrealized_plpc>=0?"+":""}${p.unrealized_plpc.toFixed(1)}%)</small>`,cls:cls(p.unrealized_pl)}]);
       h+=`</table>`;
+      // why each open position was picked (plain-English signal drivers)
+      const drv=ld.drivers||{};
+      if(Object.keys(drv).length){
+        h+=`<div style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:10px 0 4px">Why these were picked</div>`;
+        for(const p of bp){ const d=drv[p.symbol]; if(!d) continue;
+          h+=`<div class="hint" style="margin:3px 0"><b>${p.symbol}</b> — ${d.why}`
+            +`${d.score!=null?` <span style="color:var(--dim)">· score ${d.score.toFixed(2)}, picked ${d.date||''}</span>`:''}</div>`;
+        }
+      }
     } else h+=`<div class="empty">flat</div>`;
     const bct=b.closed_today||[];
     const bpnl=bct.reduce((s,c)=>s+c.realized,0);
