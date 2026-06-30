@@ -68,6 +68,9 @@ scripts/accumulation_scan.csv
 scripts/accumulation_chatter_*.csv
 # Insider-buy event log (regenerable from EDGAR Form 4s; collected by scripts/insider_collect.py)
 scripts/insider_buys_log.csv
+# Biotech surge radar (regenerable via scripts/biotech_radar.py; universe from XBI holdings)
+scripts/biotech_radar_*.csv
+scripts/.biotech_universe.txt
 
 # Claude scheduled-tasks lock (transient harness artifact)
 .claude/scheduled_tasks.lock
