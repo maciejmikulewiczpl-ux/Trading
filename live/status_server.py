@@ -892,6 +892,17 @@ def _lottery_live(symbols: list[str]) -> dict:
     return out
 
 
+BIOTECH_SNAPSHOT = ROOT / "live" / "biotech_radar_latest.json"
+
+
+def _biotech() -> dict:
+    """Latest biotech-radar snapshot (written by scripts/biotech_radar.py, pulled to the VM)."""
+    try:
+        return json.loads(BIOTECH_SNAPSHOT.read_text())
+    except Exception:
+        return {"setups": [], "heat": []}
+
+
 def _source_daily(days_limit: int = 14) -> dict:
     """Per-source daily performance grid (descriptive) for the Hype + Summary tabs.
     For each SCORED day, the average 9:45->close return of the names each source flagged
@@ -1514,10 +1525,10 @@ function plBreakdownCard(dp, todayStr, tab){
   return h;
 }
 function topNav(active){
-  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["lottery","Hype"],["summary","Summary"],["regime","Market"]].map(
+  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["lottery","Hype"],["summary","Summary"],["biotech","Biotech"],["regime","Market"]].map(
     ([k,l])=>`<button class="tab${active===k?" active":""}" onclick="setTopView('${k}')">${l}</button>`).join("")+`</div>`;
 }
-let lastRegime=null, lastLottery=null, lastSummary=null;
+let lastRegime=null, lastLottery=null, lastSummary=null, lastBiotech=null;
 function showLoading(tab){
   const r=document.getElementById("root");
   if(r) r.innerHTML=topNav(tab)+`<div class="card"><div class="empty">loading…</div></div>`;
@@ -1546,6 +1557,7 @@ async function prefetchTabs(){
   await grab("/api/newsedge", d=>{lastNews=d;});
   await grab("/api/lottery", d=>{lastLottery=d;});
   await grab("/api/summary", d=>{lastSummary=d;});
+  await grab("/api/biotech", d=>{lastBiotech=d;});
 }
 function setTopView(v){
   topView=v;
@@ -1555,6 +1567,7 @@ function setTopView(v){
   if(v==="news"){ lastNews?renderNews(lastNews):showLoading("news"); fetchNews(); }
   else if(v==="lottery"){ lastLottery?renderLottery(lastLottery):showLoading("lottery"); fetchLottery(); }
   else if(v==="summary"){ lastSummary?renderSummary(lastSummary):showLoading("summary"); fetchSummary(); }
+  else if(v==="biotech"){ lastBiotech?renderBiotech(lastBiotech):showLoading("biotech"); fetchBiotech(); }
   else if(v==="regime"){ lastRegime?renderRegime(lastRegime):showLoading("regime"); fetchRegime(); }
   else { lastData?render(lastData):showLoading("trading"); }
 }
@@ -2182,6 +2195,51 @@ function render(d){
   h+=`<div class="foot"><span>snapshot ${d.generated}</span><span id="tick"></span></div>`;
   setRoot(h);
 }
+function capStr(cap){ return !cap?'cap ?':(cap>=1e9?('$'+(cap/1e9).toFixed(2)+'B'):('$'+Math.round(cap/1e6)+'M')); }
+function bioCard(c, fwd){
+  const pu=c.p_up!=null?(c.p_up*100).toFixed(0)+'%':'?', pdn=c.p_down!=null?(c.p_down*100).toFixed(0)+'%':'?';
+  let h=`<div style="border-top:1px solid #243; padding:8px 0; margin-top:6px">`;
+  h+=`<div><b>${c.symbol}</b> <small style="color:var(--dim)">${c.name||''}</small> · $${c.price.toFixed(2)} · ${capStr(c.market_cap)} `
+    +`${c.in_band?'<span class="pos">✓ band</span>':'<span style="color:var(--dim)">(outside $200M-$1B)</span>'}`
+    +`<span style="float:right">setup ${c.setup.toFixed(2)} · heat ${c.heat.toFixed(2)}</span></div>`;
+  h+=`<div class="hint" style="margin:3px 0">odds [${c.bucket_label}]: <span class="pos">~${pu} +30%</span> / <span class="neg">~${pdn} −30%</span> (${fwd}d, hist) · ${c.why}</div>`;
+  if(c.days_to_catalyst!=null){
+    h+=`<div class="hint" style="margin:3px 0"><b>catalyst ~${c.days_to_catalyst}d</b> (${c.nearest_phase||'?'})`
+      +`${c.exit_by?` · run-up exit by <b>${c.exit_by}</b>`:''}</div>`;
+  }
+  if(c.catalysts&&c.catalysts.length)
+    h+=`<div style="font-size:11px;color:var(--dim);margin:2px 0">`+c.catalysts.slice(0,3).map(ct=>`${ct.date} · ${ct.phase} · ${ct.title}`).join('<br>')+`</div>`;
+  h+=`<div class="hint" style="margin-top:3px">▶ ${c.structure}</div>`;
+  h+=`<div class="hint">stop −25% (~$${c.stop.toFixed(2)}) · trailing ${c.trail_pct}% · tiny size (~$200-300, ≤5 names)</div>`;
+  return h+`</div>`;
+}
+function renderBiotech(d){
+  let h=topNav("biotech");
+  h+=`<div class="banner s-idle"><h1>Biotech surge radar</h1><p>Small/mid-cap biotech ($200M–$1B sweet spot) COILED before a catalyst. The "run-up" play: buy weeks before the data, take profit BEFORE the binary readout. Speculative watchlist — NOT auto-trading, NOT a direction call.</p></div>`;
+  const setups=(d&&d.setups)||[], heat=(d&&d.heat)||[], base=(d&&d.base)||{}, fwd=(d&&d.fwd_days)||10;
+  if(!setups.length && !heat.length){
+    h+=`<div class="card"><div class="empty">No radar snapshot yet — runs ~6:15am PT daily.${d&&d.date?' (last: '+d.date+')':''}</div></div>`;
+    h+=`<div class="foot"><span>biotech · ${(d&&d.generated)||''}</span><span></span></div>`; setRoot(h); return;
+  }
+  h+=`<div class="hint" style="margin-bottom:8px">As of <b>${d.date}</b> · odds = backtest historical frequency within ${fwd}d (base shot at +30% = ${base.p_up!=null?(base.p_up*100).toFixed(1):'?'}%, <b>survivorship-inflated ceiling</b>).</div>`;
+  h+=`<div class="card"><h2>Run-up setups — coiled, catalyst approaching</h2>`;
+  h+=`<div class="hint" style="margin-bottom:4px">Ranked: in-band + near-term catalyst + tightest coil first. ▶ = the play.</div>`;
+  for(const c of setups) h+=bioCard(c, fwd);
+  h+=`</div>`;
+  if(heat.length){
+    h+=`<div class="card"><h2>Already hot (moving now — may be late for a run-up entry)</h2>`;
+    h+=`<table><tr><th>sym</th><th>cap</th><th>band</th><th>heat</th><th>catalyst</th><th style="text-align:left">why</th></tr>`;
+    for(const c of heat) h+=`<tr><td>${c.symbol}</td><td>${capStr(c.market_cap)}</td><td>${c.in_band?'<span class="pos">✓</span>':''}</td><td>${c.heat.toFixed(2)}</td><td>${c.days_to_catalyst!=null?'~'+c.days_to_catalyst+'d':'—'}</td><td style="text-align:left;font-size:11px">${c.why}</td></tr>`;
+    h+=`</table></div>`;
+  }
+  h+=`<div class="card" style="border-color:#7c3a3a"><div class="hint"><b>⚠ RISK:</b> biotech catalysts are BINARY — a FAIL gaps −60-90% OVERNIGHT, straight through any stop. POSITION SIZE is the real control (tiny, money you can lose). Trial dates are approximate (completion lags actual readout; misses PDUFA/AdCom). Run-ups aren't guaranteed. Odds are survivorship-inflated. SPECULATION, not investing.</div></div>`;
+  h+=`<div class="foot"><span>biotech · ${(d&&d.generated)||''}</span><span></span></div>`;
+  setRoot(h);
+}
+async function fetchBiotech(){
+  try{ const r=await fetch("/api/biotech",{cache:"no-store"}); lastBiotech=await r.json(); if(topView==="biotech") renderBiotech(lastBiotech); }
+  catch(e){ if(topView==="biotech") document.getElementById("root").innerHTML=topNav("biotech")+`<div class="card empty">biotech radar data unavailable</div>`; }
+}
 let fails=0;
 async function tick(){
   try{ const r=await fetch("/api/status",{cache:"no-store"}); const d=await r.json(); lastData=d; fails=0;
@@ -2263,6 +2321,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.startswith("/api/regime"):
             try:
                 body = json.dumps(_regime()).encode("utf-8")
+                self._send(200, body, "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
+        elif self.path.startswith("/api/biotech"):
+            try:
+                body = json.dumps(_biotech()).encode("utf-8")
                 self._send(200, body, "application/json")
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")

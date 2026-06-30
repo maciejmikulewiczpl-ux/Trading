@@ -19,6 +19,7 @@ MUST run under .venv-openbb (yfinance):
 from __future__ import annotations
 
 import io
+import json
 import sys
 import urllib.request
 from datetime import datetime
@@ -28,6 +29,8 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
+PROBS_FILE = ROOT / "backtest" / "biotech_signal_probs.json"
+SNAPSHOT = ROOT / "live" / "biotech_radar_latest.json"
 ET = ZoneInfo("America/New_York")
 UNIV_CACHE = ROOT / "scripts" / ".biotech_universe.txt"
 XBI_URL = ("https://www.ssga.com/us/en/intermediary/etfs/library-content/products/"
@@ -83,6 +86,8 @@ def heat_scan(tickers: list[str]) -> pd.DataFrame:
         if len(c) < 30:
             continue
         v20 = v.tail(20).mean()
+        w40 = c.tail(40)
+        lo40, hi40, mn40 = float(w40.min()), float(w40.max()), float(w40.mean())
         rows.append({
             "symbol": t, "price": round(float(c.iloc[-1]), 2),
             "vol_build": round(float(v.tail(5).mean() / v20), 2) if v20 else None,   # 5d vs 20d volume
@@ -91,16 +96,25 @@ def heat_scan(tickers: list[str]) -> pd.DataFrame:
             "ret_20d": round(float(c.iloc[-1] / c.iloc[-21] - 1) * 100, 1) if len(c) > 21 else None,
             "realized_vol": round(float(c.pct_change().tail(20).std()), 4),
             "near_high": round(float(c.iloc[-1] / h.tail(252).max()), 3),
+            # consolidation footprint (the "run-up" setup — coiled BEFORE the pop)
+            "tightness": round((hi40 - lo40) / mn40, 3) if mn40 else None,   # 40d range / price; lower=tighter
+            "pos_in_range": round((float(c.iloc[-1]) - lo40) / (hi40 - lo40), 3) if hi40 > lo40 else None,
         })
     df = pd.DataFrame(rows)
     if df.empty:
         return df
-    # HEAT = blend of percentile ranks (volume-building + short-term momentum + volatility
-    # + nearness to highs). Volume-building weighted double -- the clearest "brewing" tell.
+    # HEAT = already-moving (volume-building x2 + momentum + vol + near-high) percentile blend.
     for col in ["vol_build", "rvol_today", "ret_5d", "ret_20d", "realized_vol", "near_high"]:
         df[f"p_{col}"] = df[col].rank(pct=True)
     df["heat"] = (2 * df["p_vol_build"] + df["p_ret_5d"] + df["p_ret_20d"]
                   + df["p_realized_vol"] + df["p_near_high"]) / 6.0
+    # SETUP = pre-breakout "run-up" footprint: coiled (tight 40d range) + at range top +
+    # volume just starting to build. De-emphasize names that already popped (ret_20d>40%) —
+    # the run-up play wants them BEFORE the move, not after.
+    df["p_tight"] = (1.0 / df["tightness"].replace(0, pd.NA)).rank(pct=True)   # tighter -> higher
+    df["p_pos"] = df["pos_in_range"].rank(pct=True)
+    df["setup"] = (df["p_tight"] + df["p_pos"] + df["p_vol_build"]) / 3.0
+    df.loc[df["ret_20d"] > 40, "setup"] = df["setup"] * 0.5   # already extended -> not a fresh setup
     return df.sort_values("heat", ascending=False).reset_index(drop=True)
 
 
@@ -115,6 +129,22 @@ def enrich_short(symbols: list[str]) -> dict:
                       "short_ratio": info.get("shortRatio")}
         except Exception:
             out[t] = {}
+    return out
+
+
+CAP_LO, CAP_HI = 200e6, 1e9     # the surge "sweet spot" market-cap band ($200M-$1B)
+
+
+def market_caps(tickers: list[str]) -> dict:
+    """{ticker: market cap} via yfinance fast_info (lightweight, no full-info scrape)."""
+    import yfinance as yf
+    out = {}
+    for t in tickers:
+        try:
+            cap = yf.Ticker(t).fast_info["market_cap"]
+            out[t] = float(cap) if cap else None
+        except Exception:
+            out[t] = None
     return out
 
 
@@ -170,34 +200,138 @@ def upcoming_catalysts(sponsor: str, max_n: int = 3) -> list:
     return sorted(rows)[:max_n]
 
 
-def render_cards(top: pd.DataFrame, names: dict, n: int = 8) -> None:
-    """Per top candidate: why it's flagged, upcoming catalysts, and a SUGGESTED risk structure."""
-    print(f"\n{'='*72}\nTRADE CARDS — top {n} heating-up biotechs  (SPECULATIVE — read the risk note)\n{'='*72}")
-    for _, r in top.head(n).iterrows():
-        s = r["symbol"]; nm = names.get(s, s); px = float(r["price"])
-        why = []
-        if r["vol_build"] and r["vol_build"] >= 1.3:
-            why.append(f"volume building {r['vol_build']:.1f}x")
-        if r["ret_5d"] and r["ret_5d"] > 0:
-            why.append(f"+{r['ret_5d']:.0f}% 5d")
-        if r["ret_20d"] and r["ret_20d"] > 0:
-            why.append(f"+{r['ret_20d']:.0f}% 20d")
-        if pd.notna(r.get("short%float")) and r.get("short%float"):
-            why.append(f"{r['short%float']*100:.0f}% short float")
-        extended = r["near_high"] >= 0.95
-        print(f"\n{s}  ({nm})  ${px:.2f}   heat {r['heat']:.2f}")
-        print(f"  why flagged: {', '.join(why) or '—'}  ·  near 52w-high {r['near_high']:.2f} "
-              f"{'(EXTENDED — wait for a pullback, less room)' if extended else '(room to run)'}")
-        cats = upcoming_catalysts(nm)
-        if cats:
-            print("  catalysts (est. trial-completion — LAGS actual readout):")
-            for pcd, ph, title in cats:
-                print(f"     {pcd}  {ph:12} {title}")
-        else:
-            print("  catalysts: none via clinicaltrials (may have PDUFA/AdCom/data-update catalysts not listed)")
-        print("  SUGGESTED STRUCTURE (speculative capital only — expect most to lose):")
-        print(f"     hard stop -25% (~${px*0.75:.2f})  ·  trailing stop 28% (WIDE — let a moonshot run)")
-        print(f"     size tiny (~$200-300, <=5 names concurrent)  ·  time-stop ~10-15 sessions if flat")
+def load_probs() -> dict:
+    """Backtest signal-bucket odds (P(+30%)/P(-30%) within 10d) from biotech_backtest.py."""
+    try:
+        return json.loads(PROBS_FILE.read_text())
+    except Exception:
+        return {}
+
+
+def classify_bucket(vol_build, ret_5d_pct, near_high) -> str:
+    """Map a live candidate to its backtest odds bucket (ret_5d is in PERCENT here)."""
+    vb = vol_build or 0; r5 = ret_5d_pct or 0; nh = near_high or 0
+    if vb >= 2 and r5 >= 10:
+        return "hot"
+    if vb >= 1.5 and r5 >= 5:
+        return "building"
+    if vb >= 2:
+        return "vol2"
+    if vb >= 1.5:
+        return "vol15"
+    if r5 >= 10:
+        return "momo"
+    if nh >= 0.95:
+        return "extended"
+    return "base"
+
+
+def _parse_ct_date(s: str):
+    """clinicaltrials dates come as YYYY-MM-DD, YYYY-MM, or YYYY -> a date (assume late)."""
+    from datetime import date
+    try:
+        p = str(s).split("-")
+        y = int(p[0]); m = int(p[1]) if len(p) > 1 else 12; d = int(p[2]) if len(p) > 2 else 28
+        return date(y, m, d)
+    except Exception:
+        return None
+
+
+def build_card(r: dict, nm: str, cap, probs: dict) -> dict:
+    """One enriched card: odds, market-cap band, nearest (Phase-2-preferred) catalyst +
+    days-away + run-up exit-by date, and the suggested run-up structure."""
+    from datetime import date, timedelta
+    s = r["symbol"]; px = float(r["price"])
+    bkt = classify_bucket(r["vol_build"], r["ret_5d"], r["near_high"])
+    bo = (probs.get("buckets", {}).get(bkt) or probs.get("base", {})) if probs else {}
+    sp = float(r["short%float"]) if pd.notna(r.get("short%float")) else None
+    in_band = bool(cap and CAP_LO <= cap <= CAP_HI)
+    why = []
+    if r.get("vol_build") and r["vol_build"] >= 1.3:
+        why.append(f"vol building {r['vol_build']:.1f}x")
+    if r.get("pos_in_range") is not None and r["pos_in_range"] >= 0.8 and (r.get("ret_20d") or 0) < 40:
+        why.append("coiled near range-top")
+    if r.get("ret_5d") and r["ret_5d"] > 0:
+        why.append(f"+{r['ret_5d']:.0f}% 5d")
+    if sp:
+        why.append(f"{sp*100:.0f}% short")
+    # nearest upcoming catalyst — prefer Phase 2; compute days-away + run-up exit-by (~1wk before)
+    cats = upcoming_catalysts(nm)
+    dated = [(_parse_ct_date(c[0]), c[0], c[1], c[2]) for c in cats if _parse_ct_date(c[0])]
+    days = exit_by = nearest_phase = None
+    if dated:
+        ph2 = [x for x in dated if "PHASE2" in (x[2] or "")]
+        nearest = sorted(ph2 or dated)[0]
+        days = (nearest[0] - date.today()).days
+        nearest_phase = nearest[2]
+        exit_by = (nearest[0] - timedelta(days=7)).isoformat()
+    # run-up structure (buy into the run-up, EXIT BEFORE the binary readout)
+    if days is not None and 14 <= days <= 150:
+        structure = (f"RUN-UP PLAY - buy into the run-up (~{days}d to est. readout); "
+                     f"TARGET EXIT ~{exit_by} (~1wk BEFORE data) - do NOT hold the binary.")
+    elif days is not None and days < 14:
+        structure = (f"catalyst IMMINENT (~{days}d) — run-up likely already priced in; "
+                     f"entering now = holding the binary coin-flip. AVOID for a run-up.")
+    else:
+        structure = "no near-term dated catalyst — momentum/heat play only (higher uncertainty)."
+    return {
+        "symbol": s, "name": nm, "price": px,
+        "heat": round(float(r["heat"]), 2), "setup": round(float(r.get("setup") or 0), 2),
+        "near_high": round(float(r["near_high"]), 3), "extended": bool(r["near_high"] >= 0.95),
+        "pos_in_range": r.get("pos_in_range"), "tightness": r.get("tightness"),
+        "market_cap": cap, "in_band": in_band, "short_pct": sp,
+        "bucket_label": bo.get("label", "baseline"), "p_up": bo.get("p_up"), "p_down": bo.get("p_down"),
+        "why": ", ".join(why) or "—",
+        "days_to_catalyst": days, "nearest_phase": nearest_phase, "exit_by": exit_by,
+        "catalysts": [{"date": d, "phase": ph, "title": t} for d, ph, t in cats],
+        "stop": round(px * 0.75, 2), "trail_pct": 28, "structure": structure,
+    }
+
+
+def _cap_str(cap):
+    if not cap:
+        return "cap ?"
+    return f"${cap/1e9:.2f}B" if cap >= 1e9 else f"${cap/1e6:.0f}M"
+
+
+def print_cards(setups: list, heat: list, probs: dict) -> None:
+    base = probs.get("base", {}) if probs else {}
+    fwd = probs.get("fwd_days", "?")
+    print(f"\n{'='*74}\nRUN-UP SETUPS — coiled, $200M-$1B, catalyst approaching (buy BEFORE the pop)")
+    print(f"odds = backtest hist. freq within {fwd}d (base +30% = {base.get('p_up',0)*100:.1f}%, "
+          f"survivorship-inflated)\n{'='*74}")
+    for c in setups:
+        _print_one(c, fwd)
+    print(f"\n{'-'*74}\nALREADY-HOT (moving now — may be late for a run-up entry):")
+    for c in heat[:5]:
+        print(f"  {c['symbol']:6} {_cap_str(c['market_cap']):>8} heat {c['heat']:.2f} "
+              f"{'BAND' if c['in_band'] else '    '} {('+'+str(int(c['days_to_catalyst']))+'d cat' if c['days_to_catalyst'] is not None else 'no cat')} · {c['why']}")
+
+
+def _print_one(c, fwd):
+    pu = f"{c['p_up']*100:.0f}%" if c.get("p_up") is not None else "?"
+    pdn = f"{c['p_down']*100:.0f}%" if c.get("p_down") is not None else "?"
+    band = "[in $200M-$1B band]" if c["in_band"] else "[outside band]"
+    print(f"\n{c['symbol']}  ({c['name']})  ${c['price']:.2f}  ·  {_cap_str(c['market_cap'])}  {band}")
+    print(f"  ODDS [{c['bucket_label']}]: ~{pu} +30% / ~{pdn} -30% within {fwd}d (historical)")
+    print(f"  setup {c['setup']:.2f} · heat {c['heat']:.2f} · {c['why']} · range-pos {c.get('pos_in_range')}")
+    if c["days_to_catalyst"] is not None:
+        print(f"  NEAREST CATALYST: ~{c['days_to_catalyst']}d away ({c['nearest_phase']}), est. readout window")
+    if c["catalysts"]:
+        for ct in c["catalysts"][:3]:
+            print(f"     {ct['date']}  {ct['phase']:12} {ct['title']}")
+    print(f"  PLAY: {c['structure']}")
+    print(f"        stop -25% (~${c['stop']:.2f}) · trailing {c['trail_pct']}% · tiny size (~$200-300, <=5 names)")
+
+
+def write_snapshot(date: str, setups: list, heat: list, probs: dict) -> None:
+    """Persist the latest radar for the VM status page (committed + pulled by the VM)."""
+    snap = {"date": date, "generated": datetime.now(ET).isoformat(timespec="seconds"),
+            "probs_asof": probs.get("asof"), "surge_pct": probs.get("surge_pct"),
+            "fwd_days": probs.get("fwd_days"), "base": probs.get("base"),
+            "cap_band": [CAP_LO, CAP_HI], "setups": setups, "heat": heat}
+    SNAPSHOT.parent.mkdir(exist_ok=True)
+    SNAPSHOT.write_text(json.dumps(snap, indent=2, default=str))
 
 
 def _ntfy(msg: str, title: str) -> None:
@@ -228,37 +362,48 @@ def main(argv) -> int:
     if df.empty:
         print("no bar data — aborting."); return 1
 
-    top = df.head(15).copy()
-    sh = enrich_short(list(top["symbol"]))
-    top["short%float"] = [(_v.get("short_pct_float") if (_v := sh.get(s)) else None) for s in top["symbol"]]
-
-    print(f"\n=== TOP 15 HEATING-UP biotechs (of {len(df)}) — volume building + momentum ===")
-    cols = ["symbol", "price", "heat", "vol_build", "rvol_today", "ret_5d", "ret_20d",
-            "realized_vol", "near_high", "short%float"]
-    show = top[cols].copy()
-    show["heat"] = show["heat"].round(2)
-    print(show.to_string(index=False))
-
     out = ROOT / "scripts" / f"biotech_radar_{date}.csv"
     df.to_csv(out, index=False)
-    print(f"\n-> {out.name} (full {len(df)} ranked). HEAT = volume-building + momentum + vol "
-          "+ near-high (percentile blend). Surge-PRONE, NOT direction — binary catalyst risk.")
+    print(f"-> {out.name} (full {len(df)} ranked by heat + setup)")
+
+    # candidate pool = top heat UNION top setup (catch both already-moving AND coiling names)
+    pool = list(dict.fromkeys(list(df.head(15)["symbol"])
+                              + list(df.sort_values("setup", ascending=False).head(15)["symbol"])))
+    prows = df[df["symbol"].isin(pool)].copy()
+    sh = enrich_short(pool)
+    prows["short%float"] = prows["symbol"].map(lambda s: (sh.get(s) or {}).get("short_pct_float"))
+    names = company_names(pool)
+    caps = market_caps(pool)
+    probs = load_probs()
+    cards = [build_card(r, names.get(r["symbol"], r["symbol"]), caps.get(r["symbol"]), probs)
+             for r in prows.to_dict("records")]
+
+    # RUN-UP SETUPS (the advice's play): coiled pre-breakout, prefer in-band + not extended,
+    # ranked so in-band names with a near-term catalyst float to the top.
+    def _setup_key(c):
+        near = c["days_to_catalyst"] is not None and 14 <= c["days_to_catalyst"] <= 150
+        return (not c["in_band"], not near, -c["setup"])
+    setups = sorted([c for c in cards if not c["extended"]], key=_setup_key)[:8]
+    heat = sorted(cards, key=lambda c: -c["heat"])[:8]
 
     if "--no-cards" not in argv:
-        names = company_names(list(top["symbol"].head(8)))
-        render_cards(top, names, n=8)
-        print(f"\n{'-'*72}")
-        print("RISK NOTE: biotech catalysts are BINARY (good data +100-300%, bad data -60-90%).")
-        print("This flags WHERE a surge may brew + the trial timeline — NOT direction. Backtest")
-        print("showed positive expectancy ONLY on survivorship-biased data (real edge likely ~0).")
-        print("Treat as SPECULATION: size you can lose, hard stop every position, no averaging down.")
+        print_cards(setups, heat, probs)
+        write_snapshot(date, setups, heat, probs)
+        print(f"\nsnapshot -> {SNAPSHOT.name} (for the VM status page)")
+        print(f"\n{'-'*74}")
+        print("RISK NOTE: biotech catalysts are BINARY. The RUN-UP play (buy before, EXIT before")
+        print("the readout) avoids the coin-flip — but run-ups aren't guaranteed + trial dates are")
+        print("approximate (clinicaltrials completion lags actual readout). Position SIZE is the real")
+        print("control (a fail gaps -60-90% through any stop). SPECULATION — size you can lose.")
 
-    if push and not top.empty:
-        lines = [f"Biotech radar {date} — heating up:"]
-        for _, r in top.head(6).iterrows():
-            sp = f" SI{r['short%float']*100:.0f}%" if pd.notna(r["short%float"]) else ""
-            lines.append(f"{r['symbol']} ${r['price']:.0f} vol{r['vol_build']:.1f}x "
-                         f"5d{r['ret_5d']:+.0f}%{sp}")
+    if push:
+        best = setups or heat
+        lines = [f"Biotech radar {date} — run-up setups:"]
+        for c in best[:6]:
+            cat = f" cat~{c['days_to_catalyst']}d" if c["days_to_catalyst"] is not None else ""
+            lines.append(f"{c['symbol']} {_cap_str(c['market_cap'])}{'*' if c['in_band'] else ''} "
+                         f"setup{c['setup']:.2f}{cat} +{c['p_up']*100:.0f}%odds" if c.get("p_up")
+                         else f"{c['symbol']} setup{c['setup']:.2f}{cat}")
         _ntfy("\n".join(lines), f"Biotech radar {date}")
     return 0
 

@@ -56,10 +56,51 @@ def build(tickers: list[str]):
         }, index=c.index)
         # forward max close over t+1..t+FWD (the surge label), lookahead only in the LABEL
         fwd_max = pd.concat([c.shift(-k) for k in range(1, FWD + 1)], axis=1).max(axis=1)
+        fwd_min = pd.concat([c.shift(-k) for k in range(1, FWD + 1)], axis=1).min(axis=1)
         f["fwd_surge"] = (fwd_max / c - 1.0)
+        f["fwd_crash"] = (fwd_min / c - 1.0)
         frames.append(f.dropna(subset=["vol_build", "ret_5d", "ret_20d", "near_high"]))
         paths[t] = pd.DataFrame({"open": o, "high": h, "low": lo, "close": c})
     return pd.concat(frames, ignore_index=False), paths
+
+
+PROBS_OUT = ROOT / "backtest" / "biotech_signal_probs.json"
+
+
+def signal_probs(panel: pd.DataFrame):
+    """Per signal bucket: historical P(+30% up) AND P(-30% down) within FWD days. Saved to
+    JSON for the live radar to attach 'odds of a good shot' to each candidate. NOTE both
+    biases: survivorship OVERstates p_up and UNDERstates p_down (worst crashes delisted)."""
+    import json
+    p = panel.dropna(subset=["fwd_surge", "fwd_crash"]).copy()
+    base_up = float((p["fwd_surge"] >= SURGE).mean())
+    base_dn = float((p["fwd_crash"] <= -SURGE).mean())
+    defs = [  # (key, label, mask) — strongest first; the live radar classifies the same way
+        ("hot", "vol>=2x & +10%/5d", (p["vol_build"] >= 2) & (p["ret_5d"] >= 0.10)),
+        ("building", "vol>=1.5x & +5%/5d", (p["vol_build"] >= 1.5) & (p["ret_5d"] >= 0.05)),
+        ("vol2", "vol>=2x", p["vol_build"] >= 2),
+        ("vol15", "vol>=1.5x", p["vol_build"] >= 1.5),
+        ("momo", "+10%/5d", p["ret_5d"] >= 0.10),
+        ("extended", "near 52wk high", p["near_high"] >= 0.95),
+    ]
+    out = {"surge_pct": SURGE, "fwd_days": FWD, "asof": str(pd.Timestamp.now().date()),
+           "base": {"p_up": round(base_up, 4), "p_down": round(base_dn, 4), "n": int(len(p))},
+           "buckets": {}}
+    for key, label, mask in defs:
+        sub = p[mask]
+        if len(sub) == 0:
+            continue
+        out["buckets"][key] = {"label": label, "n": int(len(sub)),
+                               "p_up": round(float((sub["fwd_surge"] >= SURGE).mean()), 4),
+                               "p_down": round(float((sub["fwd_crash"] <= -SURGE).mean()), 4)}
+    PROBS_OUT.write_text(json.dumps(out, indent=2))
+    print(f"\n=== signal-bucket odds (+/-{SURGE*100:.0f}% within {FWD}d) -> {PROBS_OUT.name} ===")
+    print(f"  {'bucket':22}{'n':>8}{'P(+30%)':>10}{'P(-30%)':>10}")
+    print(f"  {'(base/any day)':22}{out['base']['n']:>8,}{base_up*100:>9.1f}%{base_dn*100:>9.1f}%")
+    for k, v in out["buckets"].items():
+        print(f"  {v['label']:22}{v['n']:>8,}{v['p_up']*100:>9.1f}%{v['p_down']*100:>9.1f}%")
+    print("  (survivorship: p_up is an OPTIMISTIC ceiling, p_down a FLOOR — real odds worse both ways)")
+    return out
 
 
 def precursor(panel: pd.DataFrame):
@@ -136,6 +177,7 @@ def main() -> int:
     print(f"panel: {len(panel):,} (name,day) rows, {panel['sym'].nunique()} names")
 
     precursor(panel)
+    signal_probs(panel)
 
     print(f"\n=== (2) STRATEGY: heat-entry (vol_build>=1.5 & ret_5d>=+5%) + trailing stop ===")
     print(f"buy next open, time-stop {FWD}d, cost 50bps round-trip. trail-width sweep:")

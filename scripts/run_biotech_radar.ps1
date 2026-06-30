@@ -10,4 +10,9 @@ $log = Join-Path $ROOT "logs\biotech_radar_$stamp.log"
 New-Item -ItemType Directory -Force -Path (Join-Path $ROOT 'logs') | Out-Null
 "=== biotech radar START $((Get-Date).ToString('o')) ===" | Add-Content -Path $log -Encoding utf8
 & (Join-Path $ROOT '.venv-openbb\Scripts\python.exe') (Join-Path $ROOT 'scripts\biotech_radar.py') *>> $log 2>&1
+# commit the snapshot + push so the VM status page can show it
+& git -C $ROOT add live/biotech_radar_latest.json *>> $log 2>&1
+& git -C $ROOT commit -q -m "biotech radar $stamp" *>> $log 2>&1
+& git -C $ROOT push origin main *>> $log 2>&1
+& ssh -o BatchMode=yes -o ConnectTimeout=15 trading-vm "cd /home/ubuntu/trading && git pull --ff-only" *>> $log 2>&1
 "=== biotech radar END (exit $LASTEXITCODE) $((Get-Date).ToString('o')) ===" | Add-Content -Path $log -Encoding utf8
