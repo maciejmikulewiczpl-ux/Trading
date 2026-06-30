@@ -163,6 +163,11 @@ def company_names(tickers: list[str]) -> dict:
 
 _CT_URL = "https://clinicaltrials.gov/api/v2/studies"
 _CT_OK = ("RECRUITING", "ACTIVE_NOT_RECRUITING", "ENROLLING_BY_INVITATION", "NOT_YET_RECRUITING")
+# platform-tech keywords: the ONE case where a Phase 1 readout can re-rate the whole pipeline
+# (validates the engine, not one drug). Heuristic match on trial titles + company name.
+_PLATFORM_KW = ("mrna", "crispr", "gene edit", "gene-edit", "base edit", "prime edit", "car-t",
+                "car t", "cell therapy", "gene therapy", "aav ", "lipid nanoparticle", "sirna",
+                "rnai", "oncolytic", "tcr ", "platform", "molecular glue", "degrader")
 
 
 def upcoming_catalysts(sponsor: str, max_n: int = 3) -> list:
@@ -255,25 +260,52 @@ def build_card(r: dict, nm: str, cap, probs: dict) -> dict:
         why.append(f"+{r['ret_5d']:.0f}% 5d")
     if sp:
         why.append(f"{sp*100:.0f}% short")
-    # nearest upcoming catalyst — prefer Phase 2; compute days-away + run-up exit-by (~1wk before)
-    cats = upcoming_catalysts(nm)
-    dated = [(_parse_ct_date(c[0]), c[0], c[1], c[2]) for c in cats if _parse_ct_date(c[0])]
-    days = exit_by = nearest_phase = None
-    if dated:
-        ph2 = [x for x in dated if "PHASE2" in (x[2] or "")]
-        nearest = sorted(ph2 or dated)[0]
-        days = (nearest[0] - date.today()).days
-        nearest_phase = nearest[2]
-        exit_by = (nearest[0] - timedelta(days=7)).isoformat()
-    # run-up structure (buy into the run-up, EXIT BEFORE the binary readout)
-    if days is not None and 14 <= days <= 150:
-        structure = (f"RUN-UP PLAY - buy into the run-up (~{days}d to est. readout); "
-                     f"TARGET EXIT ~{exit_by} (~1wk BEFORE data) - do NOT hold the binary.")
-    elif days is not None and days < 14:
-        structure = (f"catalyst IMMINENT (~{days}d) — run-up likely already priced in; "
-                     f"entering now = holding the binary coin-flip. AVOID for a run-up.")
+    # CATALYST HIERARCHY (per the playbook): Phase 2 efficacy = the run-up sweet spot;
+    # Phase 1 = safety/dosage (~3% uplift, WEAK) UNLESS a platform tech (then it can re-rate
+    # the whole pipeline); Phase 3 = largely priced-in + binary gap-down risk.
+    today = date.today()
+    dated = []
+    for c0, c1, c2 in upcoming_catalysts(nm):
+        dt = _parse_ct_date(c0)
+        if dt and dt >= today:
+            dated.append({"d": (dt - today).days, "date": c0, "phase": c1, "title": c2,
+                          "exit_by": (dt - timedelta(days=7)).isoformat()})
+    platform = (any(any(k in (x["title"] or "").lower() for k in _PLATFORM_KW) for x in dated)
+                or any(k in nm.lower() for k in _PLATFORM_KW))
+
+    def soonest(pred):
+        xs = [x for x in dated if pred((x["phase"] or "").upper())]
+        return min(xs, key=lambda x: x["d"]) if xs else None
+    ph2 = soonest(lambda p: "PHASE2" in p)
+    ph1 = soonest(lambda p: "PHASE1" in p and "PHASE2" not in p and "PHASE3" not in p)
+    ph3 = soonest(lambda p: "PHASE3" in p and "PHASE2" not in p)
+    near = lambda x: x is not None and 14 <= x["d"] <= 150
+    days = nearest_phase = exit_by = cat_quality = None
+    if near(ph2):
+        days, nearest_phase, exit_by, cat_quality = ph2["d"], ph2["phase"], ph2["exit_by"], "phase2"
+        structure = (f"RUN-UP PLAY (Phase 2 efficacy ~{days}d = the sweet spot) - buy the run-up, "
+                     f"TARGET EXIT ~{exit_by} (~1wk BEFORE data); don't hold the binary.")
+    elif near(ph1) and platform:
+        days, nearest_phase, cat_quality = ph1["d"], ph1["phase"], "phase1_platform"
+        structure = (f"Phase 1 PLATFORM ~{days}d - a platform (mRNA/CRISPR/CAR-T/degrader) Phase 1 "
+                     f"CAN re-rate the whole pipeline. Speculative; smaller/earlier than a Phase 2 run-up.")
+    elif near(ph1):
+        days, nearest_phase, cat_quality = ph1["d"], ph1["phase"], "phase1_weak"
+        structure = (f"Phase 1 only ~{days}d - SAFETY/dosage (~3% avg uplift). WEAK run-up - skip "
+                     f"unless it's a platform play. NOT the Phase-2 efficacy setup.")
+    elif near(ph3):
+        days, nearest_phase, cat_quality = ph3["d"], ph3["phase"], "phase3"
+        structure = (f"Phase 3 ~{days}d - largely PRICED IN + binary gap-down risk if it misses. "
+                     f"Not a clean run-up.")
     else:
-        structure = "no near-term dated catalyst — momentum/heat play only (higher uncertainty)."
+        anyc = min(dated, key=lambda x: x["d"]) if dated else None
+        if anyc and anyc["d"] < 14:
+            days, nearest_phase = anyc["d"], anyc["phase"]
+            structure = (f"catalyst IMMINENT (~{days}d, {anyc['phase']}) - run-up priced in; "
+                         f"entering now = holding the binary. AVOID.")
+        else:
+            structure = "no near-term Phase-2 catalyst - momentum/heat play only (higher uncertainty)."
+    cats = [{"date": x["date"], "phase": x["phase"], "title": x["title"]} for x in dated]
     return {
         "symbol": s, "name": nm, "price": px,
         "heat": round(float(r["heat"]), 2), "setup": round(float(r.get("setup") or 0), 2),
@@ -283,7 +315,7 @@ def build_card(r: dict, nm: str, cap, probs: dict) -> dict:
         "bucket_label": bo.get("label", "baseline"), "p_up": bo.get("p_up"), "p_down": bo.get("p_down"),
         "why": ", ".join(why) or "—",
         "days_to_catalyst": days, "nearest_phase": nearest_phase, "exit_by": exit_by,
-        "catalysts": [{"date": d, "phase": ph, "title": t} for d, ph, t in cats],
+        "cat_quality": cat_quality, "platform": platform, "catalysts": cats[:4],
         "stop": round(px * 0.75, 2), "trail_pct": 28, "structure": structure,
     }
 
@@ -381,8 +413,11 @@ def main(argv) -> int:
     # RUN-UP SETUPS (the advice's play): coiled pre-breakout, prefer in-band + not extended,
     # ranked so in-band names with a near-term catalyst float to the top.
     def _setup_key(c):
-        near = c["days_to_catalyst"] is not None and 14 <= c["days_to_catalyst"] <= 150
-        return (not c["in_band"], not near, -c["setup"])
+        # the run-up ENGINE is a near-term Phase 2 catalyst -> tier it first, then platform
+        # Phase 1, then coiled-no-catalyst; within each tier prefer in-band, then setup score.
+        q = c["cat_quality"]
+        tier = 0 if q == "phase2" else (1 if q == "phase1_platform" else 2)
+        return (tier, not c["in_band"], -c["setup"])
     setups = sorted([c for c in cards if not c["extended"]], key=_setup_key)[:8]
     heat = sorted(cards, key=lambda c: -c["heat"])[:8]
 

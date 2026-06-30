@@ -2203,9 +2203,12 @@ function bioCard(c, fwd){
     +`${c.in_band?'<span class="pos">✓ band</span>':'<span style="color:var(--dim)">(outside $200M-$1B)</span>'}`
     +`<span style="float:right">setup ${c.setup.toFixed(2)} · heat ${c.heat.toFixed(2)}</span></div>`;
   h+=`<div class="hint" style="margin:3px 0">odds [${c.bucket_label}]: <span class="pos">~${pu} +30%</span> / <span class="neg">~${pdn} −30%</span> (${fwd}d, hist) · ${c.why}</div>`;
+  const QB={phase2:['#1f7a3d','P2 efficacy — run-up sweet spot'],phase1_platform:['#7c6a1f','P1 PLATFORM — can re-rate pipeline'],phase1_weak:['#6b3b3b','P1 safety only — WEAK run-up'],phase3:['#7c5a1f','P3 — priced in / gap risk']};
+  if(c.cat_quality && QB[c.cat_quality])
+    h+=`<div style="margin:3px 0"><span style="background:${QB[c.cat_quality][0]};padding:1px 6px;border-radius:3px;font-size:11px">${QB[c.cat_quality][1]}</span></div>`;
   if(c.days_to_catalyst!=null){
     h+=`<div class="hint" style="margin:3px 0"><b>catalyst ~${c.days_to_catalyst}d</b> (${c.nearest_phase||'?'})`
-      +`${c.exit_by?` · run-up exit by <b>${c.exit_by}</b>`:''}</div>`;
+      +`${c.exit_by?` · run-up exit by <b>${c.exit_by}</b>`:''}${c.platform?' · <span class="pos">platform</span>':''}</div>`;
   }
   if(c.catalysts&&c.catalysts.length)
     h+=`<div style="font-size:11px;color:var(--dim);margin:2px 0">`+c.catalysts.slice(0,3).map(ct=>`${ct.date} · ${ct.phase} · ${ct.title}`).join('<br>')+`</div>`;
