@@ -99,6 +99,7 @@ def heat_scan(tickers: list[str]) -> pd.DataFrame:
             # consolidation footprint (the "run-up" setup — coiled BEFORE the pop)
             "tightness": round((hi40 - lo40) / mn40, 3) if mn40 else None,   # 40d range / price; lower=tighter
             "pos_in_range": round((float(c.iloc[-1]) - lo40) / (hi40 - lo40), 3) if hi40 > lo40 else None,
+            "dollar_vol": round(float((c.tail(20) * v.tail(20)).mean()), 0),   # avg daily $-volume (liquidity)
         })
     df = pd.DataFrame(rows)
     if df.empty:
@@ -132,7 +133,12 @@ def enrich_short(symbols: list[str]) -> dict:
     return out
 
 
-CAP_LO, CAP_HI = 200e6, 1e9     # the surge "sweet spot" market-cap band ($200M-$1B)
+# surge-capable market-cap band: widened DOWN to $100M (SLS was sub-$200M when its setup
+# formed — the biggest %-moves are the smallest names) and up to $2B (above that a 2-3x is
+# unlikely). The real risk for tiny names is LIQUIDITY, not cap -> guarded separately below.
+CAP_LO, CAP_HI = 100e6, 2e9
+MIN_DOLLAR_VOL = 1.0e6          # avg daily $-volume floor: below this, spreads eat the edge
+                                # and you can't exit on bad data (the real micro-cap danger)
 
 
 def market_caps(tickers: list[str]) -> dict:
@@ -269,6 +275,8 @@ def build_card(r: dict, nm: str, cap, ins_list: list, probs: dict) -> dict:
     bo = (probs.get("buckets", {}).get(bkt) or probs.get("base", {})) if probs else {}
     sp = float(r["short%float"]) if pd.notna(r.get("short%float")) else None
     in_band = bool(cap and CAP_LO <= cap <= CAP_HI)
+    dvol = r.get("dollar_vol")
+    liquid = bool(dvol and dvol >= MIN_DOLLAR_VOL)
     why = []
     if r.get("vol_build") and r["vol_build"] >= 1.3:
         why.append(f"vol building {r['vol_build']:.1f}x")
@@ -342,7 +350,7 @@ def build_card(r: dict, nm: str, cap, ins_list: list, probs: dict) -> dict:
         "heat": round(float(r["heat"]), 2), "setup": round(float(r.get("setup") or 0), 2),
         "near_high": round(float(r["near_high"]), 3), "extended": bool(r["near_high"] >= 0.95),
         "pos_in_range": r.get("pos_in_range"), "tightness": r.get("tightness"),
-        "market_cap": cap, "in_band": in_band, "short_pct": sp,
+        "market_cap": cap, "in_band": in_band, "dollar_vol": dvol, "liquid": liquid, "short_pct": sp,
         "bucket_label": bo.get("label", "baseline"), "p_up": bo.get("p_up"), "p_down": bo.get("p_down"),
         "why": ", ".join(why) or "—",
         "days_to_catalyst": days, "nearest_phase": nearest_phase, "exit_by": exit_by,
@@ -381,6 +389,9 @@ def _print_one(c, fwd):
     cflag = {"HIGH": "*** HIGH CONVICTION (coil+insider+catalyst) ***", "MED": "[MED conviction]",
              "LOW": ""}.get(conv, "")
     print(f"\n{c['symbol']}  ({c['name']})  ${c['price']:.2f}  ·  {_cap_str(c['market_cap'])}  {band}  {cflag}")
+    dv = c.get("dollar_vol")
+    liq = f"${dv/1e6:.1f}M/day" + ("" if c.get("liquid") else "  ⚠ ILLIQUID — wide spreads, hard to exit") if dv else "liq ?"
+    print(f"  liquidity: {liq}")
     if c.get("insider_buys"):
         print(f"  INSIDER BUYING: {c['insider_buys']} Form-4 buy(s), ${c['insider_usd']:,.0f}, "
               f"latest {c['insider_recent']}  (smart money positioning)")
@@ -457,7 +468,8 @@ def main(argv) -> int:
     def _setup_key(c):
         q = c["cat_quality"]
         tier = 0 if q == "phase2" else (1 if q == "phase1_platform" else 2)
-        return (conv_rank.get(c["conviction"], 3), tier, not c["in_band"], -c["setup"])
+        # conviction -> liquid (tradable) -> Phase-2 -> in-band -> setup score
+        return (conv_rank.get(c["conviction"], 3), not c["liquid"], tier, not c["in_band"], -c["setup"])
     setups = sorted([c for c in cards if not c["extended"]], key=_setup_key)[:8]
     heat = sorted(cards, key=lambda c: -c["heat"])[:8]
 

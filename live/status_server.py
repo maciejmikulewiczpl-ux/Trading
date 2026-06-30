@@ -2204,6 +2204,8 @@ function bioCard(c, fwd){
   h+=`<div><b>${c.symbol}</b> <small style="color:var(--dim)">${c.name||''}</small> · $${c.price.toFixed(2)} · ${capStr(c.market_cap)} `
     +`${c.in_band?'<span class="pos">✓ band</span>':'<span style="color:var(--dim)">(outside $200M-$1B)</span>'}`
     +`<span style="float:right;background:${cv[0]};padding:1px 6px;border-radius:3px;font-size:11px">${cv[1]}</span></div>`;
+  if(c.dollar_vol!=null)
+    h+=`<div class="hint" style="margin:3px 0">liquidity: $${(c.dollar_vol/1e6).toFixed(1)}M/day${c.liquid?'':' <span class="neg">⚠ ILLIQUID — wide spreads, hard to exit on bad data</span>'}</div>`;
   if(c.insider_buys)
     h+=`<div class="hint" style="margin:3px 0">💰 <b>insider buying</b>: ${c.insider_buys} Form-4 buy(s), $${(c.insider_usd/1000).toFixed(0)}k, latest ${c.insider_recent} (smart money in)</div>`;
   h+=`<div class="hint" style="margin:3px 0">odds [${c.bucket_label}]: <span class="pos">~${pu} +30%</span> / <span class="neg">~${pdn} −30%</span> (${fwd}d, hist) · ${c.why}</div>`;
