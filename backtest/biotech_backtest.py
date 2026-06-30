@@ -48,6 +48,7 @@ def build(tickers: list[str]):
         lo = low[t].reindex(c.index); o = opn[t].reindex(c.index)
         v20 = v.rolling(20).mean()
         rng40 = (c.rolling(40).max() - c.rolling(40).min())
+        prior20hi = c.shift(1).rolling(20).max()        # highest close of the PRIOR 20 days
         f = pd.DataFrame({
             "sym": t, "close": c,
             "vol_build": v.rolling(5).mean() / v20,            # 5d vs 20d volume (through t)
@@ -55,6 +56,8 @@ def build(tickers: list[str]):
             "ret_20d": c / c.shift(20) - 1.0,
             "near_high": c / c.rolling(252, min_periods=60).max(),
             "pos_in_range": (c - c.rolling(40).min()) / rng40.replace(0, pd.NA),   # 40d range pos
+            "breakout": (c > prior20hi).astype(float),         # new 20d-high = range breakout TODAY
+            "coiled_prior": (rng40.shift(1) / c.shift(1) < 0.45).astype(float),   # was in a tight range
         }, index=c.index)
         # forward max close over t+1..t+FWD (the surge label), lookahead only in the LABEL
         fwd_max = pd.concat([c.shift(-k) for k in range(1, FWD + 1)], axis=1).max(axis=1)
@@ -180,6 +183,16 @@ def runup(panel, paths, trail, hold, cost_bps):
     return _harvest(trig, paths, trail, hold, cost_bps)
 
 
+def breakout(panel, paths, trail, hold, cost_bps, coiled_only=False):
+    """BIOTECH x ORB blend (the user's idea): wait for the name to actually BREAK OUT of its
+    range on volume, THEN enter (daily-bar cousin of an opening-range breakout). Optionally
+    require it was COILED first (the watchlist -> breakout sequence)."""
+    m = (panel["breakout"] >= 1) & (panel["vol_build"] >= 1.5)
+    if coiled_only:
+        m = m & (panel["coiled_prior"] >= 1)
+    return _harvest(panel[m], paths, trail, hold, cost_bps)
+
+
 def main() -> int:
     uni = universe()
     if not uni:
@@ -215,6 +228,19 @@ def main() -> int:
             print(f"  {str(hold)+'d (~'+str(hold//5)+'wk)':>16}{st['n']:>7,}{st['avg']:>+10.2f}%"
                   f"{st['median']:>+8.2f}%{st['win']:>6.0f}%{st['p90']:>+7.1f}%{st['best']:>+7.0f}%"
                   f"{300*st['avg']/100:>+16.2f}")
+    print(f"\n=== (4) BIOTECH x ORB BLEND: wait for the breakout, THEN enter (vs buy the coil) ===")
+    print("hold 20d, 25% trailing, 50bps. Does confirmation help, or kill the fat tail?")
+    print(f"  {'entry':>26}{'n':>7}{'avg/trade':>11}{'median':>9}{'win%':>7}{'P90':>8}{'best':>8}")
+    variants = [("coil (anticipate)", runup(panel, paths, 25.0, 20, 50.0)),
+                ("breakout (confirm)", breakout(panel, paths, 25.0, 20, 50.0)),
+                ("coiled THEN breakout", breakout(panel, paths, 25.0, 20, 50.0, coiled_only=True))]
+    for name, st in variants:
+        if st:
+            print(f"  {name:>26}{st['n']:>7,}{st['avg']:>+10.2f}%{st['median']:>+8.2f}%"
+                  f"{st['win']:>6.0f}%{st['p90']:>+7.1f}%{st['best']:>+7.0f}%")
+    print("  READ: higher WIN% + median on breakout = confirmation cuts dead-money/losers; but if")
+    print("  avg/P90/best DROP, the wait missed the fat tail (the moonshots) — biotech's whole edge.")
+
     print("\n  EXPECTATION READ (honest): avg/trade is the per-position % over the hold; on a $300")
     print("  position that's the $ column. Median NEGATIVE + win<50% = MOST positions lose a little;")
     print("  the average is carried by rare winners (see P90/best). HAIRCUT HARD: survivorship")
