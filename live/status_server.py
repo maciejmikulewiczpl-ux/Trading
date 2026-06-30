@@ -992,6 +992,29 @@ def _driver_text(pick: dict) -> str:
     return ", ".join(parts)
 
 
+_asset_name_cache: dict = {}
+
+
+def _asset_names(tc, symbols: list[str]) -> dict:
+    """{symbol: company name} via Alpaca asset metadata, cached (names don't change)."""
+    out = {}
+    for s in symbols:
+        if s in _asset_name_cache:
+            out[s] = _asset_name_cache[s]
+            continue
+        try:
+            nm = getattr(tc.get_asset(s), "name", None)
+            if nm:                       # trim boilerplate suffixes for readability
+                for suf in (" Common Stock", " Class A Common Stock", ", Inc.", " Inc."):
+                    nm = nm.replace(suf, "")
+                nm = nm.strip().rstrip(",")
+        except Exception:
+            nm = None
+        _asset_name_cache[s] = nm
+        out[s] = nm
+    return out
+
+
 def _lottery_drivers(symbols: list[str]) -> dict:
     """{symbol: {date, why, score}} — the most recent board pick record per held symbol,
     translated into a plain-English driver string."""
@@ -1106,7 +1129,16 @@ def _lottery() -> dict:
         out["bot"] = bot
         try:
             if bot.get("positions"):
-                out["drivers"] = _lottery_drivers([p["symbol"] for p in bot["positions"]])
+                syms = [p["symbol"] for p in bot["positions"]]
+                drv = _lottery_drivers(syms)
+                try:
+                    tc2, _dc2 = _lottery_clients()
+                    names = _asset_names(tc2, syms) if tc2 else {}
+                    for s in drv:
+                        drv[s]["name"] = names.get(s)
+                except Exception:
+                    pass
+                out["drivers"] = drv
         except Exception:
             pass
     today_iso = datetime.now(ET).date().isoformat()
@@ -1854,7 +1886,8 @@ function renderLottery(ld){
       if(Object.keys(drv).length){
         h+=`<div style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:10px 0 4px">Why these were picked</div>`;
         for(const p of bp){ const d=drv[p.symbol]; if(!d) continue;
-          h+=`<div class="hint" style="margin:3px 0"><b>${p.symbol}</b> — ${d.why}`
+          h+=`<div class="hint" style="margin:3px 0"><b>${p.symbol}</b>`
+            +`${d.name?` <span style="color:var(--dim)">(${d.name})</span>`:''} — ${d.why}`
             +`${d.score!=null?` <span style="color:var(--dim)">· score ${d.score.toFixed(2)}, picked ${d.date||''}</span>`:''}</div>`;
         }
       }
