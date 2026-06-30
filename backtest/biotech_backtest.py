@@ -47,12 +47,14 @@ def build(tickers: list[str]):
         v = vol[t].reindex(c.index); h = high[t].reindex(c.index)
         lo = low[t].reindex(c.index); o = opn[t].reindex(c.index)
         v20 = v.rolling(20).mean()
+        rng40 = (c.rolling(40).max() - c.rolling(40).min())
         f = pd.DataFrame({
             "sym": t, "close": c,
             "vol_build": v.rolling(5).mean() / v20,            # 5d vs 20d volume (through t)
             "ret_5d": c / c.shift(5) - 1.0,
             "ret_20d": c / c.shift(20) - 1.0,
             "near_high": c / c.rolling(252, min_periods=60).max(),
+            "pos_in_range": (c - c.rolling(40).min()) / rng40.replace(0, pd.NA),   # 40d range pos
         }, index=c.index)
         # forward max close over t+1..t+FWD (the surge label), lookahead only in the LABEL
         fwd_max = pd.concat([c.shift(-k) for k in range(1, FWD + 1)], axis=1).max(axis=1)
@@ -128,9 +130,8 @@ def precursor(panel: pd.DataFrame):
     print("  often than random). Lift ~1 = surges come out of nowhere (no price/vol pre-warning).")
 
 
-def strategy(panel: pd.DataFrame, paths: dict, trail: float, max_days: int, cost_bps: float):
-    """Buy next open when the heat trigger fires; 'trail'% trailing stop + time-stop."""
-    trig = panel[(panel["vol_build"] >= 1.5) & (panel["ret_5d"] >= 0.05)]
+def _harvest(trig: pd.DataFrame, paths: dict, trail: float, max_days: int, cost_bps: float):
+    """Buy next open for each trigger row; 'trail'% trailing stop + time-stop at max_days."""
     rets = []
     for sym, sub in trig.groupby("sym"):
         df = paths.get(sym)
@@ -163,7 +164,20 @@ def strategy(panel: pd.DataFrame, paths: dict, trail: float, max_days: int, cost
         return None
     return {"n": r.size, "avg": r.mean() * 100, "median": np.median(r) * 100,
             "win": np.mean(r > 0) * 100, "best": r.max() * 100, "worst": r.min() * 100,
-            "total": r.sum() * 100}
+            "total": r.sum() * 100, "p90": np.percentile(r, 90) * 100, "ret": r}
+
+
+def strategy(panel, paths, trail, max_days, cost_bps):
+    return _harvest(panel[(panel["vol_build"] >= 1.5) & (panel["ret_5d"] >= 0.05)],
+                    paths, trail, max_days, cost_bps)
+
+
+def runup(panel, paths, trail, hold, cost_bps):
+    """The RUN-UP setup: coiled (40d range-top) + volume building + NOT already popped,
+    held ~`hold` sessions with a wide trailing stop = 'buy the run-up, exit before data'."""
+    trig = panel[(panel["vol_build"] >= 1.5) & (panel["pos_in_range"] >= 0.85)
+                 & (panel["ret_20d"] < 0.40)]
+    return _harvest(trig, paths, trail, hold, cost_bps)
 
 
 def main() -> int:
@@ -190,6 +204,23 @@ def main() -> int:
     print("\n  READ: these are lottery-like (a few huge winners, many small losers). A POSITIVE")
     print("  avg/trade after cost = the trailing stop harvests the up-tail faster than the")
     print("  down-tail bleeds. REMEMBER survivorship inflates this -- haircut it hard.")
+
+    print(f"\n=== (3) THE RUN-UP SETUP (what the tool recommends): coiled + vol-building, ===")
+    print("buy next open, 25% trailing stop, EXIT at `hold` sessions (before the binary), 50bps:")
+    print(f"  {'hold (sessions)':>16}{'n':>7}{'avg/trade':>11}{'median':>9}{'win%':>7}"
+          f"{'P90':>8}{'best':>8}{'$/trade on $300':>17}")
+    for hold in (10, 20, 30):
+        st = runup(panel, paths, 25.0, hold, 50.0)
+        if st:
+            print(f"  {str(hold)+'d (~'+str(hold//5)+'wk)':>16}{st['n']:>7,}{st['avg']:>+10.2f}%"
+                  f"{st['median']:>+8.2f}%{st['win']:>6.0f}%{st['p90']:>+7.1f}%{st['best']:>+7.0f}%"
+                  f"{300*st['avg']/100:>+16.2f}")
+    print("\n  EXPECTATION READ (honest): avg/trade is the per-position % over the hold; on a $300")
+    print("  position that's the $ column. Median NEGATIVE + win<50% = MOST positions lose a little;")
+    print("  the average is carried by rare winners (see P90/best). HAIRCUT HARD: survivorship")
+    print("  excludes delisted failures (the -70% trial flops), so the REAL avg is materially lower")
+    print("  — plausibly near zero after that + real small-cap spreads. This is SPECULATION, not")
+    print("  expected income: size to lose, profit (if any) comes from catching the occasional moonshot.")
     return 0
 
 
