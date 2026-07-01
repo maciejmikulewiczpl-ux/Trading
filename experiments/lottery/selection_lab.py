@@ -73,7 +73,9 @@ def _agg(vals):
     vals = [v for v in vals if v is not None]
     if not vals:
         return None
-    return len(vals), st.mean(vals), st.median(vals), 100 * sum(1 for v in vals if v > 0) / len(vals)
+    # n, mean, median, win%, SUM (equal-weight PnL proxy), best (fat right tail)
+    return (len(vals), st.mean(vals), st.median(vals),
+            100 * sum(1 for v in vals if v > 0) / len(vals), sum(vals), max(vals))
 
 
 def _baskets_for_day(picks):
@@ -116,29 +118,27 @@ def main():
     if ra:
         print(f"RANDOM basket baseline: n={ra[0]} mean={ra[1]:+.2f}% median={ra[2]:+.2f}% win={ra[3]:.0f}%\n")
 
-    # gather per-basket returns
-    by_ret = {}
-    by_ret1d = {}
+    # gather per-basket returns at 3 horizons (same-day / 1d / 3d)
+    HORIZONS = [(METRIC, "same-day"), ("ret_1d", "1-day"), ("ret_3d", "3-day")]
+    by = {h[0]: {} for h in HORIZONS}
     lookup = {rec["date"]: {p["symbol"]: p for p in rec["picks"]} for rec in days}
     for rec in days:
         b = _baskets_for_day([p for p in rec["picks"] if p.get("combined_score") is not None])
         L = lookup[rec["date"]]
         for name, syms in b.items():
             for s in syms:
-                by_ret.setdefault(name, []).append(L.get(s, {}).get(METRIC))
-                by_ret1d.setdefault(name, []).append(L.get(s, {}).get("ret_1d"))
+                for fld, _ in HORIZONS:
+                    by[fld].setdefault(name, []).append(L.get(s, {}).get(fld))
 
-    print(f"  {'basket':<14}{'n':>4}{'mean%':>8}{'median%':>9}{'win%':>6}{'edge vs rand':>13}{'1d mean%':>10}")
-    print("  " + "-" * 66)
     order = ["current", "minsig3", "clean", "confluence", "ignition_only", "NEG len4", "NEG revalpha"]
-    for name in order:
-        a = _agg(by_ret.get(name, []))
-        a1 = _agg(by_ret1d.get(name, []))
-        if not a:
-            continue
-        edge = (a[1] - ra[1]) if ra else float("nan")
-        m1 = f"{a1[1]:+.2f}" if a1 else "n/a"
-        print(f"  {name:<14}{a[0]:>4}{a[1]:>+8.2f}{a[2]:>+9.2f}{a[3]:>6.0f}{edge:>+12.2f}pp{m1:>10}")
+    # Tail-aware: SUM = equal-weight PnL proxy, best = fat right tail. The bot's realized PnL is
+    # tail-driven and lives in the +1/+2 day move -> compare baskets by SUM/best across horizons.
+    for fld, label in HORIZONS:
+        print(f"\n  [{label}]  {'basket':<14}{'n':>4}{'mean%':>8}{'SUM%':>9}{'best%':>8}{'win%':>6}")
+        for name in order:
+            a = _agg(by[fld].get(name, []))
+            if a:
+                print(f"                {name:<14}{a[0]:>4}{a[1]:>+8.2f}{a[4]:>+9.1f}{a[5]:>+8.1f}{a[3]:>6.0f}")
 
     # Top-N curve (logged combined_score)
     print("\n  Top-N curve (by logged combined_score), same-day:")
