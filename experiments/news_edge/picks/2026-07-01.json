@@ -19,7 +19,9 @@
       "reddit_rank": 6,
       "earnings_day": true,
       "theme": "apparel-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.676,
+      "gap_pct": 0.767
     },
     {
       "symbol": "NBIS",
@@ -38,7 +40,8 @@
       "earnings_day": false,
       "theme": "neocloud-competition",
       "control": false,
-      "gap_pct": -17.19
+      "gap_pct": -17.19,
+      "ret_945_close": -3.589
     },
     {
       "symbol": "GIS",
@@ -57,7 +60,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "staples-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.036,
+      "gap_pct": 9.164
     },
     {
       "symbol": "STZ",
@@ -75,7 +80,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "beverages-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -4.235,
+      "gap_pct": 2.377
     },
     {
       "symbol": "RAM",
@@ -91,7 +98,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -18.3
+      "gap_pct": -18.3,
+      "ret_945_close": -5.315
     },
     {
       "symbol": "CRWV",
@@ -107,7 +115,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -11.73
+      "gap_pct": -11.73,
+      "ret_945_close": -3.478
     },
     {
       "symbol": "HUT",
@@ -123,7 +132,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -9.01
+      "gap_pct": -9.01,
+      "ret_945_close": -0.509
     },
     {
       "symbol": "SNDK",
@@ -139,7 +149,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -8.75
+      "gap_pct": -8.75,
+      "ret_945_close": -1.975
     },
     {
       "symbol": "MU",
@@ -155,7 +166,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -7.26
+      "gap_pct": -7.26,
+      "ret_945_close": -3.475
     },
     {
       "symbol": "AA",
@@ -171,7 +183,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -6.98
+      "gap_pct": -6.98,
+      "ret_945_close": -0.148
     },
     {
       "symbol": "META",
@@ -187,7 +200,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 6.73
+      "gap_pct": 6.73,
+      "ret_945_close": 2.089
     },
     {
       "symbol": "IREN",
@@ -203,7 +217,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -6.45
+      "gap_pct": -6.45,
+      "ret_945_close": -0.081
     },
     {
       "symbol": "KLAR",
@@ -219,7 +234,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.34
+      "gap_pct": 5.34,
+      "ret_945_close": -2.195
     },
     {
       "symbol": "APLD",
@@ -235,7 +251,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.76
+      "gap_pct": -4.76,
+      "ret_945_close": -1.547
     },
     {
       "symbol": "GLXY",
@@ -251,7 +268,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.68
+      "gap_pct": -4.68,
+      "ret_945_close": 1.089
     },
     {
       "symbol": "AMD",
@@ -267,7 +285,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.53
+      "gap_pct": -4.53,
+      "ret_945_close": -2.269
     },
     {
       "symbol": "NOW",
@@ -283,7 +302,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.41
+      "gap_pct": 3.41,
+      "ret_945_close": 2.046
     },
     {
       "symbol": "NVDA",
@@ -299,7 +319,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.13
+      "gap_pct": -3.13,
+      "ret_945_close": 1.579
     }
-  ]
+  ],
+  "outcomes_at": "2026-07-01T16:05:06-04:00"
 }
