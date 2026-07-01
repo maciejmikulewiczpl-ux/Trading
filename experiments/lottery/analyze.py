@@ -68,6 +68,30 @@ def _basket_of(pick: dict) -> str:
     return pick.get("basket", "?")
 
 
+def _rvol(pick: dict):
+    """realized_vol logged per pick (board v1.4, 2026-06-29+); None on older picks."""
+    s = pick.get("signals") or {}
+    return s.get("realized_vol")
+
+
+def vol_edges(picks: list[dict], nbins: int = 3) -> list[float] | None:
+    """Quantile edges (nbins-1 of them) over all picks that carry realized_vol. None if too few."""
+    vs = sorted(v for v in (_rvol(p) for p in picks) if v is not None)
+    if len(vs) < nbins * 4:            # need a few per bucket to be meaningful
+        return None
+    return [vs[int(q * (len(vs) - 1))] for q in [i / nbins for i in range(1, nbins)]]
+
+
+def _vol_bucket(v, edges) -> int | None:
+    if v is None or edges is None:
+        return None
+    b = 0
+    for e in edges:
+        if v > e:
+            b += 1
+    return b
+
+
 def hit_stats(picks: list[dict], field: str, thr: float) -> tuple[int, int]:
     """(#winners, #scored) for the given window over a list of picks."""
     wins = scored = 0
@@ -205,6 +229,81 @@ def analyze(picks_dir: Path) -> int:
               + (f"   | mean {m:+.2f}%" if m == m else "   | mean n/a"))
     print()
 
+    # --- VOL-MATCHED control (review #4c): compare a signal to random names of the SAME realized
+    # vol, so a lift isn't just "the signal picks higher-vol names" (higher vol => more +5% days by
+    # luck). realized_vol logged per pick from 2026-06-29 (board v1.4); activates as coverage grows. ---
+    all_picks = [p for rec in days for p in rec["picks"]]
+    v_edges = vol_edges(all_picks, nbins=3)
+    n_rand_vol = sum(1 for p in random_picks if _rvol(p) is not None)
+    # random per-vol-bucket stats: hit (W1) and mean-return (ret_3d)
+    W1F = ("ret_945_close", 5.0)
+    EXPF = "ret_3d"
+    rb_hit: dict[int, list] = defaultdict(lambda: [0, 0])   # bucket -> [wins, scored]
+    rb_mean: dict[int, list] = defaultdict(lambda: [0.0, 0])  # bucket -> [sum, n]
+    for p in random_picks:
+        b = _vol_bucket(_rvol(p), v_edges)
+        if b is None:
+            continue
+        hw = _is_win(p, W1F[0], W1F[1])
+        if hw is not None:
+            rb_hit[b][1] += 1
+            rb_hit[b][0] += 1 if hw else 0
+        rv = p.get(EXPF)
+        if rv is not None:
+            rb_mean[b][0] += rv
+            rb_mean[b][1] += 1
+
+    def vol_matched(picks):
+        """(W1 rate, W1 vol-matched-base, ret_3d mean, ret_3d vol-matched-base-mean, n_cov) for a
+        signal's picks that carry realized_vol; reweights the RANDOM baseline to the signal's vol mix.
+        nan where a bucket lacks random coverage or too few picks."""
+        wt_hit: dict[int, int] = defaultdict(int)
+        wt_mean: dict[int, int] = defaultdict(int)
+        sw = sm = sn = 0
+        hw_tot = hs_tot = 0
+        rm_sum = rm_n = 0
+        for p in picks:
+            b = _vol_bucket(_rvol(p), v_edges)
+            if b is None:
+                continue
+            sn += 1
+            hw = _is_win(p, W1F[0], W1F[1])
+            if hw is not None:
+                wt_hit[b] += 1
+                hs_tot += 1
+                hw_tot += 1 if hw else 0
+            rv = p.get(EXPF)
+            if rv is not None:
+                wt_mean[b] += 1
+                rm_sum += rv
+                rm_n += 1
+        # vol-matched random base = signal-vol-weighted average of random per-bucket stat
+        def _wavg(weights, table, idx_val, idx_den):
+            tot = sum(weights.values())
+            if tot == 0:
+                return float("nan")
+            acc = 0.0
+            for b, wcnt in weights.items():
+                den = table[b][idx_den]
+                if den == 0:
+                    return float("nan")   # a bucket the signal uses has no random comparison
+                acc += (wcnt / tot) * (table[b][idx_val] / den)
+            return acc
+        w1_rate = (hw_tot / hs_tot) if hs_tot else float("nan")
+        w1_base = _wavg(wt_hit, rb_hit, 0, 1)
+        exp_mean = (rm_sum / rm_n) if rm_n else float("nan")
+        exp_base = _wavg(wt_mean, rb_mean, 0, 1)
+        return w1_rate, w1_base, exp_mean, exp_base, sn
+
+    if v_edges is None:
+        print(f"VOL-MATCHED control: not enough realized_vol coverage yet "
+              f"({n_rand_vol} random picks carry it; logging began 2026-06-29). "
+              f"Activates automatically as the sample grows.\n")
+    else:
+        print(f"VOL-MATCHED control ACTIVE: vol terciles at {[round(e,3) for e in v_edges]} "
+              f"({n_rand_vol} random picks carry realized_vol). Compares each signal to random "
+              f"names of the SAME vol.\n")
+
     def report(name: str, picks: list[dict], select=None):
         print(f"  [{name}]")
         w1_pass = False   # path (a): hit-rate reliability
@@ -249,12 +348,32 @@ def analyze(picks_dir: Path) -> int:
             print(f"    exp {field:13s}: mean {mean:+6.2f}%  vs rand {edge_s:>8s}  "
                   f"PF {pf_s:>5s}{ci_txt}")
 
+        # --- VOL-MATCHED line (review #4c): signal vs SAME-vol random names ---
+        vm_checked = False
+        vm_pass = False
+        if v_edges is not None and select is not None:
+            w1r, w1b, em, eb, ncov = vol_matched(picks)
+            if ncov >= 3:
+                vm_checked = True
+                vlift = (w1r / w1b) if (w1b == w1b and w1b > 0) else float("nan")
+                vedge = (em - eb) if (em == em and eb == eb) else float("nan")
+                vlift_s = f"{vlift:.2f}x" if vlift == vlift else "n/a"
+                vedge_s = f"{vedge:+.2f}pp" if vedge == vedge else "n/a"
+                vm_pass = (vlift == vlift and vlift >= SUCCESS_LIFT) or (vedge == vedge and vedge > 0)
+                print(f"    vol-matched (n={ncov}): W1 {w1r*100:.0f}% vs same-vol rand "
+                      f"{w1b*100:.0f}% = lift {vlift_s}  |  ret_3d edge {vedge_s}")
+
         # --- combined verdict: pass on EITHER path, gated on n_days ---
         if select is not None:
             ndays_ok = n_days >= SUCCESS_NDAYS
             if w1_pass or exp_pass:
                 paths = "+".join([p for p, ok in (("hit-rate", w1_pass), ("expectancy", exp_pass)) if ok])
-                tag = f"  >>> PASSES BAR ({paths})" if ndays_ok else f"  ({paths} ok, need more days)"
+                # vol-matched confirmation: is the raw lift real, or a higher-vol artifact?
+                vm_note = ""
+                if vm_checked:
+                    vm_note = " [vol-matched OK]" if vm_pass else " [WARN: vol-matched lift weak -> may be a vol artifact]"
+                tag = (f"  >>> PASSES BAR ({paths}){vm_note}" if ndays_ok
+                       else f"  ({paths} ok, need more days){vm_note}")
                 print(f"   {tag}")
 
     print("=== per-signal baskets (top_k_of) ===")
