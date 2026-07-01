@@ -6,8 +6,13 @@ bootstrap CI (when n_days >= 15). Then print the pre-registered verdict line per
 
 Winners (pre-registered, immutable):
   W1 = ret_945_close >= +5%   W2 = ret_1d >= +10%   W3 = ret_3d >= +20%
-Success bar: a signal "works" iff W1 hit-rate >= 2x the random base rate, p < 0.05,
-n_days >= 30.
+Success bar (v2, 2026-06-30, DeepSeek/ChatGPT review #4a): a signal "works" iff EITHER
+  (a) W1 hit-rate >= 2x the random base rate, p < 0.05   [reliability path], OR
+  (b) EXPECTANCY edge on the traded horizon (ret_3d mean) beats random by a bootstrap-CI
+      lower bound > 0                                     [lumpy-moonshot path],
+  with n_days >= 30. The (b) path exists because a signal can have a mediocre hit-rate but
+  a great average return driven by fat right-tail winners (the whole lottery premise) — a
+  hit-rate-only bar would WRONGLY REJECT it.
 
 Run:
     .venv/Scripts/python.exe experiments/lottery/analyze.py
@@ -75,6 +80,54 @@ def hit_stats(picks: list[dict], field: str, thr: float) -> tuple[int, int]:
     return wins, scored
 
 
+def ret_stats(picks: list[dict], field: str) -> tuple[float, float, int]:
+    """(mean-return, profit-factor, n) over scored picks. Expectancy = mean; profit-factor
+    = gross gains / gross losses (inf if no losers). Captures the lumpy right-tail that a
+    hit-rate misses."""
+    vals = [p.get(field) for p in picks]
+    vals = [v for v in vals if v is not None]
+    if not vals:
+        return float("nan"), float("nan"), 0
+    n = len(vals)
+    mean = sum(vals) / n
+    gains = sum(v for v in vals if v > 0)
+    losses = -sum(v for v in vals if v < 0)
+    pf = (gains / losses) if losses > 0 else float("inf")
+    return mean, pf, n
+
+
+def bootstrap_edge_ci(days: list[dict], select, field: str, base_mean: float,
+                      n_boot: int = 2000) -> tuple:
+    """Day-resampled bootstrap 95% CI on the EXPECTANCY EDGE (signal mean - random mean, in
+    the return field's units). base_mean is held fixed (the random baseline). CI lower bound
+    > 0 => the signal's average return beats luck. Handles negative baselines cleanly
+    (a difference, not a ratio)."""
+    import random
+    rng = random.Random(20260630)
+    per_day = []  # (sum, count) of the selected picks' returns, per day
+    for rec in days:
+        sel = [p.get(field) for p in rec["picks"] if select(p)]
+        sel = [v for v in sel if v is not None]
+        per_day.append((sum(sel), len(sel)))
+    n = len(per_day)
+    if n == 0 or base_mean != base_mean:
+        return float("nan"), float("nan")
+    edges = []
+    for _ in range(n_boot):
+        tot = cnt = 0
+        for _ in range(n):
+            s, c = per_day[rng.randrange(n)]
+            tot += s
+            cnt += c
+        if cnt == 0:
+            continue
+        edges.append((tot / cnt) - base_mean)
+    if not edges:
+        return float("nan"), float("nan")
+    edges.sort()
+    return edges[int(0.025 * len(edges))], edges[int(0.975 * len(edges))]
+
+
 def bootstrap_lift_ci(days: list[dict], select, field: str, thr: float,
                       base_rate: float, n_boot: int = 2000) -> tuple:
     """Resample DAYS with replacement; recompute hit-rate / base_rate each draw -> 95% CI."""
@@ -114,7 +167,9 @@ def analyze(picks_dir: Path) -> int:
 
     print(f"=== lottery forward test: {n_days} logged day(s) ===")
     print("Winners: W1 ret_945_close>=+5%  W2 ret_1d>=+10%  W3 ret_3d>=+20%")
-    print(f"Bar: W1 hit-rate >= {SUCCESS_LIFT:.0f}x random base, p<0.05, n_days>={SUCCESS_NDAYS}\n")
+    print(f"Bar v2: PASS iff (hit-rate >= {SUCCESS_LIFT:.0f}x random, p<0.05) OR "
+          f"(ret_3d expectancy edge CI>0), n_days>={SUCCESS_NDAYS}.")
+    print("  expectancy path catches lumpy signals: mediocre hit-rate but fat-tail avg return.\n")
 
     # gather picks by basket and by signal-flag (top_k_of)
     by_basket: dict[str, list] = defaultdict(list)
@@ -135,16 +190,24 @@ def analyze(picks_dir: Path) -> int:
     for key, field, thr in WINDEFS:
         w, s = hit_stats(random_picks, field, thr)
         base[key] = (w / s) if s else float("nan")
+    # RANDOM expectancy baseline (mean return) per return field -- the luck baseline for path (b)
+    base_exp = {}
+    for _, field, _ in WINDEFS:
+        m, _pf, _n = ret_stats(random_picks, field)
+        base_exp[field] = m
     print("RANDOM-BASKET base rates (the luck baseline):")
     for key, field, thr in WINDEFS:
         w, s = hit_stats(random_picks, field, thr)
         br = base[key]
+        m = base_exp[field]
         print(f"  {key} ({field}>=+{thr:.0f}%): {w}/{s} = "
-              + (f"{br*100:.1f}%" if br == br else "n/a"))
+              + (f"{br*100:.1f}%" if br == br else "n/a")
+              + (f"   | mean {m:+.2f}%" if m == m else "   | mean n/a"))
     print()
 
     def report(name: str, picks: list[dict], select=None):
         print(f"  [{name}]")
+        w1_pass = False   # path (a): hit-rate reliability
         for key, field, thr in WINDEFS:
             w, s = hit_stats(picks, field, thr)
             if s == 0:
@@ -161,13 +224,38 @@ def analyze(picks_dir: Path) -> int:
                     ci_txt = f"  lift95%CI[{lo:.2f},{hi:.2f}]"
             lift_s = f"{lift:.2f}x" if lift == lift else "n/a"
             p_s = f"p={p:.3f}" if p == p else "p=n/a"
-            verdict = ""
             if key == "W1" and s > 0 and lift == lift:
-                ok = (lift >= SUCCESS_LIFT and p < 0.05 and n_days >= SUCCESS_NDAYS)
-                verdict = "  >>> PASSES BAR" if ok else (
-                    "  (lift ok, need more days)" if (lift >= SUCCESS_LIFT and p < 0.05)
-                    else "")
-            print(f"    {key}: {w}/{s} = {rate*100:5.1f}%  lift {lift_s}  {p_s}{ci_txt}{verdict}")
+                w1_pass = (lift >= SUCCESS_LIFT and p < 0.05)
+            print(f"    {key}: {w}/{s} = {rate*100:5.1f}%  lift {lift_s}  {p_s}{ci_txt}")
+
+        # --- EXPECTANCY block: mean return + profit factor per horizon (path b) ---
+        exp_pass = False   # path (b): traded-horizon (ret_3d) expectancy edge CI > 0
+        for _, field, _ in WINDEFS:
+            mean, pf, n = ret_stats(picks, field)
+            if n == 0:
+                continue
+            bm = base_exp.get(field, float("nan"))
+            edge = (mean - bm) if bm == bm else float("nan")
+            pf_s = "inf" if pf == float("inf") else (f"{pf:.2f}" if pf == pf else "n/a")
+            ci_txt = ""
+            edge_lo = float("nan")
+            if n_days >= 15 and select is not None and bm == bm:
+                edge_lo, edge_hi = bootstrap_edge_ci(days, select, field, bm)
+                if edge_lo == edge_lo:
+                    ci_txt = f"  edge95%CI[{edge_lo:+.2f},{edge_hi:+.2f}]pp"
+            edge_s = f"{edge:+.2f}pp" if edge == edge else "n/a"
+            if field == "ret_3d" and edge_lo == edge_lo:
+                exp_pass = edge_lo > 0   # traded horizon: avg return beats luck (CI>0)
+            print(f"    exp {field:13s}: mean {mean:+6.2f}%  vs rand {edge_s:>8s}  "
+                  f"PF {pf_s:>5s}{ci_txt}")
+
+        # --- combined verdict: pass on EITHER path, gated on n_days ---
+        if select is not None:
+            ndays_ok = n_days >= SUCCESS_NDAYS
+            if w1_pass or exp_pass:
+                paths = "+".join([p for p, ok in (("hit-rate", w1_pass), ("expectancy", exp_pass)) if ok])
+                tag = f"  >>> PASSES BAR ({paths})" if ndays_ok else f"  ({paths} ok, need more days)"
+                print(f"   {tag}")
 
     print("=== per-signal baskets (top_k_of) ===")
     for sig in sorted(by_signal.keys()):
