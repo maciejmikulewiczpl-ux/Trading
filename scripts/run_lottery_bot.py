@@ -9,17 +9,18 @@ takes the TOP-3 by combined_score (the hype basket), and for each:
     bot's ORB_NOTIONAL_PER_TRADE=2000 (also whole-share floored, paper_orb.py) so the two
     bots' dollar PnL is directly comparable. Sizing is COLOR only -- the lottery verdict
     is Track B's size-independent hit-rate, so this budget change doesn't affect it,
-  - attaches a 10% NATIVE Alpaca trailing stop on fill, GTC (INTRADAY protection),
-  - records the entry so the EOD run can force-close it the SAME DAY (cancelling the GTC
-    trail first, else Alpaca rejects the close for insufficient available qty).
+  - attaches a 10% NATIVE Alpaca trailing stop on fill, GTC (holds up to T+3 -- a DAY trail
+    would expire at the close and leave the rest unprotected),
+  - records the entry so a later run can time-stop close at T+3 if still open (cancelling the
+    GTC trail first, else Alpaca rejects the close for insufficient available qty).
 
-SAME-DAY EXIT (2026-06-30): the bot now closes every position at ~15:55 ET the same day it
-was opened (a second scheduled run with --eod-close), NOT T+3. Rationale = measured on our
-own logged picks: the top-3 picks average +1.04% from 09:45->close but -1.49% by T+3 (the
-multi-day hold converted a positive same-day edge into a loss), driven by the ~-0.64%/night
-overnight gap bleed a trailing stop cannot cap (an overnight gap fills at the open, below the
-stop). So we capture the intraday move and sleep in cash. TIME_STOP_DAYS is now only a T+1
-BACKSTOP for the rare case the 15:55 EOD run is missed (worst case 1 overnight, not 3).
+EXIT = 10% trailing stop + T+3 max hold. A same-day 15:55 exit was TESTED 2026-06-30 and REVERTED
+2026-07-01: horizon_curve.py showed the bot's PnL is TAIL-driven and the fat tail lives in the +1
+to +2 day move -- same-day exit captured only ~1/6th of the total (top-3 SUM +7.8% vs +49.7% at
++2d), i.e. it capped the moonshots that drive the realized PnL. The ~-0.64%/night overnight gap
+bleed is real but the multi-day tail more than pays for it. `--eod-close` REMAINS as a MANUAL
+emergency "close everything now" command; it is NOT scheduled. (Sweet spot looks ~T+2; the trailing
+stop exits most winners before T+3 anyway -- a T+2 refinement is a separate, still-to-validate tweak.)
 
 Runs on the REPURPOSED dual-momentum paper account (keys in .env.lottery). Isolation
 mirrors scripts/run_news_orb.py: loads its own .env.lottery (override), writes its own
@@ -72,9 +73,9 @@ NOTIONAL = 2000.0          # $ per pick (matches news-edge ORB_NOTIONAL_PER_TRAD
 TRAIL_PCT = 10.0           # native trailing stop % (INTRADAY protection only now)
 MAX_SPREAD_PCT = 3.0       # skip names whose bid/ask spread is wider than this (illiquid / heavy slippage)
 TOP_N = 3                  # top-3 by combined_score
-TIME_STOP_DAYS = 1         # BACKSTOP only: primary exit is the same-day --eod-close (~15:55 ET).
-                           # If that run is ever missed, the next morning's run closes at T+1
-                           # (worst case 1 overnight, not 3). Was 3 before the 2026-06-30 same-day switch.
+TIME_STOP_DAYS = 3         # close at T+3 trading-ish days if still open (the 10% trailing stop
+                           # exits most winners before then). Same-day exit tested + REVERTED
+                           # 2026-07-01 (capped the +1-2d tail that drives PnL); --eod-close is a manual tool.
 STATE_FILE = ROOT / "logs" / "lottery_positions.json"
 EXEC_LOG = ROOT / "logs" / "lottery_execution.csv"   # intended-quote vs actual-fill (slippage/capacity)
 
