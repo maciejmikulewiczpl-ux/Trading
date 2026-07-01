@@ -21,7 +21,7 @@
       "combined_score": 0.2054,
       "ret_945_close": 5.13,
       "ret_1d": 10.631,
-      "ret_3d": null
+      "ret_3d": 2.446
     },
     {
       "symbol": "AAPL",
@@ -43,7 +43,7 @@
       "combined_score": 0.5924,
       "ret_945_close": 3.127,
       "ret_1d": 0.135,
-      "ret_3d": null
+      "ret_3d": 4.66
     },
     {
       "symbol": "ABBV",
@@ -62,7 +62,7 @@
       "combined_score": 0.9464,
       "ret_945_close": 1.546,
       "ret_1d": 0.931,
-      "ret_3d": null
+      "ret_3d": -0.286
     },
     {
       "symbol": "ADP",
@@ -81,7 +81,7 @@
       "combined_score": 0.0,
       "ret_945_close": 2.288,
       "ret_1d": 0.649,
-      "ret_3d": null
+      "ret_3d": 5.458
     },
     {
       "symbol": "AMAT",
@@ -103,7 +103,7 @@
       "combined_score": 0.4764,
       "ret_945_close": -0.804,
       "ret_1d": 11.298,
-      "ret_3d": null
+      "ret_3d": 4.312
     },
     {
       "symbol": "AXON",
@@ -122,7 +122,7 @@
       "combined_score": 0.0,
       "ret_945_close": 2.271,
       "ret_1d": 9.937,
-      "ret_3d": null
+      "ret_3d": 27.891
     },
     {
       "symbol": "BABA",
@@ -141,7 +141,7 @@
       "combined_score": 0.4164,
       "ret_945_close": 1.409,
       "ret_1d": 0.611,
-      "ret_3d": null
+      "ret_3d": 3.277
     },
     {
       "symbol": "BAC",
@@ -160,7 +160,7 @@
       "combined_score": 0.3035,
       "ret_945_close": 0.478,
       "ret_1d": 0.121,
-      "ret_3d": null
+      "ret_3d": 0.995
     },
     {
       "symbol": "BB",
@@ -182,7 +182,7 @@
       "combined_score": 0.4664,
       "ret_945_close": 7.627,
       "ret_1d": 9.334,
-      "ret_3d": null
+      "ret_3d": 12.445
     },
     {
       "symbol": "BE",
@@ -203,7 +203,7 @@
       "combined_score": 0.5716,
       "ret_945_close": -10.683,
       "ret_1d": 8.595,
-      "ret_3d": null
+      "ret_3d": 14.273
     },
     {
       "symbol": "BMNR",
@@ -224,7 +224,7 @@
       "combined_score": 0.4761,
       "ret_945_close": 2.066,
       "ret_1d": 1.771,
-      "ret_3d": null
+      "ret_3d": 4.354
     },
     {
       "symbol": "BOIL",
@@ -243,7 +243,7 @@
       "combined_score": 0.3121,
       "ret_945_close": -1.05,
       "ret_1d": -7.741,
-      "ret_3d": null
+      "ret_3d": -7.636
     },
     {
       "symbol": "CAPR",
@@ -264,7 +264,7 @@
       "combined_score": 0.4897,
       "ret_945_close": -0.15,
       "ret_1d": -9.962,
-      "ret_3d": null
+      "ret_3d": -12.652
     },
     {
       "symbol": "COIN",
@@ -283,7 +283,7 @@
       "combined_score": 0.2021,
       "ret_945_close": 3.273,
       "ret_1d": 1.662,
-      "ret_3d": null
+      "ret_3d": 6.783
     },
     {
       "symbol": "DKNG",
@@ -304,7 +304,7 @@
       "combined_score": 0.38,
       "ret_945_close": 5.535,
       "ret_1d": 0.35,
-      "ret_3d": null
+      "ret_3d": 0.194
     },
     {
       "symbol": "GRPN",
@@ -323,7 +323,7 @@
       "combined_score": 0.6309,
       "ret_945_close": 1.282,
       "ret_1d": 4.575,
-      "ret_3d": null
+      "ret_3d": 13.414
     },
     {
       "symbol": "HLT",
@@ -342,7 +342,7 @@
       "combined_score": 0.7857,
       "ret_945_close": -1.36,
       "ret_1d": -0.072,
-      "ret_3d": null
+      "ret_3d": -0.204
     },
     {
       "symbol": "IREN",
@@ -361,7 +361,7 @@
       "combined_score": 0.1918,
       "ret_945_close": 3.885,
       "ret_1d": -2.693,
-      "ret_3d": null
+      "ret_3d": -8.079
     },
     {
       "symbol": "MRSH",
@@ -380,7 +380,7 @@
       "combined_score": 0.0,
       "ret_945_close": 3.612,
       "ret_1d": -1.309,
-      "ret_3d": null
+      "ret_3d": 1.919
     },
     {
       "symbol": "MSFT",
@@ -402,7 +402,7 @@
       "combined_score": 0.5531,
       "ret_945_close": 3.889,
       "ret_1d": -0.849,
-      "ret_3d": null
+      "ret_3d": 3.42
     },
     {
       "symbol": "MSTR",
@@ -424,7 +424,7 @@
       "combined_score": 0.4222,
       "ret_945_close": -1.474,
       "ret_1d": 12.896,
-      "ret_3d": null
+      "ret_3d": 13.841
     },
     {
       "symbol": "MU",
@@ -443,7 +443,7 @@
       "combined_score": 0.7087,
       "ret_945_close": -1.029,
       "ret_1d": 1.883,
-      "ret_3d": null
+      "ret_3d": -8.115
     },
     {
       "symbol": "NKE",
@@ -464,7 +464,7 @@
       "combined_score": 0.3103,
       "ret_945_close": 0.395,
       "ret_1d": 1.816,
-      "ret_3d": null
+      "ret_3d": 5.866
     },
     {
       "symbol": "OKLO",
@@ -485,7 +485,7 @@
       "combined_score": 0.4225,
       "ret_945_close": -0.99,
       "ret_1d": 5.517,
-      "ret_3d": null
+      "ret_3d": 4.997
     },
     {
       "symbol": "OMER",
@@ -506,7 +506,7 @@
       "combined_score": 0.7518,
       "ret_945_close": 1.472,
       "ret_1d": 14.253,
-      "ret_3d": null
+      "ret_3d": 8.598
     },
     {
       "symbol": "PINS",
@@ -525,7 +525,7 @@
       "combined_score": 0.0,
       "ret_945_close": 5.145,
       "ret_1d": 5.245,
-      "ret_3d": null
+      "ret_3d": 5.294
     },
     {
       "symbol": "SLS",
@@ -547,7 +547,7 @@
       "combined_score": 0.767,
       "ret_945_close": 11.206,
       "ret_1d": 24.374,
-      "ret_3d": null
+      "ret_3d": 6.86
     },
     {
       "symbol": "SNDK",
@@ -568,7 +568,7 @@
       "combined_score": 0.7136,
       "ret_945_close": -2.988,
       "ret_1d": -1.971,
-      "ret_3d": null
+      "ret_3d": -2.783
     },
     {
       "symbol": "SOFI",
@@ -587,7 +587,7 @@
       "combined_score": 0.4,
       "ret_945_close": 3.891,
       "ret_1d": 1.792,
-      "ret_3d": null
+      "ret_3d": 3.163
     },
     {
       "symbol": "TSM",
@@ -608,7 +608,7 @@
       "combined_score": 0.3206,
       "ret_945_close": 2.524,
       "ret_1d": 5.374,
-      "ret_3d": null
+      "ret_3d": 2.822
     },
     {
       "symbol": "UNH",
@@ -629,7 +629,7 @@
       "combined_score": 0.4464,
       "ret_945_close": 1.44,
       "ret_1d": -1.794,
-      "ret_3d": null
+      "ret_3d": -0.215
     },
     {
       "symbol": "USO",
@@ -648,7 +648,7 @@
       "combined_score": 0.3035,
       "ret_945_close": -0.321,
       "ret_1d": 1.497,
-      "ret_3d": null
+      "ret_3d": -2.142
     },
     {
       "symbol": "WMB",
@@ -667,9 +667,9 @@
       "combined_score": 0.4732,
       "ret_945_close": 0.295,
       "ret_1d": -3.758,
-      "ret_3d": null
+      "ret_3d": -6.656
     }
   ],
   "scored_at": "2026-06-26T16:10:05-04:00",
-  "backfilled_at": "2026-06-30T16:10:19-04:00"
+  "backfilled_at": "2026-07-01T16:10:07-04:00"
 }
