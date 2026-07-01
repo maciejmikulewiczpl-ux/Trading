@@ -1,0 +1,250 @@
+================================================================================
+HYPE BOT — FULL BRIEF FOR EXTERNAL REVIEW
+(a.k.a. the "Lottery" bot / Track C)                     as of 2026-06-30
+================================================================================
+
+PURPOSE OF THIS DOC
+-------------------
+A self-contained description of our third paper-trading bot — the "Hype" bot — its
+selection logic, the signals behind it, the live trading mechanics, and the
+forward-test measurement design. We want SPECIFIC, actionable critique of THIS bot:
+selection, sizing, exits, hold period, the signal set, and the way we're measuring
+whether it works. Assume paper trading today; a real-money decision is downstream.
+
+We already run two other, VALIDATED bots (an Opening-Range-Breakout "ORB" bot and a
+news-catalyst variant). The Hype bot is NOT validated — it is an open, pre-registered
+forward experiment. Please treat it as such.
+
+--------------------------------------------------------------------------------
+1. ONE-PARAGRAPH SUMMARY
+--------------------------------------------------------------------------------
+Every morning we build a "board" of hyped/anomalous small- and mid-cap stocks from
+social + market data, score each name by a fixed cross-sectional "combined_score",
+and the bot buys the TOP 3 names (~$2,000 each, whole shares) at ~09:45 ET. Each
+position gets a 10% native trailing stop and is force-closed at T+3 trading days if
+still open. In parallel — and this is the real point — we log MANY signal "baskets"
+each day and score their forward returns against a random basket, to learn WHICH hype
+signals (if any) actually predict a pop. The bot's P&L is "color"; the 30-day
+signal scoreboard is the actual verdict (expected ~late July 2026).
+
+--------------------------------------------------------------------------------
+2. WHY THIS BOT EXISTS (thesis)
+--------------------------------------------------------------------------------
+- Retail attention / "hype" (Reddit, StockTwits, unusual volume, gaps, short-squeeze
+  setups) sometimes precedes short, violent price pops in small/mid-caps ("lottery
+  tickets"). If any of these attention signals is predictive net of costs, a simple
+  top-N basket held a few days could capture positive expectancy with a fat right tail.
+- It is deliberately un-backtestable in the clean way our ORB bot is (social data isn't
+  cheaply reconstructable point-in-time), so we run it as a live FORWARD test with a
+  random control and pre-registered success criteria, rather than a historical backtest.
+- It is intentionally DECORRELATED from our momentum-breakout ORB bots (different
+  universe, different signals, multi-day hold), as a potential diversifier.
+
+--------------------------------------------------------------------------------
+3. THE DAILY CANDIDATE NET (universe construction)
+--------------------------------------------------------------------------------
+Each morning we union these candidate sources:
+  - WSB (r/wallstreetbets) top ~25 trending tickers by mention surge (via apewisdom).
+  - StockTwits top ~30 trending tickers.
+  - Pre-market gappers: names up >3% pre-market (top ~40).
+Plus, for MEASUREMENT only (see §6), extra baskets:
+  - r/pennystocks and r/Shortsqueeze mention-surge names.
+  - A seeded RANDOM basket (10 names) drawn from a liquid universe, seeded by the date
+    so it's reproducible/immutable — this is the luck baseline / control.
+  - A mechanical ">3% gapper" control basket.
+
+Filtering:
+  - Keep only Alpaca-TRADABLE US equities priced >= $1 (drops junk/crypto/warrants).
+  - Liquidity is otherwise handled at trade time (see §5 spread guard), not here.
+
+Typical result: ~100-300 unique candidate names/day; ~a few dozen make it into scored
+baskets.
+
+--------------------------------------------------------------------------------
+4. THE SIGNALS (all computed daily, per candidate)
+--------------------------------------------------------------------------------
+Signals that FEED the combined_score (the 8 the bot actually trades on):
+  1. wsb_surge   — WSB mention surge = mentions today / mentions 24h ago.
+  2. wsb_rank    — WSB trending rank (1 = hottest; inverted so higher=better).
+  3. st_rank     — StockTwits trending rank (1 = hottest; inverted).
+  4. pm_rvol     — pre-market relative volume (today's PM volume vs typical).
+  5. gap_pct     — absolute pre-market gap % (magnitude of the overnight move).
+  6. squeeze     — short-squeeze score = short%float × days-to-cover (weekly cache;
+                   comes online ~day 3; graceful-None until then).
+  7. uoa_z       — unusual options activity: z-score of today's total CALL option
+                   volume vs a rolling 20-day trailing mean for that name.
+  8. ignition    — a 0-4 price/volume "ignition" composite (lookahead-free), = sum of:
+                     • consecutive green-close streak >= 3 (capped at 5),
+                     • volume acceleration (mean 5d vol / mean 20d vol) >= 1.5,
+                     • within 5% of the 252-day high,
+                     • prior day closed up >= 2%.
+                   (This is the one signal with an early positive read — see §7.)
+
+MEASURED-ONLY signals (logged + scored on their own clock, but NOT in combined_score,
+so they don't change the bot's traded picks until/unless they prove out):
+  9.  pennystocks       — r/pennystocks mention surge.
+  10. shortsqueeze      — r/Shortsqueeze mention surge.
+  11. gtrends           — Google Trends search-attention spike = mean(last 3 obs) /
+                          mean(prior obs) over ~1 month; >1 = rising attention.
+  12. finra_shortvol    — FINRA daily Reg SHO short-volume ratio (ShortVol/TotalVol).
+  13. halts             — presence in the Nasdaq trading-halt feed (binary).
+  14. realized_vol      — 20-day realized daily volatility (used for a vol filter
+                          variant + the vol-matched control; see §6).
+
+Also logged for context: a realized-vol FILTER variant ("filtered3" = top-3 by
+combined_score among names clearing a 4% realized-vol floor), measured-only.
+
+--------------------------------------------------------------------------------
+5. combined_score AND THE BOT'S TRADING LOGIC
+--------------------------------------------------------------------------------
+combined_score (FIXED, never tuned — pre-registered):
+  For each of the 8 scoring signals, compute the name's cross-sectional PERCENTILE
+  RANK among all candidates that have that signal. combined_score = the simple MEAN of
+  a name's available percentile ranks (signals that are None for a name are skipped).
+  So it's an equal-weight, rank-based ensemble — robust to signal scale, no tuning.
+
+The bot (runs ~09:45 ET on a cloud VM, on its own paper account):
+  ENTRY:
+    - Read today's board; take the TOP 3 names by combined_score.
+    - For each: buy WHOLE shares of ~$2,000 notional (qty = floor($2000 / price)).
+      Names priced > $2,000/share are skipped. (Whole shares, not fractional/notional,
+      because Alpaca rejects trailing stops on fractional quantities — a notional buy
+      would leave a position with NO protective stop.)
+    - $2,000/name matches our news bot's per-trade notional so dollar P&L is directly
+      comparable across bots. Sizing is "color" only; the verdict is size-independent.
+  LIQUIDITY GUARD (market-impact):
+    - Skip any name whose bid/ask spread at trade time is > 3% (untradeable / heavy
+      slippage). Spread is used rather than ADV because the free IEX feed understates
+      true volume, so an ADV-participation check would over-reject.
+  EXIT / RISK:
+    - Attach a 10% NATIVE Alpaca TRAILING STOP on fill, GTC (good-till-cancelled, so it
+      survives multi-day holds; a day-order trail would expire at the close).
+    - The trailing stop is attached to the FULL filled quantity — we poll the buy order
+      until it's terminally filled before attaching (a fixed-sleep bug once left late-
+      settling shares unprotected).
+    - TIME STOP: if a position is still open at T+3 trading days, force-close it at
+      market (cancel the GTC trail first, else Alpaca rejects the close for reserved qty).
+  STATE: entry date / qty / order ids per symbol persisted to a JSON file for the T+3
+    logic and idempotency (never double-buys a held/tracked name).
+  EXECUTION LOGGING: intended quote vs actual fill (slippage/spread/capacity) recorded
+    per trade to a CSV, so we can audit real-world execution quality.
+
+There is NO position-level stop-loss beyond the 10% trailing stop, NO profit target
+(we let the trailing stop run), NO leverage, NO shorting, NO pyramiding, NO
+market-regime filter, and NO per-name conviction weighting — all 3 picks are sized
+equally. The bot holds at most 3 names at a time from a given day (positions from
+different days can overlap up to their T+3 windows).
+
+--------------------------------------------------------------------------------
+6. THE MEASUREMENT DESIGN (the actual experiment / verdict engine)
+--------------------------------------------------------------------------------
+This is the core scientific artifact; the bot is downstream of it.
+
+Every day we log an IMMUTABLE picks file: every candidate, which basket(s)/signal(s)
+flagged it, its combined_score, and — filled in later — its forward returns:
+    ret_945_close = return from 09:45 to same-day close
+    ret_1d        = 1-day return
+    ret_3d        = 3-day return   (≈ the bot's actual hold horizon)
+
+Pre-registered WINNER definitions (immutable):
+    W1 = ret_945_close >= +5%
+    W2 = ret_1d        >= +10%
+    W3 = ret_3d        >= +20%
+
+Success BAR (v2, updated 2026-06-30): a signal "works" iff, over n_days >= 30:
+    (a) HIT-RATE PATH: its W1 hit-rate >= 2x the random basket's base rate, p < 0.05
+        (binomial), OR
+    (b) EXPECTANCY PATH: its average return on the traded horizon (ret_3d mean) beats
+        the random basket by a day-resampled bootstrap-CI lower bound > 0.
+    The expectancy path exists so a "lumpy" signal (mediocre hit-rate but a big average
+    driven by fat right-tail winners — the whole lottery premise) is not wrongly rejected
+    by a hit-rate-only bar. We also report per-signal profit factor.
+
+Controls / rigor:
+    - RANDOM basket = the luck baseline (base rates + mean returns per window).
+    - VOL-MATCHED control (added 2026-06-30): each signal is ALSO compared to random
+      names of the SAME realized-vol tercile, so a lift can't just be "this signal picks
+      higher-volatility names" (higher vol => more +5% days by chance). The verdict is
+      annotated [vol-matched OK] or [WARN: may be a vol artifact].
+    - Day-resampled BOOTSTRAP confidence intervals on the lift/edge.
+    - Multiple-comparison awareness (we test ~11-14 signals, so expect false positives).
+    - combined_score is frozen; new signals are added measured-only first.
+
+The bot's traded set = the combined_score TOP-3 basket; it is scored the same way, but
+the VERDICT is about which SIGNALS predict, not the bot's P&L.
+
+--------------------------------------------------------------------------------
+7. WHAT WE'VE LEARNED SO FAR (early, ~13 trading days — NOT yet the verdict)
+--------------------------------------------------------------------------------
+- ignition shows an early positive read (~1.4-1.5x lift, p≈0.001 on the accumulated
+  sample). It's the most promising single signal so far. (Not yet at n_days>=30.)
+- The random base rate for a +5% same-day move is ~1% — these are rare events, so the
+  sample needs the full 30 days for power.
+- OVERNIGHT-GAP TAIL (measured 2026-06-30): the names this bot trades have ~3x SPY's
+  median overnight gap; 1st-percentile overnight gap-down ≈ -7% (SPY ≈ -2%), worst
+  observed ≈ -48%. Estimated expected overnight gap "bleed" ≈ -0.64%/night, i.e. roughly
+  -1.6% per trade over a ~T+3 hold BEFORE any directional edge. A trailing stop does NOT
+  cap this (an overnight gap fills at the open, below the stop). Worst offenders are
+  leveraged ETFs (e.g. SOXL) and recent-IPO/meme names. Our current mitigations are the
+  small $2k per-name notional + the 3% spread guard, NOT a tighter stop.
+- Inter-bot correlation with our ORB bots is low so far (calm-bull sample, low power).
+
+--------------------------------------------------------------------------------
+8. KNOWN WEAKNESSES / OPEN QUESTIONS (where we want your critique)
+--------------------------------------------------------------------------------
+We are specifically unsure about, and would value opinions on:
+
+ A. SELECTION
+    - Is an equal-weight percentile-rank ensemble (combined_score) the right way to
+      combine noisy hype signals, or should some signals be dropped/weighted/gated?
+    - Top-3 only: too few (high variance) or appropriate for a lottery strategy?
+    - Should selection be conditional (e.g., require 2+ signals to co-fire = confluence),
+      or does that over-filter a rare-event strategy? (Our ORB-side confluence tests
+      mostly failed, but hype may differ.)
+    - Are we missing obviously-predictive hype signals? (e.g., options gamma/0DTE flow,
+      dark-pool prints, specific catalyst types, time-of-day of the mention surge, the
+      RATE of change of attention vs the level.)
+
+ B. ENTRY TIMING & EXECUTION
+    - We enter once at ~09:45 ET at market. Is that the right time for hype names, or
+      does the edge live at the open / pre-market / on a pullback? Any entry-timing edge?
+    - Whole-share $2k sizing skips names > $2k/share — is that a meaningful selection
+      bias against high-priced movers?
+    - Real fills on thin names: the spread guard is our only liquidity control. Adequate?
+
+ C. EXITS & HOLD PERIOD
+    - 10% trailing stop + T+3 time stop, no target. Given the gap-tail finding (§7), is a
+      MULTI-DAY hold even correct for hype names, or should we exit same-day (avoid the
+      overnight gap bleed entirely)? What exit best captures a fat right tail?
+    - Is 10% the right trail width for names with ~3x market volatility? ATR-scaled?
+    - Would scaling out (partial profit-taking) beat a single trailing stop for lottery
+      payoffs?
+
+ D. RISK / PORTFOLIO
+    - Equal $2k on all 3, no conviction weighting, no regime filter, no daily loss cap.
+      For a fat-tailed strategy, what risk controls actually help vs. hurt the tail?
+    - Overnight gap risk is the dominant tail (§7). Beyond small notional, what would you
+      do — position limits by realized vol? exclude leveraged ETFs? cap % in one name?
+
+ E. MEASUREMENT / VERDICT
+    - Are the winner thresholds (+5%/+10%/+20%) and the dual hit-rate/expectancy bar
+      sensible for judging a lottery strategy, or is there a better success metric
+      (e.g., full-distribution / expectancy net of the gap bleed / Sharpe of the basket)?
+    - Is the vol-matched random control the right way to strip out volatility
+      contamination, or is there a cleaner counterfactual?
+    - n_days>=30 with ~1% base-rate events: is 30 days enough power, and if not, what
+      sample / test would you insist on before believing a signal?
+
+--------------------------------------------------------------------------------
+9. WHAT WE ARE NOT ASKING
+--------------------------------------------------------------------------------
+- We are not asking whether to add leverage or shorting (out of scope for now).
+- We are aware the strategy is early and low-power; "collect more data" is understood —
+  we want ideas that improve the DESIGN, SELECTION, EXITS, or MEASUREMENT specifically.
+- Please flag anything that looks like a methodological error, a hidden bias
+  (survivorship, look-ahead, multiple comparisons), or a way the P&L could be an
+  illusion.
+
+================================================================================
+END OF BRIEF
+================================================================================

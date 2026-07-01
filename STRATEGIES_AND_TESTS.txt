@@ -1,0 +1,171 @@
+================================================================================
+ TRADING BOTS — STRATEGIES & TEST LOG
+ As of 2026-06-30.  Paper trading (Alpaca). Nothing live with real money yet.
+================================================================================
+
+HOW TO READ THIS: Part 1 = what the three bots actually DO right now. Part 2 = the
+log of every study/test that got us here (what shipped, what we rejected, what's
+still pending a verdict). Part 3 = the research/watchlist tools. Part 4 = the
+working methodology. Everything here was validated (or rejected) with backtests
+on years of data and/or pre-registered forward tests — not opinion.
+
+
+================================================================================
+ PART 1 — THE THREE BOTS (current strategies)
+================================================================================
+
+--------------------------------------------------------------------------------
+ BOT 1 — BASELINE ORB  (the validated workhorse; real-money candidate)
+--------------------------------------------------------------------------------
+WHAT IT IS: an Opening-Range Breakout strategy on a ~122-name high-volatility US
+equity watchlist. Each morning it watches each name's opening range, and when price
+breaks above it, enters a plain market order and immediately attaches a NATIVE
+Alpaca trailing stop on fill.
+
+THE VALIDATED RULES (each one earned its place via a backtest — see Part 2):
+  - TIGHT-OR FILTER: only trade breakouts where the opening range is <= 0.5% of
+    price. This is the single biggest win we found.
+  - TRAILING-STOP EXIT: ride winners with a trailing stop instead of a fixed target.
+  - DIVERSIFICATION: spread the risk budget across ~16 concurrent positions
+    (risk_per_trade ~$50, max_concurrent 16) rather than concentrating.
+  - VOLATILITY-REGIME DIAL: when SPY is in a high-volatility regime, cut risk in
+    half (shipped in half-risk form; would go to full-pause for real money).
+  - RISK GUARDS: $10/share max risk cap, min_risk_per_share floor 0.25,
+    open-risk cap (~$800 total at risk).
+  - UNIVERSE: 122 high-volatility single names (no ETFs), refreshed periodically
+    via a point-in-time snapshot to avoid survivorship bias.
+RUNS: Oracle VM, systemd timer ~9:25 ET.
+STATUS: validated and stable. Considered NEAR ITS OPTIMIZATION CEILING — repeated
+tweak attempts now mostly fail (see Part 2 rejects). The next real upside is the
+PORTFOLIO BLEND (combining all three engines), not a 4th ORB tweak.
+
+--------------------------------------------------------------------------------
+ BOT 2 — NEWS-EDGE  (catalyst-selected ORB; forward-test experiment + live paper)
+--------------------------------------------------------------------------------
+WHAT IT IS: an LLM/news-sentiment layer that picks catalyst names pre-open, then
+trades them through the SAME validated ORB engine as Bot 1.
+KEY DIFFERENCES FROM BOT 1 ("bold mode"):
+  - Sizing by NOTIONAL (~$2,000/name, whole shares) so high-priced catalyst names
+    aren't blocked by the $10 risk/share cap.
+  - Volatility-dial OFF (it acts on the catalyst every day, calm or choppy).
+  - $800 open-risk rail is the remaining throttle.
+SOURCES (each scored head-to-head): Alpha Vantage news sentiment, SEC 8-K/424B5
+filings, StockTwits, Reddit, premarket RVOL, plus the LLM's own call as a benchmark.
+RUNS: 2nd Alpaca paper account (.env.news), VM timer ~9:40 ET; morning scan ~6:33am PT.
+STATUS: forward-test running; it has its own per-source scoring to see which news
+source actually predicts winners.
+
+--------------------------------------------------------------------------------
+ BOT 3 — HYPE / LOTTERY  (hype-selected, multi-day hold; forward-test + live paper)
+--------------------------------------------------------------------------------
+WHAT IT IS: a pre-registered experiment testing whether ANY hype/attention metric
+can pick the day's explosive winners. Each morning it mechanically logs the top
+names per hype signal + a random control basket, and the bot BUYS the top-3 by
+combined_score.
+TRADE MECHANICS: ~$2,000 of whole shares per name + a 10% NATIVE GTC trailing stop
+on fill + a T+3 time-stop. Holds overnight / multi-day (no end-of-day flat).
+combined_score = mean percentile rank across signals — FIXED, never tuned (so the
+experiment stays honest).
+SOURCE LAB (11 measured signals, each scored vs a random baseline): WSB (Reddit),
+StockTwits, r/pennystocks, r/Shortsqueeze, Google Trends, FINRA short-volume,
+trading halts, premarket RVOL, premarket gap, short-squeeze score, options
+call-volume (UOA), and IGNITION (a price/volume momentum composite). Of these,
+only IGNITION has a proven backtest edge so far (see Part 2).
+RUNS: repurposed paper account (.env.lottery), VM timer ~9:44 ET; board ~6:24am PT.
+STATUS: VERDICT DUE ~LATE JULY 2026 — the answer is the 30-day hit-rate scoreboard
+(which signals beat random), NOT the bot's P/L (that's just color).
+NOTE: bold-mode paper P/L looked good early (~$1.8k in 2 weeks) but on the capital
+actually deployed (~$9-15k) that's a small sample; the verdict is the scoreboard.
+
+
+================================================================================
+ PART 2 — TEST / STUDY LOG (how we got here)
+================================================================================
+
+>>> SHIPPED & VALIDATED (ORB family) — each beat a baseline on years of data:
+  - Tight-OR filter (OR <= 0.5% of price): cap-aware real-$ ~2.5x PnL, drawdown
+    crushed (-$10k -> -$938), survived 2x slippage + the 2022 bear. BIGGEST win.
+  - Trailing-stop exit (vs fixed 2R target): ~2x avgR / Sharpe / PnL, ~half drawdown.
+  - Diversification (~16 positions, not 8): ~doubled Sharpe, ~halved drawdown.
+  - Volatility-regime dial (high-vol SPY -> half risk): ~2x PnL, ~60% less drawdown,
+    out-of-sample robust.
+  - $10/share max-risk cap: optimal for the validated baseline.
+  - min_risk_per_share floor 0.25 + open-risk cap (~$800).
+  - High-vol universe expansion to 122 single names (+27% PnL, Sharpe 1.57 -> 1.87).
+  - Point-in-time survivorship test: confirmed the edge is NOT survivorship —
+    VOLATILITY is the real selector; low-vol names are dead weight.
+
+>>> REJECTED — tested and did NOT work (kept here so we don't re-run them):
+  - Volatility floor (tested twice) — cut PnL with no Sharpe lift.
+  - Sector / correlation cap — never binds; tight-OR book already diversified.
+  - OR-window length changes — 5-min floods the book.
+  - Pre-open selection/scanner ranking — modest edge offline, ~negative live.
+  - Shorts (regime-gated) — passed 2 of 3 gates but FAILED the drawdown gate.
+  - Mean-reversion / VWAP-fade 2nd engine — failed the gate TWICE.
+  - Swing engine (#3) — the "Sharpe 3.03" was a double-count; corrected ~0.45, rejected.
+  - Overnight edge hunt (7 ideas): RVOL stocks-in-play gate, VWAP confirm, bar-vol,
+    time-stops, SPY last-half-hour momentum, RETEST entry (a tail-killer), and
+    overnight drift (dead on costs) — ALL rejected. (Entry question now fully closed.)
+  - Options income engine (SPY put-credit-spreads) — failed income + tail gates.
+  - Earnings-day flag — zero tight-OR overlap; wide-OR in-play is the WORST bucket.
+  - News-sentiment backtest (VADER + FinBERT) — zero signal vs next-session return.
+  - PEAD / pairs / gap strategies — decayed or cost-killed (strategy survey).
+  - Confluence ("combine signals beats one signal") — REJECTED 3x (live ledger,
+    exit-conditioning, and a powered historical test): momentum carries it; layering
+    a gap filter on top doesn't help.
+  - Mildly-positive-but-not-shipped (scale-up playbook only): pyramiding, same-
+    direction re-entry after a stop-out.
+
+>>> PENDING VERDICT (forward tests, decided ~late July 2026):
+  - Hype source lab — which of the 11 signals beat random (pre-registered bar:
+    >=2x random hit-rate, p<0.05, >=30 days).
+  - "filtered3" — does a realized-volatility filter (drop sluggish names) beat the
+    bot's actual top-3? (measured-only, no live-trade impact)
+  - News-Edge per-source scoring.
+  - Lottery IGNITION: already validated in backtest (1.47x next-day top-decile lift,
+    p=0.001, every year 2015-2026); the forward test confirms it live.
+
+>>> INTEGRITY / METHODOLOGY CHECKS:
+  - ORB integrity audit — CLEAN (no double-count; trailing R-math exact on 60k trades;
+    survivorship pre-audited).
+  - Review standard adopted: trace one real trade END-TO-END before trusting any bot
+    change (caught the $10-cap blocking news picks + 3 lottery-bot bugs).
+
+
+================================================================================
+ PART 3 — RESEARCH / WATCHLIST TOOLS (not bots; read-only)
+================================================================================
+  - SWING SCREENER + 13F "who's buying" + accumulation scan — momentum + institutional
+    accumulation watchlists (weekly recurring); INSIDER-BUYING shown a mild +0.7-1%
+    market-adjusted edge (the one positive from a broad signal hunt).
+  - MARKET REGIME GAUGE + RISK-OFF RADAR — descriptive dashboard reads (not bot inputs).
+  - BIOTECH SURGE RADAR (newest, 2026-06-30) — hunts catalyst-driven biotech run-ups:
+    XBI universe, $100M-$2B band + liquidity guard, a "run-up" setup (coiled +
+    volume-building before a Phase-2 readout, exit BEFORE the binary data), backtest
+    odds per name, and a CONVICTION STACK (coil + insider buying + near-term Phase-2 =
+    the "next SLS" profile). HONEST: expected value ~0 after survivorship + costs;
+    it's capped-risk SPECULATION, payoff from rare moonshots, position SIZE is the
+    real control. The conviction stack is being validated now (is the insider layer
+    real edge, or was SLS coincidence?).
+  - STATUS DASHBOARD — live web page (VM, port 8787): Trading / News-Edge / Hype /
+    Summary / Biotech / Market tabs.
+
+
+================================================================================
+ PART 4 — WORKING METHODOLOGY (why these results are trustworthy)
+================================================================================
+  - PRE-REGISTRATION: define the success bar BEFORE looking (the hype experiment).
+  - RANDOM BASELINE + PERMUTATION p-values: a signal must beat luck, not just be positive.
+  - OUT-OF-SAMPLE / per-year stability: an edge must hold across years, not one window.
+  - COST & SLIPPAGE netting: survive realistic frictions (and 2x-slippage stress).
+  - SURVIVORSHIP awareness: point-in-time universes; a backtest on today's winners lies.
+  - MULTIPLE-COMPARISONS discipline: testing N ideas -> expect ~N x 5% false positives;
+    most things that "look like edge" are noise. Report the NULLS, not just the hits.
+  - THE HONEST TALLY: ~20+ ideas tested; most dissolved. Survivors are FEW and SMALL
+    (ignition 1.5x, volume-building, insider buying +0.7%). That is what real markets
+    look like. The discipline that kills mirages is the actual product.
+
+THE REALISTIC PRIZE GOING FORWARD: not a hidden edge in any single bot (they're near
+their ceilings) but (a) the PORTFOLIO BLEND of the validated engines, (b) letting the
+pre-registered experiments reach their verdicts, (c) the biotech conviction-stack lead.
+================================================================================

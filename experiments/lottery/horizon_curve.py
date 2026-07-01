@@ -63,7 +63,11 @@ def _agg(vals):
     vals = [v for v in vals if v is not None]
     if not vals:
         return None
-    return len(vals), st.mean(vals), st.median(vals), 100 * sum(1 for v in vals if v > 0) / len(vals)
+    sv = sorted(vals)
+    p90 = sv[min(len(sv) - 1, int(0.9 * len(sv)))]
+    # sum = total portfolio-PnL proxy (equal-weight per pick); best/p90 = the fat right tail
+    return (len(vals), st.mean(vals), st.median(vals),
+            100 * sum(1 for v in vals if v > 0) / len(vals), sum(vals), p90, max(vals))
 
 
 def collect():
@@ -132,12 +136,13 @@ def collect():
 
 
 def curve(rows, keys, field, subset):
-    print(f"\n  {'horizon':<10}{'n':>5}{'mean%':>9}{'median%':>10}{'win%':>7}")
+    print(f"\n  {'horizon':<10}{'n':>5}{'mean%':>9}{'median%':>10}{'win%':>7}{'SUM%':>9}{'p90%':>8}{'best%':>8}")
     for k in keys:
         vals = [r[field].get(k) for r in rows if subset(r) and k in r[field]]
         a = _agg(vals)
         if a:
-            print(f"  {k:<10}{a[0]:>5}{a[1]:>+9.2f}{a[2]:>+10.2f}{a[3]:>7.0f}")
+            print(f"  {k:<10}{a[0]:>5}{a[1]:>+9.2f}{a[2]:>+10.2f}{a[3]:>7.0f}"
+                  f"{a[4]:>+9.1f}{a[5]:>+8.1f}{a[6]:>+8.1f}")
 
 
 def main():
