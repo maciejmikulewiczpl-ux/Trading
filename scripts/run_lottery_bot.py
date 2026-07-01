@@ -9,11 +9,17 @@ takes the TOP-3 by combined_score (the hype basket), and for each:
     bot's ORB_NOTIONAL_PER_TRADE=2000 (also whole-share floored, paper_orb.py) so the two
     bots' dollar PnL is directly comparable. Sizing is COLOR only -- the lottery verdict
     is Track B's size-independent hit-rate, so this budget change doesn't affect it,
-  - attaches a 10% NATIVE Alpaca trailing stop on fill, GTC (the position holds up to
-    3 days -- a DAY trail would expire at the close and leave the rest unprotected),
-  - records the entry so a later run can time-stop close at T+3 if still open
-    (cancelling the GTC trail first, else Alpaca rejects the close for insufficient
-    available qty).
+  - attaches a 10% NATIVE Alpaca trailing stop on fill, GTC (INTRADAY protection),
+  - records the entry so the EOD run can force-close it the SAME DAY (cancelling the GTC
+    trail first, else Alpaca rejects the close for insufficient available qty).
+
+SAME-DAY EXIT (2026-06-30): the bot now closes every position at ~15:55 ET the same day it
+was opened (a second scheduled run with --eod-close), NOT T+3. Rationale = measured on our
+own logged picks: the top-3 picks average +1.04% from 09:45->close but -1.49% by T+3 (the
+multi-day hold converted a positive same-day edge into a loss), driven by the ~-0.64%/night
+overnight gap bleed a trailing stop cannot cap (an overnight gap fills at the open, below the
+stop). So we capture the intraday move and sleep in cash. TIME_STOP_DAYS is now only a T+1
+BACKSTOP for the rare case the 15:55 EOD run is missed (worst case 1 overnight, not 3).
 
 Runs on the REPURPOSED dual-momentum paper account (keys in .env.lottery). Isolation
 mirrors scripts/run_news_orb.py: loads its own .env.lottery (override), writes its own
@@ -41,10 +47,12 @@ ROOT = Path(__file__).resolve().parents[1]
 ET = ZoneInfo("America/New_York")
 
 NOTIONAL = 2000.0          # $ per pick (matches news-edge ORB_NOTIONAL_PER_TRADE for a direct PnL comparison)
-TRAIL_PCT = 10.0           # native trailing stop %
+TRAIL_PCT = 10.0           # native trailing stop % (INTRADAY protection only now)
 MAX_SPREAD_PCT = 3.0       # skip names whose bid/ask spread is wider than this (illiquid / heavy slippage)
 TOP_N = 3                  # top-3 by combined_score
-TIME_STOP_DAYS = 3         # close at T+3 trading-ish days if still open
+TIME_STOP_DAYS = 1         # BACKSTOP only: primary exit is the same-day --eod-close (~15:55 ET).
+                           # If that run is ever missed, the next morning's run closes at T+1
+                           # (worst case 1 overnight, not 3). Was 3 before the 2026-06-30 same-day switch.
 STATE_FILE = ROOT / "logs" / "lottery_positions.json"
 EXEC_LOG = ROOT / "logs" / "lottery_execution.csv"   # intended-quote vs actual-fill (slippage/capacity)
 
@@ -158,17 +166,19 @@ def _trading_days_since(entry_iso: str) -> int:
     return n
 
 
-def run_time_stops(tc, dry_run: bool) -> int:
-    """Close any tracked position that's reached T+TIME_STOP_DAYS."""
+def run_time_stops(tc, dry_run: bool, close_all: bool = False) -> int:
+    """Close tracked positions. close_all=True (the ~15:55 ET --eod-close run) force-closes
+    EVERY tracked position the same day it was opened; close_all=False (the morning run) is
+    the T+TIME_STOP_DAYS BACKSTOP for anything a missed EOD run left open overnight."""
     from alpaca.trading.requests import GetOrdersRequest
     state = _load_state()
     if not state:
-        print("time-stops: no tracked positions.")
+        print("close: no tracked positions.")
         return 0
     try:
         positions = {p.symbol: p for p in tc.get_all_positions()}
     except Exception as e:
-        print(f"time-stops: get_all_positions failed: {e}")
+        print(f"close: get_all_positions failed: {e}")
         positions = {}
     closed = 0
     for sym in list(state.keys()):
@@ -183,12 +193,13 @@ def run_time_stops(tc, dry_run: bool) -> int:
                     tc.cancel_order_by_id(oid)
                 except Exception:
                     pass   # usually already filled/cancelled -- that's how the position closed
-            print(f"time-stops: {sym} no longer held (age {age}) -> untracked.")
+            print(f"close: {sym} no longer held (age {age}) -> untracked.")
             del state[sym]
             continue
-        if age >= TIME_STOP_DAYS:
+        if close_all or age >= TIME_STOP_DAYS:
+            reason = "EOD same-day" if close_all else f"T+{age} backstop (>= {TIME_STOP_DAYS})"
             if dry_run:
-                print(f"[DRY-RUN] WOULD time-stop close {sym} (age {age} >= {TIME_STOP_DAYS})")
+                print(f"[DRY-RUN] WOULD close {sym} ({reason})")
             else:
                 try:
                     # cancel the GTC trailing stop FIRST -- with it open, the shares are
@@ -197,17 +208,17 @@ def run_time_stops(tc, dry_run: bool) -> int:
                     if oid:
                         try:
                             tc.cancel_order_by_id(oid)
-                            print(f"time-stops: cancelled trail order {oid} for {sym}.")
+                            print(f"close: cancelled trail order {oid} for {sym}.")
                         except Exception as ce:
-                            print(f"time-stops: trail cancel {sym} ({oid}) failed/already done: {ce}")
+                            print(f"close: trail cancel {sym} ({oid}) failed/already done: {ce}")
                     tc.close_position(sym)
-                    print(f"time-stop CLOSED {sym} (age {age}).")
+                    print(f"CLOSED {sym} ({reason}, age {age}).")
                     del state[sym]
                     closed += 1
                 except Exception as e:
-                    print(f"time-stop close {sym} FAILED: {e}")
+                    print(f"close {sym} FAILED: {e}")
         else:
-            print(f"time-stops: {sym} age {age} < {TIME_STOP_DAYS}, hold.")
+            print(f"close: {sym} age {age} < {TIME_STOP_DAYS}, hold (backstop not reached).")
     if not dry_run:
         _save_state(state)
     return closed
@@ -381,6 +392,7 @@ def main() -> int:
     args = sys.argv[1:]
     dry_run = "--dry-run" in args
     time_stops_only = "--time-stops-only" in args
+    eod_close = "--eod-close" in args   # the ~15:55 ET run: force-close everything SAME DAY
 
     tc = _trading_client()
     try:
@@ -392,7 +404,14 @@ def main() -> int:
 
     _emit_heartbeat("start")
 
-    # 1. time-stops first (close anything at T+3)
+    # SAME-DAY EOD close (~15:55 ET): force-close every tracked position, then exit.
+    if eod_close:
+        n = run_time_stops(tc, dry_run, close_all=True)
+        print(f"eod-close: {n} position(s) closed.")
+        _emit_heartbeat("done")
+        return 0
+
+    # 1. backstop close first (T+1 safety for anything a missed EOD run left open overnight)
     run_time_stops(tc, dry_run)
 
     if not time_stops_only:

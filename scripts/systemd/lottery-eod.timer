@@ -1,0 +1,12 @@
+[Unit]
+Description=Fire the lottery/hype SAME-DAY EXIT at 15:55 ET on US weekdays
+# Force-closes every position the 09:44 ET entry run opened today, ~5 min before the close,
+# so the bot never holds overnight (avoids the measured ~-0.64%/night gap bleed). Pairs with
+# lottery-bot.timer (09:44 ET). Safe as a blanket Mon..Fri timer: no-ops if nothing is open.
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 15:55:00 America/New_York
+Unit=lottery-eod.service
+
+[Install]
+WantedBy=timers.target

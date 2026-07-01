@@ -6,7 +6,9 @@
 # Flow: the laptop board run (~6:24am PT = ~09:24 ET) writes
 # experiments/lottery/picks/<ET-date>.json and git-pushes it. This wrapper fires at
 # ~09:44 ET, pulls, WAITS for today's board to arrive, then runs run_lottery_bot.py
-# (top-3 by combined_score, $500 notional each + 10% native trailing stop, T+3 time-stop).
+# (top-3 by combined_score, $2000 notional each + 10% native trailing stop). Positions are
+# force-closed the SAME DAY at ~15:55 ET by the separate lottery-eod.timer (2026-06-30); the
+# morning run's own close is now just a T+1 backstop if that EOD run was ever missed.
 #
 # If no board arrives (laptop off / no scan), it exits idle.
 set -u
