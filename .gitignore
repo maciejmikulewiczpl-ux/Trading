@@ -74,3 +74,6 @@ scripts/.biotech_universe.txt
 
 # Claude scheduled-tasks lock (transient harness artifact)
 .claude/scheduled_tasks.lock
+
+# generated intermediate for factor_exposure.py
+backtest/.orb_daily_pnl_*.csv
