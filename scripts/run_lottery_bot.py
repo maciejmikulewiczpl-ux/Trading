@@ -46,6 +46,28 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[1]
 ET = ZoneInfo("America/New_York")
 
+# Leveraged / inverse / single-stock-leveraged ETFs: derivative VEHICLES, not "hype lottery"
+# names. They surface on the board via gappers (SOXL topped it 2026-06-23) but are the worst
+# overnight-gap offenders and don't fit the thesis, so the bot SKIPS them at entry (the board
+# still scores them for measurement continuity). Curated core set; extend as needed. (An
+# asset-name keyword check -- "Bull/Bear/Ultra/3X/2X" -- is a future, more-complete approach.)
+LEVERAGED_INVERSE_ETFS = frozenset({
+    # broad-index leveraged/inverse
+    "TQQQ", "SQQQ", "UPRO", "SPXU", "SPXL", "SPXS", "SSO", "SDS", "QLD", "QID",
+    "UDOW", "SDOW", "DDM", "DXD", "TNA", "TZA", "UWM", "TWM", "MIDU", "URTY", "SRTY",
+    # volatility
+    "UVXY", "SVXY", "VIXY", "UVIX", "SVIX", "VXX",
+    # sector / thematic leveraged
+    "SOXL", "SOXS", "LABU", "LABD", "TECL", "TECS", "FAS", "FAZ", "NUGT", "DUST",
+    "JNUG", "JDST", "GUSH", "DRIP", "ERX", "ERY", "CURE", "DPST", "WEBL", "WEBS",
+    "HIBL", "HIBS", "RETL", "NAIL", "DFEN", "DUSL", "YINN", "YANG", "TMF", "TMV",
+    "BOIL", "KOLD", "UCO", "SCO", "AGQ", "ZSL", "UGL", "GLL", "DRN", "DRV",
+    # single-stock leveraged/inverse (the fast-growing crop)
+    "TSLL", "TSLQ", "TSLT", "TSLS", "NVDL", "NVDU", "NVDD", "NVDX", "CONL", "COND",
+    "MSTU", "MSTX", "MSTZ", "AAPU", "AAPD", "GGLL", "GGLS", "MSFU", "MSFD",
+    "AMZU", "AMZD", "METU", "METD", "AMDL", "AMDS", "PLTU", "AMUU", "AVL",
+})
+
 NOTIONAL = 2000.0          # $ per pick (matches news-edge ORB_NOTIONAL_PER_TRADE for a direct PnL comparison)
 TRAIL_PCT = 10.0           # native trailing stop % (INTRADAY protection only now)
 MAX_SPREAD_PCT = 3.0       # skip names whose bid/ask spread is wider than this (illiquid / heavy slippage)
@@ -249,6 +271,9 @@ def run_entries(tc, dry_run: bool) -> int:
         sym = p["symbol"]
         if sym in held or sym in state:
             print(f"  {sym}: already held/tracked, skip.")
+            continue
+        if sym in LEVERAGED_INVERSE_ETFS:
+            print(f"  {sym}: leveraged/inverse ETF -- skip (derivative vehicle, not a hype name).")
             continue
         px = prices.get(sym)
         if px is None or px <= 0:
