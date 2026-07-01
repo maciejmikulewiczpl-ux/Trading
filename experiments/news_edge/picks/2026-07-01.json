@@ -1,0 +1,305 @@
+{
+  "date": "2026-07-01",
+  "logged_at": "2026-07-01T09:40:02-04:00",
+  "picks": [
+    {
+      "symbol": "NKE",
+      "signal": -1,
+      "confidence": 0.6,
+      "reason": "FQ4 (6/30 PM) beat EPS (20c vs 13c est) but CAUTIOUS FY outlook: mgmt guides revenue to decline low-to-mid single digit, warns environment not improving next 6 months, Sportswear/Jordan down double digits. Stock at 52-wk low. Small-gap fresh-news guide-down = pre-registered edge bucket; ST 89% bull = crowd catching a falling knife (contrarian confirms avoid).",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 6,
+      "earnings_day": true,
+      "theme": "apparel-earnings",
+      "control": false
+    },
+    {
+      "symbol": "NBIS",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Bloomberg report (dated) Meta building a cloud-infra business selling AI compute = direct neocloud competition threat. NBIS biggest victim -17% premarket; $9.5B debt, 20% short interest. ST only 60% bull (n=10). Analyst -1 vs the mechanical CRWV control on the same theme.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "neocloud-competition",
+      "control": false,
+      "gap_pct": -17.19
+    },
+    {
+      "symbol": "GIS",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "FY26 Q4 earnings (8-K 7:01 ET): Q4 adj EPS $0.95 +27% cc beat, net sales +1%, but FY sales -5% and adj EPS -16%; FY27 outlook = improved organic growth + $3B cost-save target. Mixed; low-vol staple, unclear intraday reaction.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "staples-earnings",
+      "control": false
+    },
+    {
+      "symbol": "STZ",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Q1 FY27 (reported 6/30 PM, 8am call 7/1): beat revenue est but net sales -3.3% YoY to $2.43B. Mixed; on ST trending (crowding). Moderate-vol beverages, direction unclear.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "beverages-earnings",
+      "control": false
+    },
+    {
+      "symbol": "RAM",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -18.3
+    },
+    {
+      "symbol": "CRWV",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -11.73
+    },
+    {
+      "symbol": "HUT",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -9.01
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -8.75
+    },
+    {
+      "symbol": "MU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -7.26
+    },
+    {
+      "symbol": "AA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.98
+    },
+    {
+      "symbol": "META",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.73
+    },
+    {
+      "symbol": "IREN",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.45
+    },
+    {
+      "symbol": "KLAR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.34
+    },
+    {
+      "symbol": "APLD",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.76
+    },
+    {
+      "symbol": "GLXY",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.68
+    },
+    {
+      "symbol": "AMD",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.53
+    },
+    {
+      "symbol": "NOW",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.41
+    },
+    {
+      "symbol": "NVDA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.13
+    }
+  ]
+}
