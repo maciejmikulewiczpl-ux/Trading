@@ -39,10 +39,9 @@ def _load() -> tuple[pd.DataFrame, str]:
 
 
 def _decision_bars(rth: pd.DataFrame) -> pd.DataFrame:
-    """RTH bars at :00 or :30 (the decision grid), excluding the 09:30 open bar itself."""
-    t = rth.index
-    mask = ((t.minute == 0) | (t.minute == 30)) & (rth.index.time > RTH_OPEN)
-    return rth[mask]
+    """All RTH bars after the 09:30 open -> sigma is computed at EVERY 5-min time-of-day, so any
+    decision grid (30/15/5-min) can look it up. The strategy's actual grid is chosen in backtest()."""
+    return rth[rth.index.time > RTH_OPEN]
 
 
 def build_sigma(days: dict[object, pd.DataFrame]) -> dict:
@@ -65,7 +64,7 @@ def build_sigma(days: dict[object, pd.DataFrame]) -> dict:
 
 
 def backtest(df: pd.DataFrame, trail_k: float = 1.5, gap_adj: bool = True,
-             take_profit: float | None = None) -> pd.DataFrame:
+             take_profit: float | None = None, decide_minutes: tuple = (0, 30)) -> pd.DataFrame:
     """Bar-by-bar. Decisions at :00/:30 vs the (optionally gap-adjusted) noise band; between decisions
     a dynamic trailing stop = trail_k * sigma_entry * open guards the position. trail_k huge = 'ride to
     opposite band/close' (the v1 behaviour). gap_adj: raise upper by an overnight gap-down / lower the
@@ -108,8 +107,8 @@ def backtest(df: pd.DataFrame, trail_k: float = 1.5, gap_adj: bool = True,
                     if row["high"] >= extreme + trail:
                         ret += (entry - (extreme + trail)) * POINT_VALUE - COST_SIDE_USD * 2
                         pos, entry, extreme = 0, None, None
-            # 2) decision at :00/:30 (band breakout -> set/flip target)
-            if ts.minute in (0, 30) and ts.time() > RTH_OPEN:
+            # 2) decision at each grid mark (band breakout -> set/flip target)
+            if ts.minute in decide_minutes and ts.time() > RTH_OPEN:
                 s = sigma.get((d, f"{ts.hour:02d}:{ts.minute:02d}"))
                 if s is not None:
                     up, lo = op * (1 + s), op * (1 - s)

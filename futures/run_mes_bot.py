@@ -14,9 +14,10 @@ file). Fired every ~5 min during RTH by mes-bot.timer. DRY_RUN=1 logs the intend
 """
 from __future__ import annotations
 
+import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, time
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -81,12 +82,30 @@ def compute_target(df, today, now) -> tuple[int, str]:
     return pos, info
 
 
+STATUS_FILE = Path(__file__).resolve().parent / "status.json"
+WIN_OPEN, WIN_CLOSE = time(9, 25), time(16, 5)   # ET market-hours guard for the every-5-min scheduler
+
+
+def _write_status(**kw) -> None:
+    """Dump a small status.json for the dashboard Futures tab (best-effort)."""
+    try:
+        STATUS_FILE.write_text(json.dumps({"updated": datetime.now(ET).isoformat(timespec="seconds"),
+                                           "dry_run": DRY_RUN, "qty": QTY, **kw}, indent=2, default=str))
+    except Exception:
+        pass
+
+
 def main() -> int:
     now = datetime.now(ET)
+    # ET market-hours guard: off-hours/weekend passes exit instantly (no TWS connect), so the
+    # every-5-min Surface scheduler is cheap and timezone-agnostic (the bot decides in ET).
+    if now.weekday() >= 5 or not (WIN_OPEN <= now.time() <= WIN_CLOSE):
+        return 0
     _log(f"MES momentum pass | DRY_RUN={DRY_RUN} | qty={QTY}")
-    if now.weekday() >= 5:
-        _log("weekend -- idle."); return 0
-    ib = brk.connect()
+    try:
+        ib = brk.connect()
+    except Exception as e:
+        _log(f"TWS not reachable ({str(e)[:50]}) -- skip pass."); return 0
     try:
         df = brk.fetch_intraday(ib, duration="40 D", bar_size="5 mins")  # ~28 trading days > 14d sigma
         if df is None:
@@ -97,11 +116,14 @@ def main() -> int:
         target *= QTY
         cur = brk.position(ib)
         _log(f"target={target:+d}  current={cur:+d}  | {info}")
+        order = None
         if DRY_RUN:
             _log("DRY_RUN -> no order placed.")
         else:
-            desc = brk.reconcile_to(ib, target)
-            _log(f"ORDER {desc}" if desc else "already at target -- hold.")
+            order = brk.reconcile_to(ib, target)
+            _log(f"ORDER {order}" if order else "already at target -- hold.")
+        _write_status(position=(target if not DRY_RUN else cur), target=target, signal=info,
+                      last_order=order, account=brk.account_snapshot(ib))
     finally:
         ib.disconnect()
     return 0

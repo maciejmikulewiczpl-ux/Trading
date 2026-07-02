@@ -903,6 +903,26 @@ def _biotech() -> dict:
         return {"setups": [], "heat": []}
 
 
+FUTURES_STATUS = ROOT / "futures" / "status.json"
+
+
+def _futures() -> dict:
+    """MES momentum paper-bot status (futures/status.json, written by run_mes_bot.py on the Surface)
+    + the validated backtest summary. Live fields present only where the status file is synced."""
+    live = {}
+    try:
+        live = json.loads(FUTURES_STATUS.read_text())
+    except Exception:
+        pass
+    return {
+        "live": live,
+        "backtest": {   # fair 5-min test, 2yr, 1 MES, net of costs; gap-adjust + ride-to-close
+            "sharpe": 1.10, "pf": 1.26, "net_usd": 3776, "maxdd_usd": -2382,
+            "best_day": 2097, "worst_day": -673, "period": "Sep-2024 to Jul-2026",
+            "oos": "both halves +ve (H1 0.81 / H2 1.60)"},
+    }
+
+
 def _source_daily(days_limit: int = 14) -> dict:
     """Per-source daily performance grid (descriptive) for the Hype + Summary tabs.
     For each SCORED day, the average 9:45->close return of the names each source flagged
@@ -1525,10 +1545,10 @@ function plBreakdownCard(dp, todayStr, tab){
   return h;
 }
 function topNav(active){
-  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["lottery","Hype"],["summary","Summary"],["biotech","Biotech"],["regime","Market"]].map(
+  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["lottery","Hype"],["summary","Summary"],["biotech","Biotech"],["futures","Futures"],["regime","Market"]].map(
     ([k,l])=>`<button class="tab${active===k?" active":""}" onclick="setTopView('${k}')">${l}</button>`).join("")+`</div>`;
 }
-let lastRegime=null, lastLottery=null, lastSummary=null, lastBiotech=null;
+let lastRegime=null, lastLottery=null, lastSummary=null, lastBiotech=null, lastFutures=null;
 function showLoading(tab){
   const r=document.getElementById("root");
   if(r) r.innerHTML=topNav(tab)+`<div class="card"><div class="empty">loading…</div></div>`;
@@ -1568,6 +1588,7 @@ function setTopView(v){
   else if(v==="lottery"){ lastLottery?renderLottery(lastLottery):showLoading("lottery"); fetchLottery(); }
   else if(v==="summary"){ lastSummary?renderSummary(lastSummary):showLoading("summary"); fetchSummary(); }
   else if(v==="biotech"){ lastBiotech?renderBiotech(lastBiotech):showLoading("biotech"); fetchBiotech(); }
+  else if(v==="futures"){ lastFutures?renderFutures(lastFutures):showLoading("futures"); fetchFutures(); }
   else if(v==="regime"){ lastRegime?renderRegime(lastRegime):showLoading("regime"); fetchRegime(); }
   else { lastData?render(lastData):showLoading("trading"); }
 }
@@ -2251,6 +2272,31 @@ async function fetchBiotech(){
   try{ const r=await fetch("/api/biotech",{cache:"no-store"}); lastBiotech=await r.json(); if(topView==="biotech") renderBiotech(lastBiotech); }
   catch(e){ if(topView==="biotech") document.getElementById("root").innerHTML=topNav("biotech")+`<div class="card empty">biotech radar data unavailable</div>`; }
 }
+function renderFutures(d){
+  let h=topNav("futures");
+  h+=`<div class="banner s-idle"><h1>MES futures — intraday momentum</h1><p>The one validated futures edge: at each :00/:30 ET, detect an intraday S&P trend (dynamic gap-adjusted noise band), ride it to the close, no stop. Micro E-mini S&P (MES) on IBKR paper. A cyclical ~1.1-Sharpe edge — real, but NOT a steady 3%/mo.</p></div>`;
+  const b=(d&&d.backtest)||{}, L=(d&&d.live)||{};
+  h+=`<div class="card"><h2>Validated backtest <span class="hint">(2yr · 1 MES · net of costs)</span></h2>`;
+  h+=`<table><tr><th>Sharpe</th><th>Profit factor</th><th>Net $</th><th>Max DD</th><th>Best day</th><th>Worst day</th></tr>`;
+  h+=`<tr><td>${b.sharpe??'—'}</td><td>${b.pf??'—'}</td><td class="pos">+$${b.net_usd??'—'}</td><td class="neg">$${b.maxdd_usd??'—'}</td><td class="pos">+$${b.best_day??'—'}</td><td class="neg">$${b.worst_day??'—'}</td></tr></table>`;
+  h+=`<div class="hint" style="margin-top:4px">${b.period||''} · OOS ${b.oos||''}</div></div>`;
+  if(L&&L.updated){
+    const a=L.account||{}, posTxt=L.position>0?`LONG ${L.position}`:(L.position<0?`SHORT ${Math.abs(L.position)}`:'flat');
+    h+=`<div class="card"><h2>Live bot ${L.dry_run?'<span class="hint">(DRY-RUN — no orders)</span>':'<span class="pos">(ARMED — paper)</span>'}</h2>`;
+    h+=`<table><tr><th>Position</th><th style="text-align:left">Signal</th><th>Net liq</th><th>Realized P/L</th><th>Unrealized</th></tr>`;
+    h+=`<tr><td>${posTxt}</td><td style="text-align:left">${L.signal||'—'}</td><td>$${a.NetLiquidation!=null?Math.round(a.NetLiquidation).toLocaleString():'—'}</td><td>$${a.RealizedPnL??'—'}</td><td>$${a.UnrealizedPnL??'—'}</td></tr></table>`;
+    h+=`<div class="hint" style="margin-top:4px">updated ${L.updated} · qty ${L.qty}</div></div>`;
+  } else {
+    h+=`<div class="card"><div class="empty">No live status synced to this host. The bot runs on the Surface (needs TWS up) and writes futures/status.json there.</div></div>`;
+  }
+  h+=`<div class="card" style="border-color:#7c3a3a"><div class="hint"><b>⚠ RISK:</b> futures are LEVERAGED — 1 MES ≈ $37k notional. Cyclical edge: pays in bursts (2025 H1 carried it), flat/negative for quarters. Take-profits AND tighter stops both tested → both made it worse. Paper only.</div></div>`;
+  h+=`<div class="foot"><span>futures · ${(L&&L.updated)||''}</span><span></span></div>`;
+  setRoot(h);
+}
+async function fetchFutures(){
+  try{ const r=await fetch("/api/futures",{cache:"no-store"}); lastFutures=await r.json(); if(topView==="futures") renderFutures(lastFutures); }
+  catch(e){ if(topView==="futures") document.getElementById("root").innerHTML=topNav("futures")+`<div class="card empty">futures data unavailable</div>`; }
+}
 let fails=0;
 async function tick(){
   try{ const r=await fetch("/api/status",{cache:"no-store"}); const d=await r.json(); lastData=d; fails=0;
@@ -2338,6 +2384,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.startswith("/api/biotech"):
             try:
                 body = json.dumps(_biotech()).encode("utf-8")
+                self._send(200, body, "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
+        elif self.path.startswith("/api/futures"):
+            try:
+                body = json.dumps(_futures()).encode("utf-8")
                 self._send(200, body, "application/json")
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")

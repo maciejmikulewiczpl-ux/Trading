@@ -1,4 +1,5 @@
 data/
 state.json
+status.json
 __pycache__/
 *.pyc

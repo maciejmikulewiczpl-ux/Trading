@@ -226,6 +226,18 @@ def position(ib) -> int:
     return 0
 
 
+def account_snapshot(ib) -> dict:
+    """Paper-account P&L snapshot for the dashboard (NetLiquidation / Unrealized / Realized). Best-effort."""
+    out: dict = {}
+    try:
+        for r in ib.accountSummary():
+            if r.tag in ("NetLiquidation", "UnrealizedPnL", "RealizedPnL", "AvailableFunds"):
+                out[r.tag] = float(r.value)
+    except Exception:
+        pass
+    return out
+
+
 def reconcile_to(ib, target: int) -> str | None:
     """Place a market order to move the current MES position to `target` (-1/0/+1...). Returns a
     description of the order sent, or None if already there. This is how the momentum bot enters,
