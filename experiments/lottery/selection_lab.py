@@ -21,6 +21,9 @@ Baskets (top-3/day):
                  gtrends_spike, pm_rvol (all ratios vs the name's own norm), dropping the LEVEL-rank
                  signals (st_rank/wsb_rank) that perpetually favor always-popular mega-caps (ChatGPT
                  critique #11: TSLA always trends; a biotick going 15->400 is the real signal).
+  prepeak      : rank by RISING attention (surge/spike/rvol pctile) MINUS already-moved-in-price
+                 (|gap|+ignition pctile) -- the "bottom-3 > top-3" lead: pick pre-breakout names with
+                 multi-day room, not the already-popped names combined_score favours (which then fade).
   two_stage    : gate by ignition>=2, THEN rank survivors by ATTENTION strength (DeepSeek #7) --
                  tests whether social hype ADDS to the momentum base vs ignition_only alone.
   ignition_only: top-3 by the ignition signal alone -- the "is it just momentum?" baseline.
@@ -52,6 +55,11 @@ SCORING = [("wsb_surge", 1), ("wsb_rank", -1), ("st_rank", -1), ("pm_rvol", 1),
 ATTENTION = [("wsb_surge", 1), ("st_rank", -1), ("gtrends_spike", 1)]
 # Own-baseline-RELATIVE signals for relsurprise (ratios vs the name's own norm; excludes level ranks).
 RELSURPRISE = [("wsb_surge", 1), ("gtrends_spike", 1), ("pm_rvol", 1)]
+# prepeak (the "bottom-3 beats top-3" lead): RISING attention that has NOT yet popped in price. Score =
+# attention-surge percentile MINUS already-moved percentile -> favors pre-breakout names with room to
+# run over the multi-day hold, vs combined_score which picks already-peaked names that fade.
+PREPEAK_SURGE = [("wsb_surge", 1), ("gtrends_spike", 1), ("pm_rvol", 1)]   # rising attention
+PREPEAK_MOVED = [("gap_pct", "abs"), ("ignition", 1)]                       # already popped in price
 # Fable PnL #5: same as SCORING but gap SIGNED (down-gaps rank low) instead of abs-magnitude.
 SCORING_GAPSIGNED = [(n, (1 if n == "gap_pct" else tf)) for n, tf in SCORING]
 METRIC = "ret_945_close"
@@ -139,6 +147,13 @@ def _baskets_for_day(picks):
     sc_gs = _scores(scored, SCORING_GAPSIGNED)
     gs = [(s, v[0]) for s, v in sc_gs.items() if v[0] is not None]
     b["gap_signed"] = [s for s, _ in sorted(gs, key=lambda x: -x[1])[:3]]
+    # prepeak (the "bottom-3 > top-3 = score picks already-popped names" lead): rank by RISING attention
+    # MINUS already-moved-in-price, so we favour pre-breakout names with multi-day room, not exhausted ones.
+    sc_surge = _scores(scored, PREPEAK_SURGE)
+    sc_moved = _scores(scored, PREPEAK_MOVED)
+    pp = [(s, sc_surge[s][0] - sc_moved.get(s, (0.5,))[0])
+          for s in sc_surge if sc_surge[s][0] is not None and sc_moved.get(s, (None,))[0] is not None]
+    b["prepeak"] = [s for s, _ in sorted(pp, key=lambda x: -x[1])[:3]]
     # ignition_only
     ig = [(p["symbol"], _sigval(p, "ignition", 1)) for p in scored]
     ig = [(s, v) for s, v in ig if v is not None]
@@ -181,7 +196,7 @@ def main():
                 for fld, _ in HORIZONS:
                     by[fld].setdefault(name, []).append(L.get(s, {}).get(fld))
 
-    order = ["current", "minsig3", "clean", "confluence", "agreement", "relsurprise",
+    order = ["current", "minsig3", "clean", "confluence", "agreement", "relsurprise", "prepeak",
              "two_stage", "gap_signed", "ignition_only", "randnet", "bottom3", "NEG len4", "NEG revalpha"]
     # Tail-aware: SUM = equal-weight PnL proxy, best = fat right tail. The bot's realized PnL is
     # tail-driven and lives in the +1/+2 day move -> compare baskets by SUM/best across horizons.
