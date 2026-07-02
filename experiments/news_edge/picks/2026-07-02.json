@@ -1,0 +1,271 @@
+{
+  "date": "2026-07-02",
+  "logged_at": "2026-07-02T09:40:26-04:00",
+  "picks": [
+    {
+      "symbol": "TSLA",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Q2 2026 deliveries 480,126 vs ~406k Street consensus = large beat (8-K filed 09:01 ET, Model 3/Y 442,936). NOT a >3% premarket gapper despite the beat (ran +8% into the print on 06/29) -> small-gap fresh-catalyst bucket = pre-registered edge; muted gap + hard beat leaves room. ST only 45% bull = crowd not chasing (lower fade risk). pm_rvol 3.93 = heavy participation.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 3.93,
+      "reddit_rank": 12,
+      "earnings_day": true,
+      "theme": "ev-deliveries",
+      "control": false
+    },
+    {
+      "symbol": "RIVN",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Q2 2026 deliveries 12,194 topped 9,000-11,000 outlook (R2 ramp) AND RAISED FY guide to 65,000-70,000 from 62,000-67,000 (8-K 08:29 ET). Gap +5.9%. ST 93% bull. Fresh dated delivery+guidance catalyst.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "ev-deliveries",
+      "control": false,
+      "gap_pct": 5.91
+    },
+    {
+      "symbol": "HOOD",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Dated 07/02 analyst upgrades: Deutsche Bank PT $105->$113, Goldman $108->$121, on record June trading metrics. Gap +8.2%, ST 88% bull. Caveat: big (>8%) gapper -> pre-registered fade risk; hence moderate confidence. pm_rvol reads low (0.4) which tempers conviction.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.4,
+      "reddit_rank": 20,
+      "earnings_day": false,
+      "theme": "fintech-upgrade",
+      "control": false,
+      "gap_pct": 8.2
+    },
+    {
+      "symbol": "OUST",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "424B5 filed 06:12 ET = secondary/shelf offering (dilution) into strength. Gapping -7.99%. ST 71% bull = crowd long into a dilution print (contrarian confirms avoid).",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.66,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false,
+      "gap_pct": -7.99
+    },
+    {
+      "symbol": "LCID",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Q2 2026 produced 4,774 / delivered 3,953 (8-K 09:01 ET) plus leadership/org reshuffle under CEO Napoli. Mixed and low absolute volume; 3rd EV-delivery name so NOT piling the bet -> neutral. ST 94% bull.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "ev-deliveries",
+      "control": false
+    },
+    {
+      "symbol": "LNN",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Lindsay fiscal Q3 2026 earnings before open (8-K 06:45 ET); Street $1.21 EPS = -32% YoY on -7% revenue. Low-vol ag/irrigation name, actual print vs whisper unclear at scan time -> neutral. ST 100% bull but n=3 (noise).",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "ag-earnings",
+      "control": false
+    },
+    {
+      "symbol": "MU",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "WSB #1 by mentions (1,160, surge 2.0x) but NO fresh dated catalyst today (ran on earnings last week; GM supply deal older). Crowding, not direction -> neutral per rules. ST 83% bull, pm_rvol 1.93.",
+      "sources": [
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.93,
+      "reddit_rank": 1,
+      "earnings_day": false,
+      "theme": "memory-semis",
+      "control": false
+    },
+    {
+      "symbol": "META",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Reddit #2 surge + ST trending on the ongoing cloud/AI-infra-competition story (Bloomberg, prior day) -- not a fresh dated catalyst today. ST 46% = split. Crowding context only.",
+      "sources": [
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 1.11,
+      "reddit_rank": 2,
+      "earnings_day": false,
+      "theme": "ai-infra",
+      "control": false
+    },
+    {
+      "symbol": "NBIS",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Still crowded (ST trending + WSB surge, neocloud complex) after the Meta-cloud-threat selloff, but no NEW dated catalyst today -> neutral. ST 82% bull, pm_rvol 0.5.",
+      "sources": [
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.5,
+      "reddit_rank": 6,
+      "earnings_day": false,
+      "theme": "neocloud",
+      "control": false
+    },
+    {
+      "symbol": "CEPT",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -12.13
+    },
+    {
+      "symbol": "OWL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 8.57
+    },
+    {
+      "symbol": "RGC",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.18
+    },
+    {
+      "symbol": "AG",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.43
+    },
+    {
+      "symbol": "GLXY",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.28
+    },
+    {
+      "symbol": "IBIT",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.15
+    }
+  ]
+}
