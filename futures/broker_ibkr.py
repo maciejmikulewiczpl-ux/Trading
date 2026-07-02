@@ -123,14 +123,16 @@ def _quarterly_months(n: int, today: date | None = None) -> list[str]:
 
 
 def cache_deep_history_dated(quarters: int = 8, bar_size: str = "30 mins",
-                             chunk: str = "3 M", subchunks: int = 1, pace_s: float = 11.0) -> int:
+                             chunk: str = "3 M", subchunks: int = 1, pace_s: float = 11.0,
+                             symbol: str = "MES", exchange: str = "CME", out_path=None) -> int:
     """Deep intraday history by STITCHING dated quarterly contracts (ContFuture blocks endDateTime).
     Each contract contributes its front-month period; newest wins on overlap. No roll back-adjustment
     (candidates are intraday-only, so each day is self-contained). `subchunks` walks endDateTime back
     WITHIN a contract (needed for fine bars: 5-min caps at ~1 month/request, so use chunk='1 M',
-    subchunks=3). Writes the parquet cache."""
+    subchunks=3). `symbol` any CME-quarterly micro (MES/MNQ/M2K/MYM...). Writes the parquet cache."""
     import time as _t
     from ib_async import Future, util
+    out_path = Path(out_path) if out_path else CACHE
     ib = connect()
     frames: list[pd.DataFrame] = []
     earliest = None
@@ -144,7 +146,7 @@ def cache_deep_history_dated(quarters: int = 8, bar_size: str = "30 mins",
 
     try:
         for i, ym in enumerate(_quarterly_months(quarters)):
-            c = Future(symbol="MES", lastTradeDateOrContractMonth=ym, exchange="CME",
+            c = Future(symbol=symbol, lastTradeDateOrContractMonth=ym, exchange=exchange,
                        currency="USD", includeExpired=True)
             if not ib.qualifyContracts(c):
                 print(f"  {ym}: could not qualify -- skip."); continue
@@ -175,10 +177,10 @@ def cache_deep_history_dated(quarters: int = 8, bar_size: str = "30 mins",
         raise RuntimeError("no bars from any dated contract")
     full = pd.concat(frames)
     full = full[~full.index.duplicated(keep="first")].sort_index()
-    CACHE.parent.mkdir(parents=True, exist_ok=True)
-    full.to_parquet(CACHE)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    full.to_parquet(out_path)
     print(f"cached {len(full)} bars ({bar_size}) {full.index.min().date()} -> "
-          f"{full.index.max().date()} to {CACHE}")
+          f"{full.index.max().date()} to {out_path}")
     return 0
 
 
@@ -265,7 +267,10 @@ def main(argv) -> int:
         bar = argv[3] if len(argv) > 3 else "30 mins"
         chunk = argv[4] if len(argv) > 4 else "3 M"
         subchunks = int(argv[5]) if len(argv) > 5 else 1
-        return cache_deep_history_dated(quarters=quarters, bar_size=bar, chunk=chunk, subchunks=subchunks)
+        symbol = argv[6] if len(argv) > 6 else "MES"
+        out = CACHE if symbol == "MES" else CACHE.parent / f"{symbol.lower()}_intraday.parquet"
+        return cache_deep_history_dated(quarters=quarters, bar_size=bar, chunk=chunk,
+                                        subchunks=subchunks, symbol=symbol, out_path=out)
     if cmd == "ping":
         ib = connect()
         try:
