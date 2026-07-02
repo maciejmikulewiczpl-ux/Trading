@@ -65,7 +65,7 @@ def build_sigma(days: dict[object, pd.DataFrame]) -> dict:
 
 def backtest(df: pd.DataFrame, trail_k: float = 1.5, gap_adj: bool = True,
              take_profit: float | None = None, decide_minutes: tuple = (0, 30),
-             exit_inside: bool = False) -> pd.DataFrame:
+             exit_inside: bool = False, rsi_confirm: bool = False, rsi_n: int = 14) -> pd.DataFrame:
     """Bar-by-bar. Decisions at :00/:30 vs the (optionally gap-adjusted) noise band; between decisions
     a dynamic trailing stop = trail_k * sigma_entry * open guards the position. trail_k huge = 'ride to
     opposite band/close' (the v1 behaviour). gap_adj: raise upper by an overnight gap-down / lower the
@@ -75,6 +75,13 @@ def backtest(df: pd.DataFrame, trail_k: float = 1.5, gap_adj: bool = True,
     days_l = sorted({t.date() for t in rth_all.index})
     day_df = {d: rth_all[rth_all.index.date == d] for d in days_l}
     sigma = build_sigma(day_df)
+    # RSI(rsi_n) on the 5-min closes -- the classic momentum indicator, used as an entry CONFIRMATION
+    rsi = None
+    if rsi_confirm:
+        dlt = rth_all["close"].diff()
+        up = dlt.clip(lower=0).ewm(alpha=1 / rsi_n, adjust=False).mean()
+        dn = (-dlt.clip(upper=0)).ewm(alpha=1 / rsi_n, adjust=False).mean()
+        rsi = 100 - 100 / (1 + up / dn.replace(0, np.nan))
     closes = {d: day_df[d]["close"].iloc[-1] for d in days_l if len(day_df[d])}
     rows, prev_d = [], None
     for d in days_l:
@@ -122,6 +129,11 @@ def backtest(df: pd.DataFrame, trail_k: float = 1.5, gap_adj: bool = True,
                     # (the "exit when momentum fades, re-enter on new momentum" idea)
                     inside = 0 if exit_inside else pos
                     tgt = 1 if px > up else (-1 if px < lo else inside)
+                    # RSI confirmation: veto a fresh entry unless the momentum indicator agrees
+                    if rsi_confirm and tgt != pos and tgt != 0:
+                        rv = rsi.get(ts, 50.0)
+                        if (tgt == 1 and rv < 50) or (tgt == -1 and rv > 50):
+                            tgt = pos
                     if tgt != pos:
                         if pos != 0:
                             ret += (px - entry) * pos * POINT_VALUE - COST_SIDE_USD * 2
