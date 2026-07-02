@@ -1,40 +1,33 @@
-"""MES paper bot -- the live counterpart of futures/backtest_orb.py (Phase 3 skeleton).
+"""MES paper bot -- the LIVE intraday-momentum strategy (the one validated candidate).
 
-Runs the tight-OR-day ORB on MES against the IBKR PAPER account:
-  1. At the RTH open, build the 09:30-09:45 ET opening range from live 5-min bars.
-  2. Apply the tight-OR-day gate (OR range vs the trailing OR% distribution -> only trade tight days).
-  3. On the first breakout close beyond the OR, enter market + attach a native trailing stop
-     (TRAIL_R * OR_range) via broker_ibkr.market_with_trailing.
-  4. Flat by 15:55 ET (same-day; no overnight). Log entry/exit + slippage-vs-arrival to the ledger.
+Strategy (from futures/backtest_momentum.py, the config that won the fair 5-min test): each :00/:30 ET,
+compare price to a dynamic gap-adjusted noise band (open x (1 +/- 14d avg move-by-time)); above upper
+-> long, below lower -> short; RIDE TO THE CLOSE (NO trailing stop -- stops hurt), flat at 15:55.
 
-State in futures/state.json (one trade/day/side). Idempotent restarts. This is a SKELETON: the
-decision logic mirrors the backtest; it is guarded so it will not place orders until (a) IBKR paper
-Gateway is live and (b) DRY_RUN is turned off. Nothing here runs without the account.
+Because there is no intra-bar stop, each pass just REPLAYS today's completed :00/:30 decisions to get
+the current target position (-1/0/+1) x MES_QTY, then reconciles the IBKR position to it with a market
+order. Idempotent: a missed pass self-corrects next time; the broker position IS the state (no state
+file). Fired every ~5 min during RTH by mes-bot.timer. DRY_RUN=1 logs the intended action, no orders.
 
-    .venv-openbb/Scripts/python.exe futures/run_mes_bot.py           # DRY-RUN (no orders)
-    DRY_RUN=0 .venv-openbb/Scripts/python.exe futures/run_mes_bot.py # arm (paper account only)
+    .venv-openbb/Scripts/python.exe futures/run_mes_bot.py            # DRY-RUN (needs TWS for data)
+    DRY_RUN=0 .venv-openbb/Scripts/python.exe futures/run_mes_bot.py  # arm (PAPER account only)
 """
 from __future__ import annotations
 
-import json
 import os
 import sys
-from datetime import datetime, time
+from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from futures import broker_ibkr as brk  # noqa: E402
-from futures.backtest_orb import OR_END, RTH_OPEN, TRAIL_R  # reuse the SAME setup constants  # noqa: E402
-from futures.data import POINT_VALUE  # noqa: E402
+from futures.backtest_momentum import EOD, RTH_OPEN, build_sigma  # same setup as the backtest  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
-STATE = Path(__file__).resolve().parent / "state.json"
-EOD = time(15, 55)
 
 
 def _load_dotenv(name: str = ".env.futures") -> None:
-    """Minimal KEY=VALUE loader (matches how the other bots load their own env). No-op if absent."""
     f = Path(__file__).resolve().parents[1] / name
     if not f.exists():
         return
@@ -42,117 +35,75 @@ def _load_dotenv(name: str = ".env.futures") -> None:
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
             k, v = line.split("=", 1)
-            v = v.split("#", 1)[0].strip()          # drop inline comments
-            os.environ.setdefault(k.strip(), v)
+            os.environ.setdefault(k.strip(), v.split("#", 1)[0].strip())
 
 
 _load_dotenv()
-OR_TIGHT_PCTL = float(os.environ.get("OR_TIGHT_PCTL", "0.5"))
 QTY = int(os.environ.get("MES_QTY", "1"))
 DRY_RUN = os.environ.get("DRY_RUN", "1") != "0"
-
-
-def _load_state() -> dict:
-    if STATE.exists():
-        return json.loads(STATE.read_text())
-    return {}
-
-
-def _save_state(s: dict) -> None:
-    STATE.write_text(json.dumps(s, indent=2, default=str))
 
 
 def _log(msg: str) -> None:
     print(f"[{datetime.now(ET):%Y-%m-%d %H:%M:%S}] {msg}")
 
 
-def decide_and_trade(ib) -> None:
-    """One evaluation pass. Pulls today's 5-min bars, computes the OR + tight gate, and if a breakout
-    has printed, enters (unless already traded today / DRY_RUN). Designed to be called on a schedule
-    between ~09:45 and 15:55 ET."""
-    today = datetime.now(ET).date()
-    state = _load_state()
-    if state.get("date") == str(today) and state.get("entered"):
-        _log("already traded today; nothing to do."); return
-
-    # recent intraday incl. today, from IBKR (fallback to the free yfinance loader for dry-run dev)
-    try:
-        df = brk.fetch_intraday(ib, duration="10 D", bar_size="5 mins") if ib else None
-    except Exception as e:
-        _log(f"history fetch failed ({str(e)[:60]}); aborting pass."); return
-    if df is None:
-        from futures.data import load_mes_intraday
-        df = load_mes_intraday("5m", "10d")
-
-    day = df[df.index.date == today]
-    rth = day[(day.index.time >= RTH_OPEN) & (day.index.time <= EOD)]
-    ob = rth[rth.index.time < OR_END]
-    if len(ob) < 2:
-        _log("opening range not complete yet; wait."); return
-    or_hi, or_lo = ob["high"].max(), ob["low"].min()
-    or_range = or_hi - or_lo
-    price0 = rth["close"].iloc[0]
-
-    # tight-OR-day gate vs trailing OR% distribution (prior days in the pulled window)
-    import numpy as np
-    prior = sorted({ts.date() for ts in df.index if ts.date() < today})
-    hist = []
-    for d in prior:
-        dd = df[(df.index.date == d)]
-        dob = dd[(dd.index.time >= RTH_OPEN) & (dd.index.time < OR_END)]
-        drth = dd[(dd.index.time >= RTH_OPEN) & (dd.index.time <= EOD)]
-        if len(dob) and len(drth) and drth["close"].iloc[0] > 0:
-            hist.append((dob["high"].max() - dob["low"].min()) / drth["close"].iloc[0])
-    if len(hist) >= 10:
-        if (or_range / price0) > float(np.quantile(hist, OR_TIGHT_PCTL)):
-            _log(f"OR not tight (OR%={or_range/price0:.4f}); stand down today."); return
-    else:
-        _log(f"insufficient OR history ({len(hist)}); stand down."); return
-
-    # breakout check on the latest closed bar
-    post = rth[rth.index.time >= OR_END]
-    if post.empty:
-        _log("no post-OR bars yet."); return
-    last = post["close"].iloc[-1]
-    side = "BUY" if last > or_hi else ("SELL" if last < or_lo else None)
-    if side is None:
-        _log(f"no breakout yet (last {last:.2f} within OR [{or_lo:.2f},{or_hi:.2f}])."); return
-
-    trail_pts = TRAIL_R * or_range
-    _log(f"SIGNAL {side} MESx{QTY} | OR[{or_lo:.2f},{or_hi:.2f}] range {or_range:.2f} "
-         f"| trail {trail_pts:.2f}pts (~${trail_pts*POINT_VALUE:.0f})")
-    if DRY_RUN or ib is None:
-        _log("DRY_RUN -> no order placed."); return
-    parent, stop = brk.market_with_trailing(ib, side, QTY, trail_pts)
-    state.update({"date": str(today), "entered": True, "side": side, "or_hi": or_hi, "or_lo": or_lo,
-                  "trail_pts": trail_pts, "entry_order": parent.order.orderId})
-    _save_state(state)
-    _log(f"ENTERED {side} (order {parent.order.orderId}); trailing stop attached.")
+def compute_target(df, today, now) -> tuple[int, str]:
+    """Replay today's completed :00/:30 decisions vs the gap-adjusted noise band -> target pos -1/0/+1.
+    df = intraday OHLCV (ET) with >=14 prior days of history + today so far."""
+    rth = df[(df.index.time >= RTH_OPEN) & (df.index.time <= EOD)]
+    day_df = {d: rth[rth.index.date == d] for d in sorted({t.date() for t in rth.index})}
+    sigma = build_sigma(day_df)                      # sigma[(d,key)] uses only PRIOR days -> no leak
+    today_rth = day_df.get(today)
+    if today_rth is None or len(today_rth) == 0:
+        return 0, "no RTH bars yet today"
+    op = today_rth["open"].iloc[0]
+    prior = [d for d in sorted(day_df) if d < today]
+    pc = day_df[prior[-1]]["close"].iloc[-1] if prior else None
+    gap = (op / pc - 1.0) if pc else 0.0
+    dec = today_rth[((today_rth.index.minute == 0) | (today_rth.index.minute == 30))
+                    & (today_rth.index.time > RTH_OPEN) & (today_rth.index <= now)]
+    pos, since = 0, None
+    for ts, row in dec.iterrows():
+        s = sigma.get((today, f"{ts.hour:02d}:{ts.minute:02d}"))
+        if s is None:
+            continue
+        up, lo = op * (1 + s), op * (1 - s)
+        if gap < 0:
+            up += -gap * op
+        elif gap > 0:
+            lo -= gap * op
+        px = row["close"]
+        new = 1 if px > up else (-1 if px < lo else pos)
+        if new != pos:                                # position established/flipped at this bar
+            pos, since = new, f"{'LONG' if new > 0 else 'SHORT'} from {ts:%H:%M} @{px:.2f}"
+    info = (f"holding {since}, gap{gap*100:+.2f}%" if pos else
+            f"flat (band unbroken so far), gap{gap*100:+.2f}%")
+    return pos, info
 
 
 def main() -> int:
     now = datetime.now(ET)
-    _log(f"MES bot pass | DRY_RUN={DRY_RUN} | qty={QTY} | tightPctl={OR_TIGHT_PCTL}")
-    if now.time() >= EOD:
-        # end-of-day: flatten anything still open (same-day strategy)
-        if not DRY_RUN:
-            ib = brk.connect()
-            try:
-                if brk.position(ib) != 0:
-                    brk.flatten(ib); _log("EOD flatten sent.")
-            finally:
-                ib.disconnect()
-        else:
-            _log("EOD (DRY_RUN): would flatten any open position.")
-        return 0
-    ib = None
-    if not DRY_RUN:
-        ib = brk.connect()
+    _log(f"MES momentum pass | DRY_RUN={DRY_RUN} | qty={QTY}")
+    if now.weekday() >= 5:
+        _log("weekend -- idle."); return 0
+    ib = brk.connect()
     try:
-        decide_and_trade(ib)
+        df = brk.fetch_intraday(ib, duration="40 D", bar_size="5 mins")  # ~28 trading days > 14d sigma
+        if df is None:
+            _log("no history fetched -- abort pass."); return 0
+        target, info = compute_target(df, now.date(), now)
+        if now.time() >= EOD:                        # ride to close: flat by 15:55
+            target, info = 0, "EOD -> flat  [" + info + "]"
+        target *= QTY
+        cur = brk.position(ib)
+        _log(f"target={target:+d}  current={cur:+d}  | {info}")
+        if DRY_RUN:
+            _log("DRY_RUN -> no order placed.")
+        else:
+            desc = brk.reconcile_to(ib, target)
+            _log(f"ORDER {desc}" if desc else "already at target -- hold.")
     finally:
-        if ib is not None:
-            ib.disconnect()
+        ib.disconnect()
     return 0
 
 

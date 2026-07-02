@@ -64,11 +64,13 @@ def build_sigma(days: dict[object, pd.DataFrame]) -> dict:
     return sigma
 
 
-def backtest(df: pd.DataFrame, trail_k: float = 1.5, gap_adj: bool = True) -> pd.DataFrame:
+def backtest(df: pd.DataFrame, trail_k: float = 1.5, gap_adj: bool = True,
+             take_profit: float | None = None) -> pd.DataFrame:
     """Bar-by-bar. Decisions at :00/:30 vs the (optionally gap-adjusted) noise band; between decisions
     a dynamic trailing stop = trail_k * sigma_entry * open guards the position. trail_k huge = 'ride to
     opposite band/close' (the v1 behaviour). gap_adj: raise upper by an overnight gap-down / lower the
-    lower by a gap-up (the paper's asymmetry, damping counter-gap entries)."""
+    lower by a gap-up (the paper's asymmetry, damping counter-gap entries). take_profit (e.g. 0.005 =
+    +0.5%): lock the win when price reaches entry*(1+/-tp) -- the 'focus on short runs' idea."""
     rth_all = df[(df.index.time >= RTH_OPEN) & (df.index.time <= EOD)]
     days_l = sorted({t.date() for t in rth_all.index})
     day_df = {d: rth_all[rth_all.index.date == d] for d in days_l}
@@ -85,6 +87,14 @@ def backtest(df: pd.DataFrame, trail_k: float = 1.5, gap_adj: bool = True) -> pd
         gap = (op / pc - 1.0) if (pc and gap_adj) else 0.0
         pos, entry, extreme, s_ent, ret = 0, None, None, None, 0.0
         for ts, row in rth.iterrows():
+            # 0) take-profit check intra-bar (the 'lock a fixed % win / short runs' idea)
+            if pos != 0 and take_profit is not None:
+                if pos == 1 and row["high"] >= entry * (1 + take_profit):
+                    ret += (entry * (1 + take_profit) - entry) * POINT_VALUE - COST_SIDE_USD * 2
+                    pos, entry, extreme = 0, None, None
+                elif pos == -1 and row["low"] <= entry * (1 - take_profit):
+                    ret += (entry - entry * (1 - take_profit)) * POINT_VALUE - COST_SIDE_USD * 2
+                    pos, entry, extreme = 0, None, None
             # 1) trailing-stop check intra-bar (uses this bar's high/low)
             if pos != 0:
                 trail = trail_k * s_ent * op
@@ -158,6 +168,14 @@ def main() -> int:
         tr = backtest(df, **kw)
         results[name] = tr
         print(_line(name, _stats(tr)))
+    # TAKE-PROFIT test (the 'focus on short runs' idea): same strategy (gap-adjust, no trailing stop),
+    # only the exit differs -- ride to close vs lock a fixed % win. Isolates the cap-the-winner effect.
+    print("\nTake-profit test (gap-adjust, no stop; only the exit differs):")
+    print(_line("ride to close", _stats(backtest(df, trail_k=999, gap_adj=True, take_profit=None))))
+    for tp in (0.003, 0.005, 0.010):
+        print(_line(f"take-profit +{tp*100:.1f}%",
+                    _stats(backtest(df, trail_k=999, gap_adj=True, take_profit=tp))))
+
     # OOS split on the best variant by Sharpe
     best = max(results, key=lambda k: (_stats(results[k]) or {"sharpe": -9})["sharpe"])
     tr = results[best].copy()

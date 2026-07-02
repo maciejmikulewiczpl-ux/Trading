@@ -182,19 +182,40 @@ def cache_deep_history_dated(quarters: int = 8, bar_size: str = "30 mins",
     return 0
 
 
-# --- ORDER side (Phase 3+; used by run_mes_bot.py) ---
-def market_with_trailing(ib, action: str, qty: int, trail_points: float):
-    """Submit a market entry + an attached native IBKR trailing stop (trailStopPrice by points).
-    action = 'BUY'/'SELL'. Returns (parent_trade, stop_trade). UNTESTED until Gateway is live."""
-    from ib_async import MarketOrder, Order
-    c = mes_contract(ib)
-    parent = MarketOrder(action, qty, transmit=False)
-    parent_trade = ib.placeOrder(c, parent)
-    stop_action = "SELL" if action == "BUY" else "BUY"
-    trail = Order(orderType="TRAIL", action=stop_action, totalQuantity=qty,
-                  auxPrice=trail_points, parentId=parent.orderId, transmit=True)
-    stop_trade = ib.placeOrder(c, trail)
-    return parent_trade, stop_trade
+# --- ORDER side (used by run_mes_bot.py) ---
+def _front_month(today: date | None = None, roll_buffer: int = 8) -> str:
+    """Nearest quarterly month (YYYYMM) whose 3rd-Fri expiry is > today+roll_buffer days (rolls the
+    front ~a week before expiry, matching MES liquidity)."""
+    today = today or datetime.now(ET).date()
+    y, m = today.year, today.month
+    for _ in range(12):
+        if m in (3, 6, 9, 12) and (_third_friday(y, m) - today).days > roll_buffer:
+            return f"{y}{m:02d}"
+        m += 1
+        if m > 12:
+            m, y = 1, y + 1
+    return f"{y}{m:02d}"
+
+
+def mes_front_contract(ib):
+    """Current front-month DATED MES future -- for ORDERS (you cannot trade a ContFuture)."""
+    from ib_async import Future
+    c = Future(symbol="MES", lastTradeDateOrContractMonth=_front_month(), exchange="CME", currency="USD")
+    ib.qualifyContracts(c)
+    return c
+
+
+def order_market(ib, action: str, qty: int):
+    """Market order on the front MES contract. action='BUY'/'SELL'. Returns the Trade. Fields set
+    explicitly to avoid TWS order-preset rejection (err 10349): DAY tif, allow extended hours, and
+    clear the legacy eTradeOnly/firmQuoteOnly flags that some TWS builds reject."""
+    from ib_async import MarketOrder
+    o = MarketOrder(action, qty)
+    o.tif = "DAY"
+    o.outsideRth = True
+    o.eTradeOnly = False
+    o.firmQuoteOnly = False
+    return ib.placeOrder(mes_front_contract(ib), o)
 
 
 def position(ib) -> int:
@@ -205,14 +226,21 @@ def position(ib) -> int:
     return 0
 
 
-def flatten(ib):
-    """Market-close any open MES position (kill switch)."""
-    from ib_async import MarketOrder
-    pos = position(ib)
-    if pos == 0:
+def reconcile_to(ib, target: int) -> str | None:
+    """Place a market order to move the current MES position to `target` (-1/0/+1...). Returns a
+    description of the order sent, or None if already there. This is how the momentum bot enters,
+    flips, and exits -- idempotent, so a missed pass self-corrects on the next one."""
+    cur = position(ib)
+    delta = target - cur
+    if delta == 0:
         return None
-    c = mes_contract(ib)
-    return ib.placeOrder(c, MarketOrder("SELL" if pos > 0 else "BUY", abs(pos)))
+    order_market(ib, "BUY" if delta > 0 else "SELL", abs(delta))
+    return f"{'BUY' if delta > 0 else 'SELL'} {abs(delta)} (pos {cur} -> {target})"
+
+
+def flatten(ib):
+    """Market-close any open MES position (kill switch / EOD)."""
+    return reconcile_to(ib, 0)
 
 
 def main(argv) -> int:
