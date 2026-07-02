@@ -7,12 +7,16 @@ bootstrap CI (when n_days >= 15). Then print the pre-registered verdict line per
 Winners (pre-registered, immutable):
   W1 = ret_945_close >= +5%   W2 = ret_1d >= +10%   W3 = ret_3d >= +20%
 Success bar (v2, 2026-06-30, DeepSeek/ChatGPT review #4a): a signal "works" iff EITHER
-  (a) W1 hit-rate >= 2x the random base rate, p < 0.05   [reliability path], OR
+  (a) W1 hit-rate >= 2x the random base rate AND the day-resampled bootstrap lift-CI lower
+      bound > 1.0                                         [reliability path], OR
   (b) EXPECTANCY edge on the traded horizon (ret_3d mean) beats random by a bootstrap-CI
       lower bound > 0                                     [lumpy-moonshot path],
   with n_days >= 30. The (b) path exists because a signal can have a mediocre hit-rate but
   a great average return driven by fat right-tail winners (the whole lottery premise) — a
   hit-rate-only bar would WRONGLY REJECT it.
+  NOTE (Fable review #3, 2026-07-01): path (a) uses the day-CLUSTERED bootstrap CI, NOT the
+  plain binomial p (which assumes independent name-days -- invalid when hype names co-move and
+  overstates significance). The binomial p is still printed for reference, tagged "(naive)".
 
 Run:
     .venv/Scripts/python.exe experiments/lottery/analyze.py
@@ -182,6 +186,64 @@ def bootstrap_lift_ci(days: list[dict], select, field: str, thr: float,
     return lo, hi
 
 
+def _day_top3(rec) -> list[dict]:
+    return sorted([p for p in rec["picks"] if p.get("combined_score") is not None],
+                  key=lambda x: -x["combined_score"])[:3]
+
+
+def bootstrap_top3_lift_ci(days, field, thr, base_rate, n_boot: int = 2000) -> tuple:
+    """Day-resampled 95% CI on the combined-score TOP-3 basket's hit-rate lift (each drawn day
+    contributes its OWN top-3). Clustering-aware verdict for the bot's real basket, which has no
+    per-pick select predicate. Mirrors bootstrap_lift_ci at the day/top-3 level (Fable #3)."""
+    import random
+    rng = random.Random(20260701)
+    per_day = [hit_stats(_day_top3(rec), field, thr) for rec in days]
+    n = len(per_day)
+    if n == 0 or base_rate <= 0:
+        return float("nan"), float("nan")
+    lifts = []
+    for _ in range(n_boot):
+        w = s = 0
+        for _ in range(n):
+            ww, ss = per_day[rng.randrange(n)]
+            w += ww
+            s += ss
+        if s == 0:
+            continue
+        lifts.append((w / s) / base_rate)
+    if not lifts:
+        return float("nan"), float("nan")
+    lifts.sort()
+    return lifts[int(0.025 * len(lifts))], lifts[int(0.975 * len(lifts))]
+
+
+def bootstrap_top3_edge_ci(days, field, base_mean, n_boot: int = 2000) -> tuple:
+    """Day-resampled 95% CI on the top-3 basket's EXPECTANCY edge (mean return - base_mean)."""
+    import random
+    rng = random.Random(20260701)
+    per_day = []
+    for rec in days:
+        sel = [v for v in (p.get(field) for p in _day_top3(rec)) if v is not None]
+        per_day.append((sum(sel), len(sel)))
+    n = len(per_day)
+    if n == 0 or base_mean != base_mean:
+        return float("nan"), float("nan")
+    edges = []
+    for _ in range(n_boot):
+        tot = cnt = 0
+        for _ in range(n):
+            s, c = per_day[rng.randrange(n)]
+            tot += s
+            cnt += c
+        if cnt == 0:
+            continue
+        edges.append((tot / cnt) - base_mean)
+    if not edges:
+        return float("nan"), float("nan")
+    edges.sort()
+    return edges[int(0.025 * len(edges))], edges[int(0.975 * len(edges))]
+
+
 def analyze(picks_dir: Path) -> int:
     days = load_days(picks_dir)
     n_days = len(days)
@@ -191,8 +253,8 @@ def analyze(picks_dir: Path) -> int:
 
     print(f"=== lottery forward test: {n_days} logged day(s) ===")
     print("Winners: W1 ret_945_close>=+5%  W2 ret_1d>=+10%  W3 ret_3d>=+20%")
-    print(f"Bar v2: PASS iff (hit-rate >= {SUCCESS_LIFT:.0f}x random, p<0.05) OR "
-          f"(ret_3d expectancy edge CI>0), n_days>={SUCCESS_NDAYS}.")
+    print(f"Bar v2: PASS iff (hit-rate >= {SUCCESS_LIFT:.0f}x random AND day-clustered lift-CI lo>1) "
+          f"OR (ret_3d expectancy edge CI>0), n_days>={SUCCESS_NDAYS}.  [binomial p shown but NOT used]")
     print("  expectancy path catches lumpy signals: mediocre hit-rate but fat-tail avg return.\n")
 
     # gather picks by basket and by signal-flag (top_k_of)
@@ -304,9 +366,9 @@ def analyze(picks_dir: Path) -> int:
               f"({n_rand_vol} random picks carry realized_vol). Compares each signal to random "
               f"names of the SAME vol.\n")
 
-    def report(name: str, picks: list[dict], select=None):
+    def report(name: str, picks: list[dict], select=None, top3=False):
         print(f"  [{name}]")
-        w1_pass = False   # path (a): hit-rate reliability
+        w1_pass = False   # path (a): hit-rate reliability (day-CLUSTERED bootstrap, not naive binomial)
         for key, field, thr in WINDEFS:
             w, s = hit_stats(picks, field, thr)
             if s == 0:
@@ -315,16 +377,25 @@ def analyze(picks_dir: Path) -> int:
             rate = w / s
             br = base.get(key, float("nan"))
             lift = (rate / br) if (br and br == br and br > 0) else float("nan")
+            # The binomial p assumes INDEPENDENT name-days, but hype names co-move (one meme day =
+            # several correlated W1 hits), so it OVERSTATES significance. It is shown for reference
+            # only -- the PASS decision now uses the day-resampled bootstrap lift CI, which is
+            # clustering-aware (Fable review #3, 2026-07-01).
             p = _binom_p(w, s, br) if (br == br and br > 0) else float("nan")
+            ci_lo = ci_hi = float("nan")
             ci_txt = ""
-            if n_days >= 15 and select is not None:
-                lo, hi = bootstrap_lift_ci(days, select, field, thr, br)
-                if lo == lo:
-                    ci_txt = f"  lift95%CI[{lo:.2f},{hi:.2f}]"
+            if n_days >= 15 and (select is not None or top3):
+                ci_lo, ci_hi = (bootstrap_top3_lift_ci(days, field, thr, br) if top3
+                                else bootstrap_lift_ci(days, select, field, thr, br))
+                if ci_lo == ci_lo:
+                    ci_txt = f"  lift95%CI[{ci_lo:.2f},{ci_hi:.2f}]"
             lift_s = f"{lift:.2f}x" if lift == lift else "n/a"
-            p_s = f"p={p:.3f}" if p == p else "p=n/a"
+            p_s = f"p~{p:.3f}(naive)" if p == p else "p=n/a"
             if key == "W1" and s > 0 and lift == lift:
-                w1_pass = (lift >= SUCCESS_LIFT and p < 0.05)
+                # clustering-aware pass: the day-resampled lift-CI lower bound must clear 1.0 (beats
+                # random once day-level correlation is accounted for) AND the point lift must meet the
+                # 2x effect-size bar. Needs n_days>=15 for the CI to exist.
+                w1_pass = (lift >= SUCCESS_LIFT) and (ci_lo == ci_lo and ci_lo > 1.0)
             print(f"    {key}: {w}/{s} = {rate*100:5.1f}%  lift {lift_s}  {p_s}{ci_txt}")
 
         # --- EXPECTANCY block: mean return + profit factor per horizon (path b) ---
@@ -338,8 +409,9 @@ def analyze(picks_dir: Path) -> int:
             pf_s = "inf" if pf == float("inf") else (f"{pf:.2f}" if pf == pf else "n/a")
             ci_txt = ""
             edge_lo = float("nan")
-            if n_days >= 15 and select is not None and bm == bm:
-                edge_lo, edge_hi = bootstrap_edge_ci(days, select, field, bm)
+            if n_days >= 15 and (select is not None or top3) and bm == bm:
+                edge_lo, edge_hi = (bootstrap_top3_edge_ci(days, field, bm) if top3
+                                    else bootstrap_edge_ci(days, select, field, bm))
                 if edge_lo == edge_lo:
                     ci_txt = f"  edge95%CI[{edge_lo:+.2f},{edge_hi:+.2f}]pp"
             edge_s = f"{edge:+.2f}pp" if edge == edge else "n/a"
@@ -364,7 +436,7 @@ def analyze(picks_dir: Path) -> int:
                       f"{w1b*100:.0f}% = lift {vlift_s}  |  ret_3d edge {vedge_s}")
 
         # --- combined verdict: pass on EITHER path, gated on n_days ---
-        if select is not None:
+        if select is not None or top3:
             ndays_ok = n_days >= SUCCESS_NDAYS
             if w1_pass or exp_pass:
                 paths = "+".join([p for p, ok in (("hit-rate", w1_pass), ("expectancy", exp_pass)) if ok])
@@ -388,8 +460,8 @@ def analyze(picks_dir: Path) -> int:
             report(b, by_basket[b], select=lambda p, _b=b: p.get("basket") == _b)
             print()
 
-    print("=== combined_score TOP-3 / day ===")
-    report("combined_top3", combined_top3)
+    print("=== combined_score TOP-3 / day (the bot's real basket) ===")
+    report("combined_top3", combined_top3, top3=True)
     print()
 
     if n_days < SUCCESS_NDAYS:

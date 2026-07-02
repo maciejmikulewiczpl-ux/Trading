@@ -13,6 +13,16 @@ Baskets (top-3/day):
                  min-signals gate from the drop-wsb_rank change).
   confluence   : rank by COUNT of signals in the top quintile (>=0.8 pct) -- "exceptional somewhere",
                  not "pretty good everywhere" (DeepSeek Alt A).
+  agreement    : rank by COUNT of distinct ATTENTION PLATFORMS (WSB / StockTwits / Google Trends)
+                 simultaneously in their top quintile (ChatGPT critique #3). This is the *targeted*
+                 version of "reward extremes": a single ignition spike on a mega-cap (USB/ABBV/ADI --
+                 our verified composition bug) can't light up 3 independent crowds. Tie-break by cs.
+  relsurprise  : rank by mean percentile of the OWN-BASELINE-RELATIVE signals only -- wsb_surge,
+                 gtrends_spike, pm_rvol (all ratios vs the name's own norm), dropping the LEVEL-rank
+                 signals (st_rank/wsb_rank) that perpetually favor always-popular mega-caps (ChatGPT
+                 critique #11: TSLA always trends; a biotick going 15->400 is the real signal).
+  two_stage    : gate by ignition>=2, THEN rank survivors by ATTENTION strength (DeepSeek #7) --
+                 tests whether social hype ADDS to the momentum base vs ignition_only alone.
   ignition_only: top-3 by the ignition signal alone -- the "is it just momentum?" baseline.
   NEG len4     : junk control = tickers of length 4 (should have NO edge).
   NEG revalpha : junk control = top-3 by reverse-alphabetical ticker (should have NO edge).
@@ -25,6 +35,7 @@ Run:
 """
 from __future__ import annotations
 
+import random
 import statistics as st
 import sys
 from pathlib import Path
@@ -36,6 +47,13 @@ from experiments.lottery.analyze import load_days, PICKS_DIR  # noqa: E402
 # (signal, transform): -1 = "lower is better" (negate), 'abs' = magnitude, 1 = as-is. Matches board.py.
 SCORING = [("wsb_surge", 1), ("wsb_rank", -1), ("st_rank", -1), ("pm_rvol", 1),
            ("gap_pct", "abs"), ("squeeze", 1), ("uoa_z", 1), ("ignition", 1)]
+# Distinct ATTENTION platforms for the agreement basket (one signal per independent crowd): WSB
+# mention-surge, StockTwits trending rank (lower=better), Google Trends spike ratio.
+ATTENTION = [("wsb_surge", 1), ("st_rank", -1), ("gtrends_spike", 1)]
+# Own-baseline-RELATIVE signals for relsurprise (ratios vs the name's own norm; excludes level ranks).
+RELSURPRISE = [("wsb_surge", 1), ("gtrends_spike", 1), ("pm_rvol", 1)]
+# Fable PnL #5: same as SCORING but gap SIGNED (down-gaps rank low) instead of abs-magnitude.
+SCORING_GAPSIGNED = [(n, (1 if n == "gap_pct" else tf)) for n, tf in SCORING]
 METRIC = "ret_945_close"
 
 
@@ -97,10 +115,43 @@ def _baskets_for_day(picks):
     # confluence: count of signals in the top quintile (>=0.8)
     conf = [(s, sum(1 for pct in v[2].values() if pct >= 0.8)) for s, v in sc_all.items()]
     b["confluence"] = [s for s, c in sorted(conf, key=lambda x: -x[1])[:3] if c > 0]
+    # agreement (#3): count of distinct ATTENTION platforms in their own top quintile. Each platform
+    # is scored cross-sectionally on its own signal; a mega-cap with one ignition spike scores 0 here.
+    sc_att = _scores(scored, ATTENTION)
+    cs_lookup = {p["symbol"]: p["combined_score"] for p in scored}
+    agree = [(s, sum(1 for pct in v[2].values() if pct >= 0.8), cs_lookup.get(s, 0.0))
+             for s, v in sc_att.items()]
+    # rank by agreement count desc, tie-break by combined_score desc; keep only names agreeing on >=2
+    b["agreement"] = [s for s, c, _ in sorted(agree, key=lambda x: (-x[1], -x[2])) if c >= 2][:3]
+    # relsurprise (#11): mean percentile of own-baseline-relative signals only, >=2 active
+    sc_rel = _scores(scored, RELSURPRISE)
+    rel = [(s, v[0]) for s, v in sc_rel.items() if v[0] is not None and v[1] >= 2]
+    b["relsurprise"] = [s for s, _ in sorted(rel, key=lambda x: -x[1])[:3]]
+    # two_stage (DeepSeek #7): gate by ignition>=2, then rank survivors by ATTENTION strength.
+    # Tests whether social hype ADDS to the momentum base (vs ignition_only = momentum alone).
+    ig_ok = [p for p in scored if (_sigval(p, "ignition", 1) or 0) >= 2]
+    sc_ts = _scores(ig_ok, ATTENTION)
+    ts = [(s, v[0]) for s, v in sc_ts.items() if v[0] is not None]
+    b["two_stage"] = [s for s, _ in sorted(ts, key=lambda x: -x[1])[:3]]
+    # gap_signed (Fable PnL #5): recompute combined_score with gap SIGNED (as-is) instead of abs, so a
+    # -16% gap-DOWN ranks low instead of high. Pure left-tail removal test (does dropping down-gappers
+    # from selection help?). Only changes names that carry a gap; the rest score identically.
+    sc_gs = _scores(scored, SCORING_GAPSIGNED)
+    gs = [(s, v[0]) for s, v in sc_gs.items() if v[0] is not None]
+    b["gap_signed"] = [s for s, _ in sorted(gs, key=lambda x: -x[1])[:3]]
     # ignition_only
     ig = [(p["symbol"], _sigval(p, "ignition", 1)) for p in scored]
     ig = [(s, v) for s, v in ig if v is not None]
     b["ignition_only"] = [s for s, _ in sorted(ig, key=lambda x: -x[1])[:3]]
+    # within-net controls (Fable #4): the RIGHT null is "does top-3 beat picking inside the candidate
+    # net?", not "beat the broad-universe random basket". randnet = seeded random-3 FROM the net;
+    # bottom3 = the 3 LOWEST combined_score names. If 'current' doesn't beat these, the score is dead
+    # weight within the net even if the net itself has lift.
+    net_syms = [p["symbol"] for p in scored]
+    if net_syms:
+        rng = random.Random(hash(tuple(sorted(net_syms))) & 0xFFFFFFFF)
+        b["randnet"] = rng.sample(net_syms, min(3, len(net_syms)))
+    b["bottom3"] = [p["symbol"] for p in sorted(scored, key=lambda x: x["combined_score"])[:3]]
     # negative controls
     b["NEG len4"] = [p["symbol"] for p in scored if len(p["symbol"]) == 4][:3]
     b["NEG revalpha"] = [p["symbol"] for p in sorted(scored, key=lambda x: x["symbol"], reverse=True)][:3]
@@ -130,7 +181,8 @@ def main():
                 for fld, _ in HORIZONS:
                     by[fld].setdefault(name, []).append(L.get(s, {}).get(fld))
 
-    order = ["current", "minsig3", "clean", "confluence", "ignition_only", "NEG len4", "NEG revalpha"]
+    order = ["current", "minsig3", "clean", "confluence", "agreement", "relsurprise",
+             "two_stage", "gap_signed", "ignition_only", "randnet", "bottom3", "NEG len4", "NEG revalpha"]
     # Tail-aware: SUM = equal-weight PnL proxy, best = fat right tail. The bot's realized PnL is
     # tail-driven and lives in the +1/+2 day move -> compare baskets by SUM/best across horizons.
     for fld, label in HORIZONS:
@@ -167,9 +219,11 @@ def main():
             print(f"    Q{q+1} (cs {csr:<11}) n={a[0]:>3} mean={a[1]:+.2f}% win={a[3]:.0f}%")
 
     print("\nRead: 'clean'/'minsig3' beating 'current' = the composition-bias fix helps. ignition_only")
-    print("~= current => it's largely a momentum ranker. NEG baskets should be ~0 (flat); if a NEG")
-    print("basket shows edge, the pipeline leaks false positives. Calibration should rise with cs.")
-    print("Directional, small n. Same-day metric (the bot's now-traded horizon).")
+    print("~= current => it's largely a momentum ranker. 'agreement'/'relsurprise' beating 'current'")
+    print("on SUM/best (esp. at 1d/3d, where the tail lives) = ChatGPT's cross-platform / own-baseline")
+    print("selection would earn MORE -> a ship candidate; if not, reject (profit bar, not a nicer stat).")
+    print("NEG baskets should be ~0 (flat); if a NEG basket shows edge, the pipeline leaks false")
+    print("positives. Calibration should rise with cs. Directional, small n.")
     return 0
 
 
