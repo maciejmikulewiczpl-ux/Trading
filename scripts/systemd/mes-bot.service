@@ -1,0 +1,19 @@
+[Unit]
+Description=MES futures paper bot (one pass: tight-OR-day ORB on IBKR paper account)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Short-lived: one evaluation pass (build OR, tight-OR gate, breakout entry + trailing stop, EOD
+# flatten). Fired every ~5 min during RTH by mes-bot.timer. Needs IB Gateway logged into the PAPER
+# account with the API enabled (a separate always-on process). run_mes_bot.py loads .env.futures.
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/trading
+ExecStart=/home/ubuntu/trading/scripts/launch_mes_bot.sh
+Restart=no
+KillSignal=SIGINT
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

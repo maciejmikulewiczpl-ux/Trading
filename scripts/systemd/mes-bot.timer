@@ -1,0 +1,12 @@
+[Unit]
+Description=Fire the MES paper bot every 5 min during US RTH (09:30-15:55 ET, weekdays)
+
+[Timer]
+# Every 5 minutes on the hour-grid for hours 09..15 ET, Mon-Fri. The bot self-guards: it stands down
+# before the 09:45 OR completes and flattens at >=15:55, so the coarse window is safe.
+OnCalendar=Mon..Fri *-*-* 09..15:00/5 America/New_York
+Persistent=false
+Unit=mes-bot.service
+
+[Install]
+WantedBy=timers.target
