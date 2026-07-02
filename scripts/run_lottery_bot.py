@@ -72,6 +72,13 @@ LEVERAGED_INVERSE_ETFS = frozenset({
 NOTIONAL = 2000.0          # $ per pick (matches news-edge ORB_NOTIONAL_PER_TRADE for a direct PnL comparison)
 TRAIL_PCT = 10.0           # native trailing stop % (INTRADAY protection only now)
 MAX_SPREAD_PCT = 3.0       # skip names whose bid/ask spread is wider than this (illiquid / heavy slippage)
+LIQUID_DOLLAR_VOL = 5_000_000.0  # prior-session CONSOLIDATED (SIP) $-volume above which a $2000 clip has
+                           # ~zero market impact -> BYPASS the spread guard. The free feed's single-venue
+                           # IEX NBBO is noisy and FALSE-REJECTS liquid names (2026-07-02: RDDT showed a
+                           # 4.7% IEX spread, OUST 14%, yet both trade $150M+/day -- the bot bought nothing
+                           # that day). SIP prior-day daily bars ARE readable on free tier (recent SIP
+                           # quotes are not), so SIP $-vol is the reliable market-impact measure. Names
+                           # with NO SIP daily bar (true microcaps, e.g. RGC) fall through to the spread guard.
 TOP_N = 3                  # top-3 by combined_score
 TIME_STOP_DAYS = 3         # close at T+3 trading-ish days if still open (the 10% trailing stop
                            # exits most winners before then). Same-day exit tested + REVERTED
@@ -155,6 +162,36 @@ def _latest_quotes(symbols: list[str]) -> dict[str, tuple]:
                 if q and q.bid_price and q.ask_price}
     except Exception as e:
         print(f"quote fetch failed: {e}")
+        return {}
+
+
+def _prev_dollar_volumes(symbols: list[str]) -> dict[str, float]:
+    """Prior-session CONSOLIDATED (SIP) dollar volume per symbol -- the real market-impact
+    proxy for the liquidity bypass. Free tier can't query recent SIP *quotes* but CAN read
+    prior-day SIP daily bars (>15 min old), so this is the reliable liquidity signal the
+    noisy single-venue IEX NBBO can't give. Names with no SIP daily bar (true microcaps)
+    are simply absent -> the caller keeps applying the spread guard to them."""
+    try:
+        from alpaca.data.historical import StockHistoricalDataClient
+        from alpaca.data.requests import StockBarsRequest
+        from alpaca.data.timeframe import TimeFrame
+        from alpaca.data.enums import DataFeed
+        dc = StockHistoricalDataClient(os.environ["ALPACA_API_KEY"],
+                                       os.environ["ALPACA_SECRET_KEY"])
+        bars = dc.get_stock_bars(StockBarsRequest(
+            symbol_or_symbols=symbols, timeframe=TimeFrame.Day, limit=2, feed=DataFeed.SIP))
+        data = getattr(bars, "data", {}) or {}
+        out: dict[str, float] = {}
+        for s in symbols:
+            sb = data.get(s) or []
+            if sb:
+                b = sb[-1]   # last COMPLETED session (SIP's 15-min delay excludes today's partial bar)
+                vwap = float(getattr(b, "vwap", 0) or getattr(b, "close", 0) or 0)
+                if vwap > 0:
+                    out[s] = float(b.volume) * vwap
+        return out
+    except Exception as e:
+        print(f"dollar-volume fetch failed: {e}")
         return {}
 
 
@@ -267,6 +304,7 @@ def run_entries(tc, dry_run: bool) -> int:
     pick_syms = [p["symbol"] for p in picks]
     prices = _latest_prices(pick_syms)
     quotes = _latest_quotes(pick_syms)   # bid/ask at trade time for slippage/capacity analysis
+    dvols = _prev_dollar_volumes(pick_syms)   # prior-day SIP $-vol: liquidity bypass for IEX-noise spreads
     placed = 0
     for p in picks:
         sym = p["symbol"]
@@ -286,15 +324,24 @@ def run_entries(tc, dry_run: bool) -> int:
                   f"(whole-share constraint).")
             continue
         # LIQUIDITY guard (market-impact): skip names with an absurdly wide quote spread =
-        # untradeable / heavy slippage. Spread is the reliable signal on the free IEX feed
-        # (IEX volume understates true ADV, so an ADV-participation check would over-reject).
+        # untradeable / heavy slippage. The free feed's IEX NBBO is single-venue and noisy, so
+        # a wide reading alone false-rejects genuinely liquid names -- prior-day SIP dollar
+        # volume (LIQUID_DOLLAR_VOL) overrides the spread for names that clearly can absorb the clip.
         bid, ask = quotes.get(sym, (None, None))
         if bid and ask and ask > 0:
             spread_pct = (ask - bid) / ((ask + bid) / 2.0) * 100
             if spread_pct > MAX_SPREAD_PCT:
-                print(f"  {sym}: spread {spread_pct:.1f}% > {MAX_SPREAD_PCT:.0f}% -- illiquid, "
-                      f"skip (market-impact guard).")
-                continue
+                dv = dvols.get(sym, 0.0)
+                if dv >= LIQUID_DOLLAR_VOL:
+                    # liquid name: a $2000 clip is a rounding error vs $-vol, so the wide IEX
+                    # quote is single-venue noise, not real illiquidity -> keep it.
+                    print(f"  {sym}: IEX spread {spread_pct:.1f}% but prior SIP $-vol "
+                          f"${dv/1e6:.0f}M >= ${LIQUID_DOLLAR_VOL/1e6:.0f}M -- IEX noise, KEEP.")
+                else:
+                    print(f"  {sym}: spread {spread_pct:.1f}% > {MAX_SPREAD_PCT:.0f}% and $-vol "
+                          f"${dv/1e6:.1f}M < ${LIQUID_DOLLAR_VOL/1e6:.0f}M -- illiquid, "
+                          f"skip (market-impact guard).")
+                    continue
         if dry_run:
             print(f"  [DRY-RUN] WOULD BUY {sym} {qty} sh @ ~${px:.2f} (~${qty*px:.0f}) "
                   f"+ {TRAIL_PCT:.0f}% GTC trailing stop on fill")
