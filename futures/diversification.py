@@ -107,6 +107,18 @@ def main() -> int:
         print(f"    => SAME return as SPY with {'LESS' if lev_lo['maxDD']>sp['maxDD'] else 'MORE'} "
               f"drawdown ({abs(lev_lo['maxDD']/sp['maxDD']):.0%} of SPY's DD). THAT is the diversification win.")
 
+    # CURRENT target: what the long-only TSMOM sleeve would hold right now (actionable)
+    tgt = (sig.clip(lower=0) * w).iloc[-1].dropna()
+    tgt = tgt[tgt > 0]
+    tgt = (tgt / tgt.sum()).sort_values(ascending=False)
+    asof = sig.index[-1].date()
+    print(f"\n  CURRENT long-only TSMOM target (as of {asof}) -- the sleeve you'd hold now:")
+    if len(tgt):
+        for t, wt in tgt.items():
+            print(f"    LONG {t+' '+BASKET.get(t,''):<14} {wt*100:>4.0f}%")
+    else:
+        print("    (all sleeves in downtrend -> flat / cash)")
+
     print("\nRead: diversification helps iff the COMBINED Sharpe > the best single sleeve AND sleeve corr")
     print("is low. The real 'more profit' argument = a high-Sharpe diversified book can be LEVERED to a")
     print("target return with SMALLER drawdown than the single asset. ETF proxies (unlevered), frictionless,")
