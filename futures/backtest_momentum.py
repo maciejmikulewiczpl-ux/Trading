@@ -64,7 +64,8 @@ def build_sigma(days: dict[object, pd.DataFrame]) -> dict:
 
 
 def backtest(df: pd.DataFrame, trail_k: float = 1.5, gap_adj: bool = True,
-             take_profit: float | None = None, decide_minutes: tuple = (0, 30)) -> pd.DataFrame:
+             take_profit: float | None = None, decide_minutes: tuple = (0, 30),
+             exit_inside: bool = False) -> pd.DataFrame:
     """Bar-by-bar. Decisions at :00/:30 vs the (optionally gap-adjusted) noise band; between decisions
     a dynamic trailing stop = trail_k * sigma_entry * open guards the position. trail_k huge = 'ride to
     opposite band/close' (the v1 behaviour). gap_adj: raise upper by an overnight gap-down / lower the
@@ -117,7 +118,10 @@ def backtest(df: pd.DataFrame, trail_k: float = 1.5, gap_adj: bool = True,
                     elif gap > 0:
                         lo -= gap * op         # overnight gap-up -> harder to go short
                     px = row["close"]
-                    tgt = 1 if px > up else (-1 if px < lo else pos)
+                    # inside the band: hold (default) or EXIT-TO-FLAT + re-enter on a fresh breakout
+                    # (the "exit when momentum fades, re-enter on new momentum" idea)
+                    inside = 0 if exit_inside else pos
+                    tgt = 1 if px > up else (-1 if px < lo else inside)
                     if tgt != pos:
                         if pos != 0:
                             ret += (px - entry) * pos * POINT_VALUE - COST_SIDE_USD * 2
