@@ -41,8 +41,28 @@ def _picks_for(days) -> dict:
     return out
 
 
-def _run(trades, bars) -> dict | None:
-    """Run the bot's exit (10%/T+3) on a selector's picks; entry reconstructed at ~09:45."""
+def sim_fixed(frm, entry, stop_pct, max_days):
+    """A FIXED (non-trailing) stop at entry*(1-stop_pct/100), else exit at the T+max_days close."""
+    stop = entry * (1 - stop_pct / 100)
+    path = frm[:max_days + 1]
+    for i, (_d, _o, _h, lo, c) in enumerate(path):
+        if i > 0 and lo <= stop:
+            return stop / entry - 1.0
+        if i >= max_days:
+            return c / entry - 1.0
+    return path[-1][4] / entry - 1.0
+
+
+# exit policies: fn(frm, entry) -> realized fraction
+EXITS = {
+    "trail 10% (bot)": lambda frm, e: sim_one(frm, e, CUR_TRAIL, CUR_DAYS)[0],
+    "no stop (hold T+3)": lambda frm, e: sim_one(frm, e, 999, CUR_DAYS)[0],
+    "fixed -15% (T+3)": lambda frm, e: sim_fixed(frm, e, 15, CUR_DAYS),
+}
+
+
+def _run(trades, bars, exitfn) -> dict | None:
+    """Run a given exit policy on a selector's picks; entry reconstructed at ~09:45."""
     import statistics
     rs = []
     for sym, edate_s, r945 in trades:
@@ -55,8 +75,7 @@ def _run(trades, bars) -> dict | None:
             continue
         close0 = frm[0][4]                                   # entry-day close
         entry = close0 / (1 + r945 / 100) if r945 is not None else frm[0][1]   # 09:45 px, else day open
-        r, _i, _why = sim_one(frm, entry, CUR_TRAIL, CUR_DAYS)
-        rs.append(r * 100)
+        rs.append(exitfn(frm, entry) * 100)
     if not rs:
         return None
     tot = sum(rs)
@@ -71,22 +90,26 @@ def main() -> int:
     picks = _picks_for(days)
     allsyms = [t[0] for sel in SELECTORS for t in picks[sel]]
     bars = _daily_bars(allsyms)
-    print("=" * 74)
-    print(f"SELECTION vs EXECUTION | bot's exit held constant ({CUR_TRAIL:.0f}% trail, T+{CUR_DAYS}) | "
-          f"${SIZE:.0f}/name")
-    print(f"{len(days)} logged days | daily-res approximation, thin micro-cap bars, SMALL SAMPLE")
-    print("=" * 74)
-    print(f"  {'selector':>14}{'n':>5}{'avg %':>8}{'win %':>7}{'total %':>9}{'total $':>10}")
+    print("=" * 78)
+    print(f"SELECTION x EXIT matrix | total $ at ${SIZE:.0f}/name | {len(days)} logged days")
+    print("daily-res stop approximation, thin micro-cap bars, SMALL SAMPLE (relative ranking = signal)")
+    print("=" * 78)
+    exits = list(EXITS)
+    print(f"  {'selector':>14}" + "".join(f"{e:>20}" for e in exits))
+    best = None
     for sel in SELECTORS:
-        st = _run(picks[sel], bars)
-        if st is None:
-            print(f"  {sel:>14}    (no data)"); continue
-        tag = "  <- live bot" if sel == "current" else ""
-        print(f"  {sel:>14}{st['n']:>5}{st['avg_%']:>8}{st['win_%']:>7}{st['total_%']:>9}"
-              f"{st['total_$']:>+10}{tag}")
-    print("\nRead: same execution for all -> the gap is pure SELECTION. If bottom3/prepeak beat 'current'")
-    print("in total $, better name-picking + the bot's existing exit would have made more. 'current'")
-    print("should ~ track the live account (sanity). Small sample -> the 30-day verdict still rules.")
+        cells = {e: _run(picks[sel], bars, EXITS[e]) for e in exits}
+        line = f"  {sel:>14}"
+        for e in exits:
+            st = cells[e]
+            line += f"{('$'+format(st['total_$'],'+')+' /'+str(st['win_%'])+'%w') if st else '(no data)':>20}"
+            if st and (best is None or st["total_$"] > best[2]):
+                best = (sel, e, st["total_$"])
+        print(line + ("  <- live bot" if sel == "current" else ""))
+    print(f"\n  BEST cell: {best[0]} + [{best[1]}] = ${best[2]:+}")
+    print("\nRead: down a column = which SELECTION wins for that exit. Across a row = which EXIT suits that")
+    print("selection. 'no stop' lets the tail run but eats full drawdowns; 'fixed -15%' is looser than the")
+    print("10% trail. Idealized (~2x live) -> trust the RANKING, not the $. 30-day verdict still rules.")
     return 0
 
 
