@@ -19,7 +19,9 @@
       "reddit_rank": 12,
       "earnings_day": true,
       "theme": "ev-deliveries",
-      "control": false
+      "control": false,
+      "ret_945_close": -4.893,
+      "gap_pct": 0.728
     },
     {
       "symbol": "RIVN",
@@ -39,7 +41,8 @@
       "earnings_day": true,
       "theme": "ev-deliveries",
       "control": false,
-      "gap_pct": 5.91
+      "gap_pct": 5.91,
+      "ret_945_close": 0.054
     },
     {
       "symbol": "HOOD",
@@ -58,7 +61,8 @@
       "earnings_day": false,
       "theme": "fintech-upgrade",
       "control": false,
-      "gap_pct": 8.2
+      "gap_pct": 8.2,
+      "ret_945_close": -4.809
     },
     {
       "symbol": "OUST",
@@ -77,7 +81,8 @@
       "earnings_day": false,
       "theme": "dilution",
       "control": false,
-      "gap_pct": -7.99
+      "gap_pct": -7.99,
+      "ret_945_close": -8.523
     },
     {
       "symbol": "LCID",
@@ -96,7 +101,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "ev-deliveries",
-      "control": false
+      "control": false,
+      "ret_945_close": -6.143,
+      "gap_pct": 3.391
     },
     {
       "symbol": "LNN",
@@ -115,7 +122,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "ag-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.272,
+      "gap_pct": 7.646
     },
     {
       "symbol": "MU",
@@ -133,7 +142,9 @@
       "reddit_rank": 1,
       "earnings_day": false,
       "theme": "memory-semis",
-      "control": false
+      "control": false,
+      "ret_945_close": -7.472,
+      "gap_pct": 0.734
     },
     {
       "symbol": "META",
@@ -151,7 +162,9 @@
       "reddit_rank": 2,
       "earnings_day": false,
       "theme": "ai-infra",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.938,
+      "gap_pct": -0.927
     },
     {
       "symbol": "NBIS",
@@ -169,7 +182,9 @@
       "reddit_rank": 6,
       "earnings_day": false,
       "theme": "neocloud",
-      "control": false
+      "control": false,
+      "ret_945_close": -6.818,
+      "gap_pct": 1.752
     },
     {
       "symbol": "CEPT",
@@ -185,7 +200,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -12.13
+      "gap_pct": -12.13,
+      "ret_945_close": null,
+      "outcome_error": "'CEPT'"
     },
     {
       "symbol": "OWL",
@@ -201,7 +218,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 8.57
+      "gap_pct": 8.57,
+      "ret_945_close": -4.875
     },
     {
       "symbol": "RGC",
@@ -217,7 +235,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -6.18
+      "gap_pct": -6.18,
+      "ret_945_close": -14.653
     },
     {
       "symbol": "AG",
@@ -233,7 +252,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.43
+      "gap_pct": 5.43,
+      "ret_945_close": -1.658
     },
     {
       "symbol": "GLXY",
@@ -249,7 +269,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.28
+      "gap_pct": 5.28,
+      "ret_945_close": -9.864
     },
     {
       "symbol": "IBIT",
@@ -265,7 +286,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.15
+      "gap_pct": 3.15,
+      "ret_945_close": -0.684
     }
-  ]
+  ],
+  "outcomes_at": "2026-07-02T16:05:09-04:00"
 }
