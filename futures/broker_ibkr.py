@@ -17,9 +17,13 @@ from __future__ import annotations
 
 import os
 import sys
+from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
+
+ET = ZoneInfo("America/New_York")
 
 CACHE = Path(__file__).resolve().parent / "data" / "mes_intraday.parquet"
 # Paper defaults: IB Gateway=4002, TWS=7497 (live would be 4001/7496). clientId is arbitrary but unique.
@@ -46,16 +50,16 @@ def connect(host: str = HOST, port: int = PORT, client_id: int = CLIENT_ID):
     return ib
 
 
-def fetch_intraday(ib, duration: str = "2 Y", bar_size: str = "5 mins",
-                   rth: bool = False) -> pd.DataFrame:
-    """Historical MES bars -> OHLCV DataFrame, tz America/New_York. duration e.g. '2 Y'/'6 M';
-    bar_size e.g. '5 mins'/'1 min'. IBKR paces long requests; may need a CME market-data subscription
-    for full depth (flagged to the user). rth=False keeps the overnight session too."""
+def fetch_intraday(ib, duration: str = "30 D", bar_size: str = "5 mins",
+                   rth: bool = False, end="") -> pd.DataFrame | None:
+    """One historical request -> OHLCV DataFrame (tz America/New_York), or None if empty. IBKR caps
+    intraday requests (~1 month for 5-min bars) so keep `duration` small and walk `end` backward for
+    depth (see cache_deep_history). `end` = "" (now) or a tz-aware datetime. rth=False keeps overnight."""
     c = mes_contract(ib)
-    bars = ib.reqHistoricalData(c, endDateTime="", durationStr=duration, barSizeSetting=bar_size,
+    bars = ib.reqHistoricalData(c, endDateTime=end, durationStr=duration, barSizeSetting=bar_size,
                                 whatToShow="TRADES", useRTH=rth, formatDate=1)
     if not bars:
-        raise RuntimeError("no bars returned (check market-data permissions / Gateway)")
+        return None
     from ib_async import util
     df = util.df(bars).rename(columns={"date": "dt"})
     df = df.set_index(pd.DatetimeIndex(pd.to_datetime(df["dt"])))
@@ -65,17 +69,106 @@ def fetch_intraday(ib, duration: str = "2 Y", bar_size: str = "5 mins",
     return df[["open", "high", "low", "close", "volume"]].sort_index()
 
 
-def cache_deep_history(duration: str = "2 Y", bar_size: str = "5 mins") -> int:
-    """Fetch deep intraday history and write the parquet cache backtest_orb reads via
-    data.load_mes_intraday_cache(). Prints the coverage it landed."""
+def cache_deep_history(months: int = 24, bar_size: str = "5 mins", chunk: str = "30 D",
+                       pace_s: float = 11.0) -> int:
+    """Deep intraday history via CHUNKED walk-back: request `chunk` at a time, stepping endDateTime
+    to the earliest bar seen, ~`months` chunks, respecting IBKR pacing. Stitches + dedupes and writes
+    the parquet cache that data.load_mes_intraday_cache() / backtest_orb read."""
+    import time as _t
     ib = connect()
+    frames: list[pd.DataFrame] = []
+    end = ""
     try:
-        df = fetch_intraday(ib, duration=duration, bar_size=bar_size)
+        for i in range(months):
+            df = fetch_intraday(ib, duration=chunk, bar_size=bar_size, end=end)
+            if df is None or df.empty:
+                print(f"  chunk {i+1}: no more data -- stopping."); break
+            frames.append(df)
+            earliest = df.index.min()
+            print(f"  chunk {i+1}: {len(df)} bars back to {earliest}")
+            end = earliest.tz_convert("UTC").to_pydatetime()   # ib_async formats tz-aware datetimes
+            if i < months - 1:
+                _t.sleep(pace_s)
     finally:
         ib.disconnect()
+    if not frames:
+        raise RuntimeError("no bars returned at all (check Gateway / market-data permissions)")
+    full = pd.concat(frames)
+    full = full[~full.index.duplicated(keep="last")].sort_index()
     CACHE.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(CACHE)
-    print(f"cached {len(df)} bars ({bar_size}) {df.index.min()} -> {df.index.max()} to {CACHE}")
+    full.to_parquet(CACHE)
+    print(f"cached {len(full)} bars ({bar_size}) {full.index.min()} -> {full.index.max()} to {CACHE}")
+    return 0
+
+
+def _third_friday(year: int, month: int) -> date:
+    """MES quarterly expiry = 3rd Friday of the contract month."""
+    d = date(year, month, 1)
+    first_fri = 1 + (4 - d.weekday()) % 7
+    return date(year, month, first_fri + 14)
+
+
+def _quarterly_months(n: int, today: date | None = None) -> list[str]:
+    """The last n MES quarterly contract months (YYYYMM, newest first). MES expires H/M/U/Z."""
+    today = today or datetime.now(ET).date()
+    qm = ((today.month - 1) // 3 + 1) * 3          # next quarter month in {3,6,9,12}
+    cy, cm, out = (today.year + (1 if qm > 12 else 0)), (qm if qm <= 12 else 12), []
+    for _ in range(n):
+        out.append(f"{cy}{cm:02d}")
+        cm -= 3
+        if cm < 1:
+            cm += 12
+            cy -= 1
+    return out
+
+
+def cache_deep_history_dated(quarters: int = 8, bar_size: str = "30 mins",
+                             chunk: str = "3 M", pace_s: float = 11.0) -> int:
+    """Deep intraday history by STITCHING dated quarterly contracts (ContFuture blocks endDateTime).
+    Each contract contributes its front-month period; newest wins on overlap. No roll back-adjustment
+    (our candidates are intraday-only, so each day is self-contained). Writes the parquet cache."""
+    import time as _t
+    from ib_async import Future, util
+    ib = connect()
+    frames: list[pd.DataFrame] = []
+    earliest = None
+    now = datetime.now(ET)
+    try:
+        for i, ym in enumerate(_quarterly_months(quarters)):
+            c = Future(symbol="MES", lastTradeDateOrContractMonth=ym, exchange="CME",
+                       currency="USD", includeExpired=True)
+            if not ib.qualifyContracts(c):
+                print(f"  {ym}: could not qualify -- skip."); continue
+            exp = datetime.combine(_third_friday(int(ym[:4]), int(ym[4:6])),
+                                   datetime.min.time()).replace(hour=16, tzinfo=ET)
+            end = min(exp, now)
+            bars = ib.reqHistoricalData(c, endDateTime=end, durationStr=chunk, barSizeSetting=bar_size,
+                                        whatToShow="TRADES", useRTH=False, formatDate=1, timeout=90)
+            if not bars:
+                print(f"  {c.localSymbol}: no bars."); continue
+            df = util.df(bars).rename(columns={"date": "dt"})
+            df = df.set_index(pd.DatetimeIndex(pd.to_datetime(df["dt"])))
+            df.index = (df.index.tz_localize("UTC") if df.index.tz is None else df.index).tz_convert(ET)
+            df = df[["open", "high", "low", "close", "volume"]].sort_index()
+            if earliest is not None:
+                df = df[df.index < earliest]           # newest contract wins on overlap
+            if df.empty:
+                continue
+            frames.append(df)
+            earliest = df.index.min()
+            print(f"  {c.localSymbol}: {len(df)} bars back to {earliest.date()}")
+            if i < quarters - 1:
+                _t.sleep(pace_s)
+    finally:
+        ib.disconnect()
+    if not frames:
+        raise RuntimeError("no bars from any dated contract")
+    full = pd.concat(frames)
+    full = full[~full.index.duplicated(keep="first")].sort_index()
+    CACHE.parent.mkdir(parents=True, exist_ok=True)
+    full.to_parquet(CACHE)
+    print(f"cached {len(full)} bars ({bar_size}) {full.index.min().date()} -> "
+          f"{full.index.max().date()} to {CACHE}")
     return 0
 
 
@@ -115,8 +208,12 @@ def flatten(ib):
 def main(argv) -> int:
     cmd = argv[1] if len(argv) > 1 else "ping"
     if cmd == "fetch":
-        dur = argv[2] if len(argv) > 2 else "2 Y"
-        return cache_deep_history(duration=dur)
+        months = int(argv[2]) if len(argv) > 2 else 24
+        return cache_deep_history(months=months)
+    if cmd == "deep":   # dated-contract stitched deep history (recommended)
+        quarters = int(argv[2]) if len(argv) > 2 else 8
+        bar = argv[3] if len(argv) > 3 else "30 mins"
+        return cache_deep_history_dated(quarters=quarters, bar_size=bar)
     if cmd == "ping":
         ib = connect()
         try:
