@@ -1937,8 +1937,8 @@ function renderLottery(ld){
   if(ld.selection && ld.selection.n_days){
     const sel=ld.selection, hz=sel.horizons;
     const label={current:'current (live bot)',prepeak:'prepeak (rising, not popped)',relsurprise:'relsurprise (own-baseline)',gap_signed:'gap_signed',bottom3:'bottom-3 (invert)'};
-    h+=`<div class="card"><h2>Selection scoreboard <span class="hint">(measured-only · ${sel.n_days} days · cumulative SUM%)</span></h2>`;
-    h+=`<div class="hint" style="margin-bottom:6px">Is the bot's <b>current</b> top-3 actually picking better than the alternatives? Watching the "bottom-3 &gt; top-3" question live. Higher = better; not traded — a live experiment for the 30-day verdict.</div>`;
+    h+=`<div class="card"><h2>Selection scoreboard <span class="hint">(NAME-PICKING quality only · ${sel.n_days} days)</span></h2>`;
+    h+=`<div class="hint" style="margin-bottom:6px">Does the bot's <b>current</b> top-3 pick better NAMES than the alternatives? Each cell = the % returns of that selector's picks, <b>naively bought &amp; held</b> for the horizon, summed (equal weight). This is NOT the bot's real P/L — it strips out the trailing stop / T+3 exit on purpose, so selectors compare on names alone. (The bot's actual account P/L, which its execution earns on top, is the card below.) Higher = better; small sample, 30-day verdict.</div>`;
     h+=`<table><tr><th style="text-align:left">selector</th>`+hz.map(x=>`<th>${x}</th>`).join('')+`</tr>`;
     for(const name of sel.order){
       const c=sel.cum[name]||{};
