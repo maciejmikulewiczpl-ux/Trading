@@ -148,9 +148,15 @@ def _stats(trades: pd.DataFrame, n_days: int) -> None:
 
 
 def main() -> int:
-    df = load_mes_intraday(interval="5m", period="60d")
+    from futures.data import load_mes_intraday_cache
+    try:
+        df = load_mes_intraday_cache()          # deep IBKR 5-min cache if present
+        src = "IBKR cache"
+    except FileNotFoundError:
+        df = load_mes_intraday(interval="5m", period="60d")
+        src = "yfinance ~50d SMOKE"
     n_days = len({ts.date() for ts in df.index})
-    print(f"=== MES intraday ORB (SMOKE TEST): {len(df)} 5m bars, {n_days} days "
+    print(f"=== MES intraday ORB [{src}]: {len(df)} 5m bars, {n_days} days "
           f"{df.index.min().date()} -> {df.index.max().date()} ===")
     print(f"setup: OR 09:30-09:45 ET | tight-OR gate <= p{OR_TIGHT_PCTL*100:.0f} | "
           f"trail {TRAIL_R}xOR | EOD 15:55 | dir={DIRECTION} | net of ${COST_RT_USD:.0f}/RT\n")

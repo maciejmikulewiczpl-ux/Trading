@@ -123,16 +123,25 @@ def _quarterly_months(n: int, today: date | None = None) -> list[str]:
 
 
 def cache_deep_history_dated(quarters: int = 8, bar_size: str = "30 mins",
-                             chunk: str = "3 M", pace_s: float = 11.0) -> int:
+                             chunk: str = "3 M", subchunks: int = 1, pace_s: float = 11.0) -> int:
     """Deep intraday history by STITCHING dated quarterly contracts (ContFuture blocks endDateTime).
     Each contract contributes its front-month period; newest wins on overlap. No roll back-adjustment
-    (our candidates are intraday-only, so each day is self-contained). Writes the parquet cache."""
+    (candidates are intraday-only, so each day is self-contained). `subchunks` walks endDateTime back
+    WITHIN a contract (needed for fine bars: 5-min caps at ~1 month/request, so use chunk='1 M',
+    subchunks=3). Writes the parquet cache."""
     import time as _t
     from ib_async import Future, util
     ib = connect()
     frames: list[pd.DataFrame] = []
     earliest = None
     now = datetime.now(ET)
+
+    def _proc(bars) -> pd.DataFrame:
+        df = util.df(bars).rename(columns={"date": "dt"})
+        df = df.set_index(pd.DatetimeIndex(pd.to_datetime(df["dt"])))
+        df.index = (df.index.tz_localize("UTC") if df.index.tz is None else df.index).tz_convert(ET)
+        return df[["open", "high", "low", "close", "volume"]].sort_index()
+
     try:
         for i, ym in enumerate(_quarterly_months(quarters)):
             c = Future(symbol="MES", lastTradeDateOrContractMonth=ym, exchange="CME",
@@ -141,24 +150,25 @@ def cache_deep_history_dated(quarters: int = 8, bar_size: str = "30 mins",
                 print(f"  {ym}: could not qualify -- skip."); continue
             exp = datetime.combine(_third_friday(int(ym[:4]), int(ym[4:6])),
                                    datetime.min.time()).replace(hour=16, tzinfo=ET)
-            end = min(exp, now)
-            bars = ib.reqHistoricalData(c, endDateTime=end, durationStr=chunk, barSizeSetting=bar_size,
-                                        whatToShow="TRADES", useRTH=False, formatDate=1, timeout=90)
-            if not bars:
-                print(f"  {c.localSymbol}: no bars."); continue
-            df = util.df(bars).rename(columns={"date": "dt"})
-            df = df.set_index(pd.DatetimeIndex(pd.to_datetime(df["dt"])))
-            df.index = (df.index.tz_localize("UTC") if df.index.tz is None else df.index).tz_convert(ET)
-            df = df[["open", "high", "low", "close", "volume"]].sort_index()
-            if earliest is not None:
-                df = df[df.index < earliest]           # newest contract wins on overlap
-            if df.empty:
-                continue
-            frames.append(df)
-            earliest = df.index.min()
-            print(f"  {c.localSymbol}: {len(df)} bars back to {earliest.date()}")
-            if i < quarters - 1:
+            c_end = min(exp, now)
+            got = 0
+            for _j in range(subchunks):
+                bars = ib.reqHistoricalData(c, endDateTime=c_end, durationStr=chunk,
+                                            barSizeSetting=bar_size, whatToShow="TRADES",
+                                            useRTH=False, formatDate=1, timeout=90)
+                if not bars:
+                    break
+                raw = _proc(bars)
+                raw_min = raw.index.min()
+                keep = raw[raw.index < earliest] if earliest is not None else raw
+                if not keep.empty:
+                    frames.append(keep)
+                    earliest = keep.index.min()
+                    got += len(keep)
+                c_end = raw_min.tz_convert("UTC").to_pydatetime()   # step back within the contract
                 _t.sleep(pace_s)
+            if got:
+                print(f"  {c.localSymbol}: +{got} bars, earliest now {earliest.date()}")
     finally:
         ib.disconnect()
     if not frames:
@@ -213,7 +223,9 @@ def main(argv) -> int:
     if cmd == "deep":   # dated-contract stitched deep history (recommended)
         quarters = int(argv[2]) if len(argv) > 2 else 8
         bar = argv[3] if len(argv) > 3 else "30 mins"
-        return cache_deep_history_dated(quarters=quarters, bar_size=bar)
+        chunk = argv[4] if len(argv) > 4 else "3 M"
+        subchunks = int(argv[5]) if len(argv) > 5 else 1
+        return cache_deep_history_dated(quarters=quarters, bar_size=bar, chunk=chunk, subchunks=subchunks)
     if cmd == "ping":
         ib = connect()
         try:
