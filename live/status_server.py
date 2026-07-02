@@ -1069,6 +1069,40 @@ def _lottery_drivers(symbols: list[str]) -> dict:
     return out
 
 
+def _hype_selection() -> dict:
+    """LIVE selection scoreboard: the bot's 'current' top-3 vs alternative selectors (prepeak/
+    relsurprise/gap_signed/bottom3) on the logged picks, so the 30-day 'is the score picking the RIGHT
+    names?' question can be watched live. Reuses experiments/lottery/selection_lab baskets (measured-
+    only; changes nothing the bot trades). Cumulative equal-weight SUM% per basket per horizon."""
+    order = ["current", "prepeak", "relsurprise", "gap_signed", "bottom3"]
+    out = {"n_days": 0, "order": order, "horizons": ["same-day", "1-day", "3-day"], "cum": {}}
+    try:
+        from experiments.lottery.analyze import load_days, PICKS_DIR
+        from experiments.lottery.selection_lab import _baskets_for_day
+    except Exception:
+        return out
+    days = load_days(PICKS_DIR)
+    out["n_days"] = len(days)
+    HZ = [("ret_945_close", "same-day"), ("ret_1d", "1-day"), ("ret_3d", "3-day")]
+    lookup = {rec["date"]: {p["symbol"]: p for p in rec["picks"]} for rec in days}
+    acc = {b: {lab: [] for _, lab in HZ} for b in order}
+    for rec in days:
+        scored = [p for p in rec["picks"] if p.get("combined_score") is not None]
+        bk = _baskets_for_day(scored)
+        L = lookup[rec["date"]]
+        for name in order:
+            for s in bk.get(name, []):
+                for fld, lab in HZ:
+                    v = L.get(s, {}).get(fld)
+                    if v is not None:
+                        acc[name][lab].append(v)
+    for name in order:
+        out["cum"][name] = {lab: {"sum": round(sum(acc[name][lab]), 1), "n": len(acc[name][lab]),
+                                  "mean": round(sum(acc[name][lab]) / len(acc[name][lab]), 2)
+                                  if acc[name][lab] else None} for _, lab in HZ}
+    return out
+
+
 def _lottery() -> dict:
     """Summarize the lottery forward-test for its web tab (read-only).
 
@@ -1180,6 +1214,10 @@ def _lottery() -> dict:
             out["live_date"] = today_iso
         except Exception:
             pass
+    try:
+        out["selection"] = _hype_selection()
+    except Exception:
+        pass
     return out
 
 
@@ -1895,6 +1933,22 @@ function renderLottery(ld){
   const pct1=v=>v==null?"—":(v*100).toFixed(0)+"%";
   let h=topNav("lottery");
   h+=`<div class="banner s-idle"><h1>Hype — can ANY hype metric pick the day's winners?</h1><p>A pre-registered forward test: every morning, mechanically log the top names per hype signal (WSB surge, StockTwits, premarket RVOL, squeeze, options flow, ignition) plus a <b>random control basket</b>. A signal "works" only if it hits real winners ≥2× more often than the random picks. Bold paper bot buys the top-3 combined-score picks. Verdict at 30 trading days.</p></div>`;
+  // --- selection scoreboard (measured-only: is the bot's top-3 picking the RIGHT names?) ---
+  if(ld.selection && ld.selection.n_days){
+    const sel=ld.selection, hz=sel.horizons;
+    const label={current:'current (live bot)',prepeak:'prepeak (rising, not popped)',relsurprise:'relsurprise (own-baseline)',gap_signed:'gap_signed',bottom3:'bottom-3 (invert)'};
+    h+=`<div class="card"><h2>Selection scoreboard <span class="hint">(measured-only · ${sel.n_days} days · cumulative SUM%)</span></h2>`;
+    h+=`<div class="hint" style="margin-bottom:6px">Is the bot's <b>current</b> top-3 actually picking better than the alternatives? Watching the "bottom-3 &gt; top-3" question live. Higher = better; not traded — a live experiment for the 30-day verdict.</div>`;
+    h+=`<table><tr><th style="text-align:left">selector</th>`+hz.map(x=>`<th>${x}</th>`).join('')+`</tr>`;
+    for(const name of sel.order){
+      const c=sel.cum[name]||{};
+      h+=`<tr${name==='current'?' style="font-weight:600"':''}><td style="text-align:left">${label[name]||name}</td>`+hz.map(x=>{
+        const v=c[x]?c[x].sum:null;
+        return `<td class="${v>0?'pos':(v<0?'neg':'')}">${v==null?'—':(v>0?'+':'')+v}</td>`;
+      }).join('')+`</tr>`;
+    }
+    h+=`</table></div>`;
+  }
   // --- bot account ---
   if(ld.bot){
     const b=ld.bot, a=b.account;
