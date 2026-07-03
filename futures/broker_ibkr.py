@@ -240,20 +240,34 @@ def account_snapshot(ib) -> dict:
     return out
 
 
-def closed_trades(ib) -> list[dict]:
-    """Session CLOSING fills with realized P&L (for the dashboard trade history). A closing BUY(BOT)
-    means a SHORT was covered; a closing SELL(SLD) means a LONG was sold. realizedPNL is UNSET on
-    opening fills -> skipped. Dedup by execId upstream (ib.fills() is session-scoped)."""
-    out = []
+def closed_trades(ib, days_back: int = 7) -> list[dict]:
+    """CLOSING fills with realized P&L for the persistent trade record. Merges TWO sources so the ledger
+    is complete + self-healing (not just the current session): (1) ib.fills() -- this session, reliable
+    realizedPNL; (2) reqExecutions over the last `days_back` days -- backfills prior/missed days within
+    IBKR's retention. Dedup by execId; only closing fills (realizedPNL set) kept. Closing BUY(BOT)
+    covered a SHORT; SELL(SLD) sold a LONG. All calls defensive -> never breaks the bot."""
+    from datetime import timedelta
+    raw = []
     try:
-        fills = ib.fills()
+        raw += list(ib.fills())                                   # current session (reliable P&L)
     except Exception:
-        return out
-    for f in fills:
+        pass
+    try:
+        from ib_async import ExecutionFilter
+        flt = ExecutionFilter()
+        flt.time = (datetime.now(ET) - timedelta(days=days_back)).strftime("%Y%m%d-%H:%M:%S")
+        raw += list(ib.reqExecutions(flt))                        # recent history (backfill / self-heal)
+    except Exception:
+        pass
+    out, seen = [], set()
+    for f in raw:
+        e = getattr(f, "execution", None)
+        if e is None or e.execId in seen:
+            continue
         rp = getattr(getattr(f, "commissionReport", None), "realizedPNL", None)
         if rp is None or abs(rp) > 1e12:          # UNSET_DOUBLE / not a closing fill
             continue
-        e = f.execution
+        seen.add(e.execId)
         out.append({"execId": e.execId, "exit_time": str(e.time), "exit": round(float(e.price), 2),
                     "side": "SHORT" if e.side == "BOT" else "LONG", "qty": int(e.shares),
                     "pnl": round(float(rp), 2)})
