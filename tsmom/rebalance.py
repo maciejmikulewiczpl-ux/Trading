@@ -19,7 +19,7 @@ from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tsmom.signal import BASKET, weights_from_daily  # noqa: E402
+from tsmom.weights import BASKET, weights_from_daily  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
 STATUS = ROOT / "tsmom" / "status.json"

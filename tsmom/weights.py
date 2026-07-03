@@ -8,7 +8,7 @@ NEGATIVELY correlated (-0.36) so combining lifts the aggregate Sharpe ~1.1->~1.8
 target_weights() -> {ETF: weight} for THIS month (weights sum to <=1; cash = 1 - sum when few uptrends).
 Uses yfinance daily (monthly-resampled) for the signal -- robust, no market-data subscription needed.
 
-    .venv-openbb/Scripts/python.exe tsmom/signal.py     # print this month's target
+    .venv-openbb/Scripts/python.exe tsmom/weights.py     # print this month's target
 """
 from __future__ import annotations
 
