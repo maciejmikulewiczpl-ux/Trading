@@ -2387,10 +2387,12 @@ function renderFutures(d){
   const T=(d&&d.tsmom)||{};
   h+=`<div class="card"><h2>Diversifier sleeve — cross-asset TSMOM <span class="hint">(monthly · Alpaca · neg-corr w/ MES → combo Sharpe ~1.8)</span></h2>`;
   if(T&&T.updated){
-    h+=`<div class="grid"><div class="stat"><div class="k">Equity</div><div class="v">$${Math.round(T.equity).toLocaleString()}</div></div>`;
-    h+=`<div class="stat"><div class="k">Invested</div><div class="v">${Math.round(100-(T.cash/T.equity*100))}%</div></div>`;
-    h+=`<div class="stat"><div class="k">Holdings</div><div class="v">${(T.positions||[]).length}</div></div>`;
+    h+=`<div class="grid"><div class="stat"><div class="k">Capital</div><div class="v">$${Math.round(T.capital||0).toLocaleString()}</div></div>`;
+    h+=`<div class="stat"><div class="k">Sleeve value</div><div class="v">$${Math.round(T.sleeve_value||0).toLocaleString()}</div></div>`;
+    h+=`<div class="stat"><div class="k">Unreal P/L</div><div class="v ${(T.sleeve_unreal||0)>=0?'pos':'neg'}">${(T.sleeve_unreal||0)>=0?'+':''}$${Math.round(T.sleeve_unreal||0).toLocaleString()}</div></div>`;
+    h+=`<div class="stat"><div class="k">Invested</div><div class="v">${T.invested_pct??0}%</div></div>`;
     h+=`<div class="stat"><div class="k">Mode</div><div class="v">${T.dry_run?'DRY-RUN':'<span class="pos">ARMED</span>'}</div></div></div>`;
+    if(T.shared_account) h+=`<div class="hint" style="margin-top:2px">Shares an existing account — trades only its own ETFs on a fixed $${Math.round((T.capital||0)/1000)}k slice.</div>`;
     if(T.targets && Object.keys(T.targets).length){
       h+=`<div class="hint" style="margin:8px 0 4px">This month's target weights (long-only trend):</div>`;
       h+=`<div style="font-size:12px;line-height:1.7">`+Object.entries(T.targets).map(([k,v])=>`<b>${k}</b> ${v}%`).join(' &nbsp;·&nbsp; ')+`</div>`;

@@ -80,21 +80,23 @@ def main() -> int:
     from alpaca.trading.requests import MarketOrderRequest
 
     acct = tc.get_account()
-    equity = float(acct.equity)
+    capital = float(os.environ.get("TSMOM_CAPITAL", "250000"))   # fixed slice -> safe to SHARE an account
     tw = weights_from_daily(_daily_closes(dc))               # {ETF: weight} from Alpaca daily bars
-    pos = {p.symbol: p for p in tc.get_all_positions()}
-    syms = sorted(set(tw) | set(pos))
+    allpos = {p.symbol: p for p in tc.get_all_positions()}
+    pos = {s: p for s, p in allpos.items() if s in BASKET}   # ONLY our ETFs -- never touch other bots' names
+    syms = sorted(BASKET)                                    # manage only the basket
     px = _prices(dc, syms)
-    _log(f"TSMOM rebalance | DRY_RUN={dry} | equity ${equity:,.0f} | {len(tw)} targets, {len(pos)} held")
+    _log(f"TSMOM rebalance | DRY_RUN={dry} | capital ${capital:,.0f} | {len(tw)} targets, "
+         f"{len(pos)} basket holdings (account holds {len(allpos)} total)")
 
     orders, plan = [], []
     for s in syms:
         if s not in px or px[s] <= 0:
             continue
-        tgt_sh = int((tw.get(s, 0.0) * equity) / px[s])
+        tgt_sh = int((tw.get(s, 0.0) * capital) / px[s])     # size off the fixed slice, not shared equity
         cur_sh = int(float(pos[s].qty)) if s in pos else 0
         delta = tgt_sh - cur_sh
-        if delta == 0 or abs(delta) * px[s] < MIN_TRADE_FRAC * equity:
+        if delta == 0 or abs(delta) * px[s] < MIN_TRADE_FRAC * capital:
             continue
         side = OrderSide.BUY if delta > 0 else OrderSide.SELL
         plan.append({"symbol": s, "side": side.value, "qty": abs(delta), "px": round(px[s], 2)})
@@ -110,13 +112,17 @@ def main() -> int:
     if not plan:
         _log("  already at target -- no rebalance needed.")
 
-    # status for the dashboard
+    # status for the dashboard -- the SLEEVE's own P&L (its ETF holdings), not the shared account total
     positions = [{"symbol": p.symbol, "qty": float(p.qty), "value": float(p.market_value),
                   "unreal": float(p.unrealized_pl), "unreal_pc": float(p.unrealized_plpc) * 100}
                  for p in pos.values()]
+    sleeve_value = sum(p["value"] for p in positions)
     STATUS.write_text(json.dumps({
         "updated": datetime.now(ET).isoformat(timespec="seconds"), "dry_run": dry,
-        "equity": equity, "cash": float(acct.cash),
+        "capital": capital, "sleeve_value": round(sleeve_value),
+        "sleeve_unreal": round(sum(p["unreal"] for p in positions)),
+        "invested_pct": round(sleeve_value / capital * 100) if capital else 0,
+        "shared_account": len(allpos) > len(pos),
         "targets": {t: round(w * 100, 1) for t, w in sorted(tw.items(), key=lambda x: -x[1])},
         "positions": sorted(positions, key=lambda x: -x["value"]),
         "planned": plan, "executed": orders,
