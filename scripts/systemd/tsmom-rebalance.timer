@@ -5,7 +5,7 @@ Description=Fire the monthly TSMOM rebalance on the 2nd-4th of each month (10:15
 # Monthly rebalance. Fires the 2nd/3rd/4th at 10:15 ET -- the first trading day rebalances, the others
 # are idempotent no-ops (covers weekends/holidays landing on the 2nd). Persistent = catch up if the VM
 # was down at the fire time.
-OnCalendar=*-*-2,3,4 10:15 America/New_York
+OnCalendar=*-*-2,3,4,5,6 10:15 America/New_York
 Persistent=true
 Unit=tsmom-rebalance.service
 
