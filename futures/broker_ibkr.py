@@ -240,6 +240,26 @@ def account_snapshot(ib) -> dict:
     return out
 
 
+def closed_trades(ib) -> list[dict]:
+    """Session CLOSING fills with realized P&L (for the dashboard trade history). A closing BUY(BOT)
+    means a SHORT was covered; a closing SELL(SLD) means a LONG was sold. realizedPNL is UNSET on
+    opening fills -> skipped. Dedup by execId upstream (ib.fills() is session-scoped)."""
+    out = []
+    try:
+        fills = ib.fills()
+    except Exception:
+        return out
+    for f in fills:
+        rp = getattr(getattr(f, "commissionReport", None), "realizedPNL", None)
+        if rp is None or abs(rp) > 1e12:          # UNSET_DOUBLE / not a closing fill
+            continue
+        e = f.execution
+        out.append({"execId": e.execId, "exit_time": str(e.time), "exit": round(float(e.price), 2),
+                    "side": "SHORT" if e.side == "BOT" else "LONG", "qty": int(e.shares),
+                    "pnl": round(float(rp), 2)})
+    return out
+
+
 def reconcile_to(ib, target: int) -> str | None:
     """Place a market order to move the current MES position to `target` (-1/0/+1...). Returns a
     description of the order sent, or None if already there. This is how the momentum bot enters,

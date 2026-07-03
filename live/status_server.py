@@ -920,7 +920,35 @@ def _futures() -> dict:
             "sharpe": 1.10, "pf": 1.26, "net_usd": 3776, "maxdd_usd": -2382,
             "best_day": 2097, "worst_day": -673, "period": "Sep-2024 to Jul-2026",
             "oos": "both halves +ve (H1 0.81 / H2 1.60)"},
+        "tsmom": _tsmom(),
+        "trades": _futures_trades(),
     }
+
+
+TSMOM_STATUS = ROOT / "tsmom" / "status.json"
+
+
+def _tsmom() -> dict:
+    """TSMOM diversifier-sleeve status (tsmom/status.json, written by the monthly rebalance bot on the
+    VM). The slow book that runs alongside MES momentum -- negatively correlated (-0.36) -> combo Sharpe
+    ~1.8. Empty until the sleeve is armed."""
+    try:
+        return json.loads(TSMOM_STATUS.read_text())
+    except Exception:
+        return {}
+
+
+FUTURES_TRADES = ROOT / "futures" / "trades.json"
+
+
+def _futures_trades() -> dict:
+    """MES bot's closed-trade history (futures/trades.json, appended by run_mes_bot.py from IBKR fills).
+    Empty until the bot has recorded round-trips."""
+    try:
+        t = json.loads(FUTURES_TRADES.read_text())
+        return t if isinstance(t, dict) else {"trades": t}
+    except Exception:
+        return {"trades": []}
 
 
 def _source_daily(days_limit: int = 14) -> dict:
@@ -2343,8 +2371,43 @@ function renderFutures(d){
   } else {
     h+=`<div class="card"><div class="empty">No live status synced to this host. The bot runs on the Surface (needs TWS up) and writes futures/status.json there.</div></div>`;
   }
+  // closed-trade history (each round-trip's realized P/L)
+  const tr=(d&&d.trades&&d.trades.trades)||[];
+  if(tr.length){
+    const tot=tr.reduce((s,x)=>s+(x.pnl||0),0), wins=tr.filter(x=>(x.pnl||0)>0).length;
+    h+=`<div class="card"><h2>Closed trades <span class="hint">(${tr.length} · ${Math.round(wins/tr.length*100)}% win · realized <span class="${tot>=0?'pos':'neg'}">${tot>=0?'+':''}$${tot.toFixed(0)}</span>)</span></h2>`;
+    h+=`<table><tr><th style="text-align:left">closed</th><th>side</th><th>qty</th><th>entry</th><th>exit</th><th>P/L</th></tr>`;
+    for(const x of tr.slice(-25).reverse())
+      h+=`<tr><td style="text-align:left">${x.exit_time||x.time||''}</td><td>${x.side||''}</td><td>${x.qty??''}</td><td>${x.entry!=null?x.entry:'—'}</td><td>${x.exit!=null?x.exit:'—'}</td><td class="${(x.pnl||0)>=0?'pos':'neg'}">${(x.pnl||0)>=0?'+':''}$${(x.pnl||0).toFixed(0)}</td></tr>`;
+    h+=`</table></div>`;
+  } else {
+    h+=`<div class="card"><div class="empty">No closed trades recorded yet (populates from IBKR fills once the bot runs armed sessions).</div></div>`;
+  }
+  // diversifier sleeve — cross-asset TSMOM (the negatively-correlated monthly book)
+  const T=(d&&d.tsmom)||{};
+  h+=`<div class="card"><h2>Diversifier sleeve — cross-asset TSMOM <span class="hint">(monthly · Alpaca · neg-corr w/ MES → combo Sharpe ~1.8)</span></h2>`;
+  if(T&&T.updated){
+    h+=`<div class="grid"><div class="stat"><div class="k">Equity</div><div class="v">$${Math.round(T.equity).toLocaleString()}</div></div>`;
+    h+=`<div class="stat"><div class="k">Invested</div><div class="v">${Math.round(100-(T.cash/T.equity*100))}%</div></div>`;
+    h+=`<div class="stat"><div class="k">Holdings</div><div class="v">${(T.positions||[]).length}</div></div>`;
+    h+=`<div class="stat"><div class="k">Mode</div><div class="v">${T.dry_run?'DRY-RUN':'<span class="pos">ARMED</span>'}</div></div></div>`;
+    if(T.targets && Object.keys(T.targets).length){
+      h+=`<div class="hint" style="margin:8px 0 4px">This month's target weights (long-only trend):</div>`;
+      h+=`<div style="font-size:12px;line-height:1.7">`+Object.entries(T.targets).map(([k,v])=>`<b>${k}</b> ${v}%`).join(' &nbsp;·&nbsp; ')+`</div>`;
+    }
+    const P=T.positions||[];
+    if(P.length){
+      h+=`<table style="margin-top:8px"><tr><th style="text-align:left">sym</th><th>value</th><th>unreal P/L</th></tr>`;
+      for(const p of P) h+=`<tr><td style="text-align:left">${p.symbol}</td><td>$${Math.round(p.value).toLocaleString()}</td><td class="${p.unreal>=0?'pos':'neg'}">${p.unreal>=0?'+':''}$${p.unreal.toFixed(0)} <small>(${p.unreal_pc>=0?'+':''}${p.unreal_pc.toFixed(1)}%)</small></td></tr>`;
+      h+=`</table>`;
+    }
+    h+=`<div class="hint" style="margin-top:4px">updated ${T.updated}</div>`;
+  } else {
+    h+=`<div class="empty">Sleeve not live yet — create an Alpaca paper account, fill .env.tsmom, deploy tsmom-rebalance on the VM, then arm (DRY_RUN=0). Rebalances monthly to the cross-asset trend targets.</div>`;
+  }
+  h+=`</div>`;
   h+=`<div class="card" style="border-color:#7c3a3a"><div class="hint"><b>⚠ RISK:</b> futures are LEVERAGED — 1 MES ≈ $37k notional. Cyclical edge: pays in bursts (2025 H1 carried it), flat/negative for quarters. Take-profits AND tighter stops both tested → both made it worse. Paper only.</div></div>`;
-  h+=`<div class="foot"><span>futures · ${(L&&L.updated)||''}</span><span></span></div>`;
+  h+=`<div class="foot"><span>futures + tsmom · ${(L&&L.updated)||''}</span><span></span></div>`;
   setRoot(h);
 }
 async function fetchFutures(){

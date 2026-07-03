@@ -86,6 +86,9 @@ STATUS_FILE = Path(__file__).resolve().parent / "status.json"
 WIN_OPEN, WIN_CLOSE = time(9, 25), time(16, 5)   # ET market-hours guard for the every-5-min scheduler
 
 
+TRADES_FILE = STATUS_FILE.parent / "trades.json"
+
+
 def _write_status(**kw) -> None:
     """Dump a small status.json for the dashboard Futures tab (best-effort)."""
     try:
@@ -93,6 +96,21 @@ def _write_status(**kw) -> None:
                                            "dry_run": DRY_RUN, "qty": QTY, **kw}, indent=2, default=str))
     except Exception:
         pass
+
+
+def _record_trades(ib) -> None:
+    """Merge today's closing fills (realized P&L) into futures/trades.json for the dashboard history.
+    Dedup by execId; ib.fills() is session-scoped so this accumulates the persistent record."""
+    try:
+        existing = json.loads(TRADES_FILE.read_text()).get("trades", []) if TRADES_FILE.exists() else []
+        seen = {t.get("execId") for t in existing}
+        new = [t for t in brk.closed_trades(ib) if t.get("execId") not in seen]
+        if new:
+            TRADES_FILE.write_text(json.dumps({"trades": existing + new}, indent=2, default=str))
+            _log(f"recorded {len(new)} closed trade(s): "
+                 + ", ".join(f"{t['side']} {t['qty']} P/L {t['pnl']:+.0f}" for t in new))
+    except Exception as e:
+        _log(f"trade-record skipped ({str(e)[:50]}).")
 
 
 def main() -> int:
@@ -124,6 +142,8 @@ def main() -> int:
             _log(f"ORDER {order}" if order else "already at target -- hold.")
         _write_status(position=(target if not DRY_RUN else cur), target=target, signal=info,
                       last_order=order, account=brk.account_snapshot(ib))
+        if not DRY_RUN:
+            _record_trades(ib)
     finally:
         ib.disconnect()
     return 0

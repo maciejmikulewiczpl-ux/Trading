@@ -1,5 +1,6 @@
 data/
 state.json
 status.json
+trades.json
 __pycache__/
 *.pyc

@@ -1,0 +1,17 @@
+[Unit]
+Description=Monthly cross-asset TSMOM sleeve rebalance (Alpaca paper, .env.tsmom) -- the diversifier
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Rebalances the account to long-only cross-asset trend targets (tsmom/rebalance.py). Idempotent, so
+# the timer's 3 monthly fires are safe. Runs on the VM = reliable (unlike the Surface-bound futures bot).
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/trading
+ExecStart=/home/ubuntu/trading/scripts/launch_tsmom.sh
+Restart=no
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target
