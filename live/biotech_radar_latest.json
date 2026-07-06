@@ -1,6 +1,6 @@
 {
-  "date": "2026-07-04",
-  "generated": "2026-07-05T09:16:31-04:00",
+  "date": "2026-07-06",
+  "generated": "2026-07-06T09:20:04-04:00",
   "probs_asof": "2026-06-30",
   "surge_pct": 0.3,
   "fwd_days": 10,
@@ -28,14 +28,14 @@
       "tightness": 0.938,
       "market_cap": 686544393.0752459,
       "in_band": true,
-      "dollar_vol": 24562194.0,
+      "dollar_vol": 24561464.0,
       "liquid": true,
       "short_pct": 0.1928,
       "bucket_label": "+10%/5d",
       "p_up": 0.0911,
       "p_down": 0.0318,
       "why": "+30% 5d, 19% short",
-      "days_to_catalyst": 54,
+      "days_to_catalyst": 53,
       "nearest_phase": "PHASE2,PHASE3",
       "exit_by": "2026-08-21",
       "cat_quality": "phase2",
@@ -58,7 +58,7 @@
       "conviction": "MED",
       "stop": 9.96,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~54d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-08-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~53d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-08-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 43.5,
@@ -81,7 +81,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.6x, coiled near range-top, +9% 5d, 18% short",
-      "days_to_catalyst": 85,
+      "days_to_catalyst": 84,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-09-21",
       "cat_quality": "phase2",
@@ -109,7 +109,7 @@
       "conviction": "MED",
       "stop": 57.2,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~85d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-09-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~84d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-09-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 7.8,
@@ -132,7 +132,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.6x, coiled near range-top, +12% 5d, 8% short",
-      "days_to_catalyst": 133,
+      "days_to_catalyst": 132,
       "nearest_phase": "PHASE3",
       "exit_by": null,
       "cat_quality": "phase3",
@@ -150,7 +150,7 @@
       "conviction": "MED",
       "stop": 4.8,
       "trail_pct": 28,
-      "structure": "Phase 3 ~133d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
+      "structure": "Phase 3 ~132d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
     },
     {
       "cash_runway_months": 40.9,
@@ -324,7 +324,7 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "coiled near range-top, +7% 5d, 16% short",
-      "days_to_catalyst": 26,
+      "days_to_catalyst": 25,
       "nearest_phase": "PHASE1",
       "exit_by": null,
       "cat_quality": "phase1_weak",
@@ -352,7 +352,7 @@
       "conviction": "LOW",
       "stop": 11.65,
       "trail_pct": 28,
-      "structure": "Phase 1 only ~26d - SAFETY/dosage (~3% avg uplift). WEAK run-up - skip unless it's a platform play. NOT the Phase-2 efficacy setup."
+      "structure": "Phase 1 only ~25d - SAFETY/dosage (~3% avg uplift). WEAK run-up - skip unless it's a platform play. NOT the Phase-2 efficacy setup."
     }
   ],
   "heat": [
@@ -370,7 +370,7 @@
       "tightness": 1.232,
       "market_cap": 2945555868.508751,
       "in_band": false,
-      "dollar_vol": 122060470.0,
+      "dollar_vol": 122021822.0,
       "liquid": true,
       "short_pct": 0.32349998,
       "bucket_label": "vol>=1.5x & +5%/5d",
@@ -411,7 +411,7 @@
       "tightness": 0.5,
       "market_cap": 1115687215.6981087,
       "in_band": true,
-      "dollar_vol": 26924062.0,
+      "dollar_vol": 26923341.0,
       "liquid": true,
       "short_pct": 0.1314,
       "bucket_label": "vol>=2x & +10%/5d",
@@ -589,7 +589,7 @@
       "tightness": 0.636,
       "market_cap": 31647672865.466896,
       "in_band": false,
-      "dollar_vol": 568552902.0,
+      "dollar_vol": 568455994.0,
       "liquid": true,
       "short_pct": 0.18090001,
       "bucket_label": "+10%/5d",
