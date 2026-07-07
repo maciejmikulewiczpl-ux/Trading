@@ -271,7 +271,31 @@ def run_time_stops(tc, dry_run: bool, close_all: bool = False) -> int:
                             print(f"close: cancelled trail order {oid} for {sym}.")
                         except Exception as ce:
                             print(f"close: trail cancel {sym} ({oid}) failed/already done: {ce}")
+                    # SAFETY (2026-07-07 incident): re-fetch the LIVE position right before
+                    # selling and confirm it is genuinely LONG. The batch get_all_positions
+                    # read above can be stale/phantom -- an Alpaca paper glitch dropped held
+                    # positions overnight but still listed them, so close_position() sold into
+                    # a zero position and OPENED A SHORT (long-only bot went -10 RDDT). Only
+                    # close a confirmed long; if it's gone/not-long, untrack without selling.
+                    try:
+                        live_qty = float(tc.get_open_position(sym).qty)
+                    except Exception:
+                        live_qty = 0.0
+                    if live_qty <= 0:
+                        print(f"close: {sym} not a live long at close time (qty={live_qty}) "
+                              f"-> SKIP sell + untrack (avoids opening a short).")
+                        del state[sym]
+                        continue
                     tc.close_position(sym)
+                    # defense-in-depth: verify we didn't end up short from a bad read; cover if so
+                    import time as _t
+                    _t.sleep(2)
+                    try:
+                        if float(tc.get_open_position(sym).qty) < 0:
+                            tc.close_position(sym)
+                            print(f"WARN {sym} flipped SHORT after close -> covered immediately.")
+                    except Exception:
+                        pass   # no position remains = flat = good
                     print(f"CLOSED {sym} ({reason}, age {age}).")
                     del state[sym]
                     closed += 1
