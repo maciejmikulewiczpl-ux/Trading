@@ -1,0 +1,1071 @@
+{
+  "date": "2026-07-07",
+  "logged_at": "2026-07-07T09:25:56-04:00",
+  "n_candidates": 52,
+  "n_tradable": 50,
+  "picks": [
+    {
+      "symbol": "AAPL",
+      "basket": "wsb",
+      "top_k_of": [
+        "ignition",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 9.1,
+        "wsb_rank": 11,
+        "st_rank": null,
+        "pm_rvol": 0.04,
+        "gap_pct": null,
+        "squeeze": 2.82,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.64,
+        "finra_short_ratio": 0.4573,
+        "halt_reason": null,
+        "realized_vol": 0.0232
+      },
+      "combined_score": 0.5939,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "AJG",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 10.7,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.6625,
+        "halt_reason": null,
+        "realized_vol": 0.0211
+      },
+      "combined_score": 0.3594,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "AMD",
+      "basket": "filtered3",
+      "top_k_of": [
+        "filtered3",
+        "ignition"
+      ],
+      "signals": {
+        "wsb_surge": 5.8,
+        "wsb_rank": 10,
+        "st_rank": null,
+        "pm_rvol": 0.32,
+        "gap_pct": null,
+        "squeeze": 4.2,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.67,
+        "finra_short_ratio": 0.4981,
+        "halt_reason": null,
+        "realized_vol": 0.0555
+      },
+      "combined_score": 0.6511,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "ARQQ",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 15,
+        "pm_rvol": null,
+        "gap_pct": -5.81,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.6158,
+        "halt_reason": null,
+        "realized_vol": 0.1335
+      },
+      "combined_score": 0.2692,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "BKR",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 9.87,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.33,
+        "finra_short_ratio": 0.276,
+        "halt_reason": null,
+        "realized_vol": 0.0196
+      },
+      "combined_score": 0.3438,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CHPY",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 26,
+        "pm_rvol": null,
+        "gap_pct": 3.26,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.79,
+        "finra_short_ratio": 0.4954,
+        "halt_reason": null,
+        "realized_vol": 0.0445
+      },
+      "combined_score": 0.2571,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CMPS",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "gtrends",
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 1,
+        "pm_rvol": null,
+        "gap_pct": -19.05,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.97,
+        "finra_short_ratio": 0.5511,
+        "halt_reason": null,
+        "realized_vol": 0.0471
+      },
+      "combined_score": 0.6035,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CNC",
+      "basket": "pennystocks",
+      "top_k_of": [
+        "pennystocks"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": null,
+        "penny_surge": 1.0,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.3695,
+        "halt_reason": null,
+        "realized_vol": null
+      },
+      "combined_score": null,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CRNX",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "gtrends",
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 5,
+        "pm_rvol": null,
+        "gap_pct": 97.89,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 32.77,
+        "finra_short_ratio": 0.5678,
+        "halt_reason": null,
+        "realized_vol": 0.0308
+      },
+      "combined_score": 0.5815,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "CTAS",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 21.91,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 1.43,
+        "finra_short_ratio": 0.438,
+        "halt_reason": null,
+        "realized_vol": 0.021
+      },
+      "combined_score": 0.3906,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "DUOT",
+      "basket": "finra_shortvol",
+      "top_k_of": [
+        "finra_shortvol"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 25,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.7865,
+        "halt_reason": null,
+        "realized_vol": 0.0646
+      },
+      "combined_score": 0.0893,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "ELAB",
+      "basket": "pennystocks",
+      "top_k_of": [
+        "pennystocks"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": null,
+        "penny_surge": 5.0,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.5577,
+        "halt_reason": null,
+        "realized_vol": null
+      },
+      "combined_score": null,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "FLY",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 6,
+        "pm_rvol": 0.0,
+        "gap_pct": -3.13,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.42,
+        "finra_short_ratio": 0.6147,
+        "halt_reason": null,
+        "realized_vol": 0.0813
+      },
+      "combined_score": 0.1964,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "HUBB",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 23.88,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.6462,
+        "halt_reason": null,
+        "realized_vol": 0.0283
+      },
+      "combined_score": 0.4062,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "IBKR",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 9.4,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.5,
+        "finra_short_ratio": 0.4044,
+        "halt_reason": null,
+        "realized_vol": 0.0277
+      },
+      "combined_score": 0.7447,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "IWM",
+      "basket": "wsb",
+      "top_k_of": [
+        "finra_shortvol",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 22.0,
+        "wsb_rank": 24,
+        "st_rank": null,
+        "pm_rvol": 0.68,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.62,
+        "finra_short_ratio": 0.6796,
+        "halt_reason": null,
+        "realized_vol": 0.0128
+      },
+      "combined_score": 0.6518,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "LABD",
+      "basket": "filtered3",
+      "top_k_of": [
+        "filtered3",
+        "pm_rvol"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 17,
+        "pm_rvol": 3.77,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.4284,
+        "halt_reason": null,
+        "realized_vol": 0.0531
+      },
+      "combined_score": 0.6255,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "LCID",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 19,
+        "pm_rvol": 0.0,
+        "gap_pct": 9.38,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.79,
+        "finra_short_ratio": 0.6179,
+        "halt_reason": null,
+        "realized_vol": 0.0637
+      },
+      "combined_score": 0.3707,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "LUCY",
+      "basket": "pennystocks",
+      "top_k_of": [
+        "pennystocks"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": null,
+        "penny_surge": 9.0,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": null,
+        "finra_short_ratio": 0.5531,
+        "halt_reason": null,
+        "realized_vol": null
+      },
+      "combined_score": null,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "MSFT",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 4.1,
+        "wsb_rank": 3,
+        "st_rank": null,
+        "pm_rvol": 0.12,
+        "gap_pct": null,
+        "squeeze": 3.25,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.59,
+        "finra_short_ratio": 0.3214,
+        "halt_reason": null,
+        "realized_vol": 0.0236
+      },
+      "combined_score": 0.4283,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "MU",
+      "basket": "gappers",
+      "top_k_of": [
+        "pm_rvol"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 20,
+        "pm_rvol": 0.73,
+        "gap_pct": -4.5,
+        "squeeze": 2.8,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.69,
+        "finra_short_ratio": 0.3959,
+        "halt_reason": null,
+        "realized_vol": 0.0818
+      },
+      "combined_score": 0.3113,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "NET",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 11,
+        "pm_rvol": null,
+        "gap_pct": 8.04,
+        "squeeze": 7.08,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.34,
+        "finra_short_ratio": 0.3362,
+        "halt_reason": null,
+        "realized_vol": 0.032
+      },
+      "combined_score": 0.539,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "NVDA",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 4,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 2.22,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.58,
+        "finra_short_ratio": 0.3468,
+        "halt_reason": null,
+        "realized_vol": 0.0244
+      },
+      "combined_score": 0.2143,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "PENG",
+      "basket": "gappers",
+      "top_k_of": [
+        "gtrends"
+      ],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 8,
+        "pm_rvol": 0.0,
+        "gap_pct": 10.18,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.82,
+        "finra_short_ratio": 0.5144,
+        "halt_reason": null,
+        "realized_vol": 0.079
+      },
+      "combined_score": 0.4703,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "PLTR",
+      "basket": "wsb",
+      "top_k_of": [
+        "ignition",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 13.0,
+        "wsb_rank": 40,
+        "st_rank": null,
+        "pm_rvol": 0.15,
+        "gap_pct": null,
+        "squeeze": 7.07,
+        "uoa_z": null,
+        "ignition": 2,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.63,
+        "finra_short_ratio": 0.5312,
+        "halt_reason": null,
+        "realized_vol": 0.0368
+      },
+      "combined_score": 0.5694,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "QQQ",
+      "basket": "wsb",
+      "top_k_of": [
+        "pm_rvol",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 5.5,
+        "wsb_rank": 6,
+        "st_rank": null,
+        "pm_rvol": 1.15,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.56,
+        "finra_short_ratio": 0.6368,
+        "halt_reason": null,
+        "realized_vol": 0.0215
+      },
+      "combined_score": 0.7052,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "RDDT",
+      "basket": "gappers",
+      "top_k_of": [
+        "finra_shortvol",
+        "gtrends",
+        "squeeze"
+      ],
+      "signals": {
+        "wsb_surge": 3.4,
+        "wsb_rank": 14,
+        "st_rank": 14,
+        "pm_rvol": 0.0,
+        "gap_pct": 3.18,
+        "squeeze": 36.47,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.8,
+        "finra_short_ratio": 0.6496,
+        "halt_reason": null,
+        "realized_vol": 0.055
+      },
+      "combined_score": 0.3933,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "RIVN",
+      "basket": "wsb",
+      "top_k_of": [
+        "filtered3",
+        "gtrends",
+        "squeeze",
+        "stocktwits",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 18.0,
+        "wsb_rank": 18,
+        "st_rank": 2,
+        "pm_rvol": null,
+        "gap_pct": 8.0,
+        "squeeze": 64.63,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 1.16,
+        "finra_short_ratio": 0.4661,
+        "halt_reason": null,
+        "realized_vol": 0.0549
+      },
+      "combined_score": 0.7123,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "RTX",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 4.7,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.41,
+        "finra_short_ratio": 0.4839,
+        "halt_reason": null,
+        "realized_vol": 0.0194
+      },
+      "combined_score": 0.4404,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SECZ",
+      "basket": "gappers",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": 12,
+        "pm_rvol": null,
+        "gap_pct": -11.62,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.67,
+        "finra_short_ratio": 0.5477,
+        "halt_reason": null,
+        "realized_vol": 0.0672
+      },
+      "combined_score": 0.4588,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SMCI",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": 29.32,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.53,
+        "finra_short_ratio": 0.4998,
+        "halt_reason": null,
+        "realized_vol": 0.0891
+      },
+      "combined_score": 0.2813,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SNDK",
+      "basket": "wsb",
+      "top_k_of": [
+        "pm_rvol",
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 3.2,
+        "wsb_rank": 4,
+        "st_rank": null,
+        "pm_rvol": 0.87,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.76,
+        "finra_short_ratio": 0.3196,
+        "halt_reason": null,
+        "realized_vol": 0.0956
+      },
+      "combined_score": 0.4387,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SOXL",
+      "basket": "stocktwits",
+      "top_k_of": [
+        "stocktwits"
+      ],
+      "signals": {
+        "wsb_surge": 4.0,
+        "wsb_rank": 20,
+        "st_rank": 3,
+        "pm_rvol": 0.58,
+        "gap_pct": -6.53,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.64,
+        "finra_short_ratio": 0.5853,
+        "halt_reason": null,
+        "realized_vol": 0.1544
+      },
+      "combined_score": 0.5504,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SPCX",
+      "basket": "finra_shortvol",
+      "top_k_of": [
+        "finra_shortvol"
+      ],
+      "signals": {
+        "wsb_surge": 4.6,
+        "wsb_rank": 9,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": null,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.32,
+        "finra_short_ratio": 0.6676,
+        "halt_reason": null,
+        "realized_vol": null
+      },
+      "combined_score": 0.44,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SPOT",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": 16.1,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.39,
+        "finra_short_ratio": 0.3463,
+        "halt_reason": null,
+        "realized_vol": 0.0209
+      },
+      "combined_score": 0.375,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "SPY",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 3.7,
+        "wsb_rank": 2,
+        "st_rank": null,
+        "pm_rvol": 0.0,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.51,
+        "finra_short_ratio": 0.6459,
+        "halt_reason": null,
+        "realized_vol": 0.011
+      },
+      "combined_score": 0.4186,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "TSLA",
+      "basket": "wsb",
+      "top_k_of": [
+        "wsb"
+      ],
+      "signals": {
+        "wsb_surge": 12.2,
+        "wsb_rank": 7,
+        "st_rank": null,
+        "pm_rvol": 0.17,
+        "gap_pct": null,
+        "squeeze": 3.86,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.64,
+        "finra_short_ratio": 0.5075,
+        "halt_reason": null,
+        "realized_vol": 0.0416
+      },
+      "combined_score": 0.6042,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "VNQ",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.5813,
+        "halt_reason": null,
+        "realized_vol": 0.0116
+      },
+      "combined_score": 0.4746,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "XLP",
+      "basket": "random",
+      "top_k_of": [],
+      "signals": {
+        "wsb_surge": null,
+        "wsb_rank": null,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 0,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.0,
+        "finra_short_ratio": 0.6627,
+        "halt_reason": null,
+        "realized_vol": 0.0118
+      },
+      "combined_score": 0.0,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    },
+    {
+      "symbol": "YOU",
+      "basket": "finra_shortvol",
+      "top_k_of": [
+        "finra_shortvol"
+      ],
+      "signals": {
+        "wsb_surge": 4.2,
+        "wsb_rank": 33,
+        "st_rank": null,
+        "pm_rvol": null,
+        "gap_pct": null,
+        "squeeze": null,
+        "uoa_z": null,
+        "ignition": 1,
+        "penny_surge": null,
+        "squeeze_sub_surge": null,
+        "gtrends_spike": 0.55,
+        "finra_short_ratio": 0.7002,
+        "halt_reason": null,
+        "realized_vol": 0.0238
+      },
+      "combined_score": 0.3715,
+      "ret_945_close": null,
+      "ret_1d": null,
+      "ret_3d": null
+    }
+  ]
+}
