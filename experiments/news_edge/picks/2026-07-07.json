@@ -1,0 +1,291 @@
+{
+  "date": "2026-07-07",
+  "logged_at": "2026-07-07T09:39:09-04:00",
+  "picks": [
+    {
+      "symbol": "CMPS",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "COMPASS Pathways released POSITIVE 26-week Part B data from 2nd Phase 3 COMP006 trial of COMP360 psilocybin for treatment-resistant depression (39% durable response @25mg vs 25% prior single-dose). Rolling NDA + FDA National Priority Voucher; final submission on track Q4 2026. Clean dated primary clinical catalyst. Gap ~+30% to ~$13.50. ST 94% bull (n=16) = crowd chasing -> big-gapper fade risk tempers conviction to moderate.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "fda-biotech",
+      "control": false
+    },
+    {
+      "symbol": "RIVN",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Rivian announced a 75M-share offering (~$1.5B) to meet equity requirements under its DOE loan agreement -> dilution overhanging an otherwise strong Q2 (delivery beat 12,194 + raised FY guide to 65-70k, reported 07/02). Fresh dated dilution catalyst drives the ~-10% premarket. ST 43% bull (n=7, split). WSB surge rank 18 (crowding, not direction).",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 18,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "CRNX",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Vertex to acquire Crinetics all-cash at $85/share (~$10B); stock +98.8% and PINNED near deal price = merger-arb, no intraday breakout room -> not tradeable as a frontrunner. Neutral. ST 88% bull (n=8).",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-ma",
+      "control": false
+    },
+    {
+      "symbol": "VRTX",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "Acquirer in the CRNX deal (~$10B all-cash). Acquirers commonly trade flat-to-slightly-down on cash M&A; mega-cap so muted. No clear directional edge -> neutral. ST 86% bull (n=7).",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-ma",
+      "control": false
+    },
+    {
+      "symbol": "EOSE",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Frontier Power USA JV with Cerberus ($100M anchor) + 2GWh reservation, BUT Eos funds its ~$150M via a pro-rata rights offering (EOSER trading, dilutive). Project news offset by dilution = mixed, not a clean bullish frontrunner -> neutral. Gap ~+6.7%. ST 77% bull (n=13).",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "energy-storage",
+      "control": false
+    },
+    {
+      "symbol": "SOXL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -16.18
+    },
+    {
+      "symbol": "DOCN",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 8.25
+    },
+    {
+      "symbol": "ARQQ",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -7.95
+    },
+    {
+      "symbol": "PENG",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -7.22
+    },
+    {
+      "symbol": "SECZ",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -7.12
+    },
+    {
+      "symbol": "MU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.44
+    },
+    {
+      "symbol": "LCID",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.17
+    },
+    {
+      "symbol": "FIG",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.14
+    },
+    {
+      "symbol": "CHPY",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -5.11
+    },
+    {
+      "symbol": "NET",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.3
+    },
+    {
+      "symbol": "FLY",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.13
+    },
+    {
+      "symbol": "SHOP",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.01
+    }
+  ]
+}
