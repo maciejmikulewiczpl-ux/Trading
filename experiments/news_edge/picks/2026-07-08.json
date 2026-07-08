@@ -1,0 +1,284 @@
+{
+  "date": "2026-07-08",
+  "logged_at": "2026-07-08T09:41:07-04:00",
+  "picks": [
+    {
+      "symbol": "NVTS",
+      "signal": -1,
+      "confidence": 0.6,
+      "reason": "8-K (09:29) discloses completed $500M ATM program - sold ~6.53M shares for ~$122M net (dilution). Stock gapped DOWN -4.5%; StockTwits bearish (33% bull). Classic offering-completion fade setup.",
+      "sources": [
+        "edgar-8k",
+        "stocktwits",
+        "websearch-stocktitan"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false,
+      "gap_pct": -4.5
+    },
+    {
+      "symbol": "SEI",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Wolfe Research initiated Outperform, $120 PT; also announced ~$55M cash/stock acquisition of Global Energy Services Alliance (power-gen). +3.9% premarket (small fresh-news gap). StockTwits 100% bull.",
+      "sources": [
+        "websearch-investing",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "power-infra",
+      "control": false
+    },
+    {
+      "symbol": "HELE",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Q1 FY27 earnings BEAT (adj EPS $0.17 vs $0.02 est; rev $402.1M vs $375M est). FY27 guide $3.25-3.75 EPS ~inline caps upside. Earnings-day gapper; StockTwits 80% bull.",
+      "sources": [
+        "edgar-8k",
+        "websearch-investing",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "consumer-earnings",
+      "control": false
+    },
+    {
+      "symbol": "VERA",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "PDUFA decision window for atacicept (IgA nephropathy, accelerated approval). +6% premarket into the binary FDA catalyst; StockTwits 92% bull. Binary risk -> lower confidence.",
+      "sources": [
+        "websearch-investing",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "fda",
+      "control": false
+    },
+    {
+      "symbol": "PENG",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Named Nvidia AI Factory Specialized Partner + FY26 guide to high end; Stifel PT $66, Rosenblatt $65. CFO departure (effective today) a minor offset. +5.95%, reddit mention surge (11.5x), pm RVOL 1.61. Already extended near targets.",
+      "sources": [
+        "edgar-8k",
+        "reddit",
+        "stocktwits",
+        "websearch-stockstotrade"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.61,
+      "reddit_rank": 20,
+      "earnings_day": false,
+      "theme": "ai-infra",
+      "control": false,
+      "gap_pct": 5.95
+    },
+    {
+      "symbol": "BABA",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Leader of a broad China-tech rally (BIDU/JD also up). +8.25% premarket, StockTwits 88% bull, trending + reddit. Big gap -> fade risk per pre-reg, so moderate confidence.",
+      "sources": [
+        "stocktwits",
+        "reddit",
+        "movers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "china-tech",
+      "control": false,
+      "gap_pct": 8.25
+    },
+    {
+      "symbol": "SCLX",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Binding term sheet for $100M strategic investment from iHolding (Kazakhstan). +7% to ~$9.93 (not a penny). StockTwits 95% bull. Caution: promotional/meme-coin behavior (Dream Bowl token) -> low confidence.",
+      "sources": [
+        "websearch-benzinga",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "financing",
+      "control": false
+    },
+    {
+      "symbol": "SECZ",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -25.69
+    },
+    {
+      "symbol": "WULF",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 9.54
+    },
+    {
+      "symbol": "BABA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 8.25
+    },
+    {
+      "symbol": "ABTC",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -7.67
+    },
+    {
+      "symbol": "SLS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.04
+    },
+    {
+      "symbol": "PENG",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.95
+    },
+    {
+      "symbol": "BIDU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.28
+    },
+    {
+      "symbol": "NVTS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.5
+    },
+    {
+      "symbol": "JD",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.06
+    }
+  ]
+}
