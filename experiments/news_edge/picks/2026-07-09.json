@@ -1,0 +1,474 @@
+{
+  "date": "2026-07-09",
+  "logged_at": "2026-07-09T09:40:55-04:00",
+  "picks": [
+    {
+      "symbol": "MU",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "AI-memory sector rip: BofA note frames memory as 35-40% of cloud AI capex (healthy reset, not structural), SK Hynix Nasdaq listing 7/10 + Kioxia +10%/SK Hynix +8% on AI-NAND/HBM demand. MU = liquid HBM leader (Anthropic deal, record Q3). +6.2% pm, pm RVOL 1.3, StockTwits 100% bull. Sector-wave (no MU-specific catalyst today) -> modest confidence.",
+      "sources": [
+        "websearch-tradingkey",
+        "stocktwits",
+        "pm-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.3,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-memory",
+      "control": false,
+      "gap_pct": 6.22
+    },
+    {
+      "symbol": "AEHR",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Post-earnings pop (+13-15% today; +40% YTD after the print) - semiconductor test/burn-in levered to AI memory and SiC. Named catalyst = earnings beat. Big gapper (+13.5%); StockTwits 100% bull. Earnings-day gappy -> moderate confidence.",
+      "sources": [
+        "websearch-tickeron",
+        "stocktwits",
+        "pm-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "semicap",
+      "control": false,
+      "gap_pct": 13.47
+    },
+    {
+      "symbol": "GLW",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Corning optical fiber/connectivity levered to AI-datacenter capex; riding the AI-infra wave. +7.3% pm with the strongest CONFIRMED participation of the set (pm RVOL 2.02). StockTwits 64% bull. No single-name news pinned -> moderate confidence.",
+      "sources": [
+        "pm-rvol",
+        "stocktwits",
+        "pm-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 2.02,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-optical",
+      "control": false,
+      "gap_pct": 7.28
+    },
+    {
+      "symbol": "BE",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Cleanest single-name catalyst: Brookfield expanded its Bloom-powered AI-infra financing framework 5B->25B (7/6); Evercore and UBS raised PT to 350; Q1 EPS 0.44 vs 0.12 est, FY raised. Filed 8-K today. +7.5% pm, WSB surge (223 upvotes), StockTwits 89% bull.",
+      "sources": [
+        "websearch-stockstotrade",
+        "edgar-8k",
+        "reddit",
+        "stocktwits",
+        "pm-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.46,
+      "reddit_rank": 25,
+      "earnings_day": false,
+      "theme": "ai-power",
+      "control": false,
+      "gap_pct": 7.52
+    },
+    {
+      "symbol": "PEP",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Q2 earnings TODAY, gapping DOWN -4.5%. Wall Street cut price targets into the print; persistent Frito-Lay North America volume concerns. Soft-reaction fade setup. StockTwits neutral (43% bull).",
+      "sources": [
+        "websearch-tradingkey",
+        "edgar-8k",
+        "stocktwits",
+        "pm-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "staples-earnings",
+      "control": false,
+      "gap_pct": -4.46
+    },
+    {
+      "symbol": "FCEL",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Priced a 225M upsized offering (dilution) - bearish overhang; the +5.9% sympathy pop alongside Bloom fuel-cell strength should fade on the dilution. StockTwits 100% bull = contrarian dip-buying into an offering. Named catalyst = offering pricing.",
+      "sources": [
+        "websearch",
+        "edgar-8k",
+        "stocktwits",
+        "pm-gappers"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false,
+      "gap_pct": 5.92
+    },
+    {
+      "symbol": "RXT",
+      "signal": -1,
+      "confidence": 0.35,
+      "reason": "Filed 424B5 + 8-K at ~08:12 (secondary offering = dilution). Offering overhang = near-term fade. StockTwits 86% bull (contrarian). Named catalyst = the 424B5 pricing.",
+      "sources": [
+        "edgar-424b5",
+        "edgar-8k",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.02,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "RIVN",
+      "signal": -1,
+      "confidence": 0.3,
+      "reason": "8-K stock offering (dilutive) pressuring shares, though it beat Q2 deliveries + raised FY outlook to 70k on the R2 debut = genuinely mixed. Near-term the offering overhang leads -> lean avoid, low confidence. StockTwits bullish (thin n=5).",
+      "sources": [
+        "edgar-8k",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ev-dilution",
+      "control": false
+    },
+    {
+      "symbol": "MP",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Biggest WSB mention surge (rank 49, 10x vs 24h ago) + StockTwits 100% bull (n=22), rare-earth name. NO named/dated catalyst found today -> crowding only, signal 0 per rules (chatter = find the catalyst, not itself the catalyst).",
+      "sources": [
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": 49,
+      "earnings_day": false,
+      "theme": "rare-earth",
+      "control": false
+    },
+    {
+      "symbol": "SOXL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 14.68
+    },
+    {
+      "symbol": "AEHR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 13.47
+    },
+    {
+      "symbol": "LITE",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 8.33
+    },
+    {
+      "symbol": "BE",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.52
+    },
+    {
+      "symbol": "GLW",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.28
+    },
+    {
+      "symbol": "MU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.22
+    },
+    {
+      "symbol": "ENVX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.95
+    },
+    {
+      "symbol": "FCEL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.92
+    },
+    {
+      "symbol": "MARA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.7
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.77
+    },
+    {
+      "symbol": "PEP",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.46
+    },
+    {
+      "symbol": "POET",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.41
+    },
+    {
+      "symbol": "CRM",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.26
+    },
+    {
+      "symbol": "CHPY",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.24
+    },
+    {
+      "symbol": "IBM",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.17
+    },
+    {
+      "symbol": "AMPX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.97
+    },
+    {
+      "symbol": "META",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.64
+    },
+    {
+      "symbol": "NOW",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.36
+    }
+  ]
+}
