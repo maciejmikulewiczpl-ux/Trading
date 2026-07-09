@@ -605,7 +605,7 @@
       "combined_score": null,
       "ret_945_close": 0.0,
       "ret_1d": 0.0,
-      "ret_3d": null
+      "ret_3d": -8.812
     },
     {
       "symbol": "META",
@@ -1334,5 +1334,5 @@
     }
   ],
   "scored_at": "2026-07-02T16:10:10-04:00",
-  "backfilled_at": "2026-07-08T16:10:11-04:00"
+  "backfilled_at": "2026-07-09T16:10:09-04:00"
 }
