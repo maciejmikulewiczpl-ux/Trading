@@ -159,6 +159,13 @@ def build_board() -> dict:
     print(f"FINRA short-vol: {len(finra_sv)} symbols in latest daily file")
     halts = S.trading_halts()
     print(f"trading halts: {len(halts)} symbols in feed")
+    # v1.5 (2026-07-10) options-implied EXPECTED MOVE (forward-looking "market is pricing a big
+    # move" = ATM straddle / strike, sqrt-time normalized to the T+3 hold). MEASURED-only (own
+    # scoreboard clock; NOT in combined_score). Motivated by multiday_selector.py: signal LEVELS
+    # carry no multi-day edge, so a forward-looking options signal is the next thing to forward-test.
+    print("computing options expected-move (ATM straddle, quotes-only) ...")
+    opt_em = S.options_expected_move(all_syms)
+    print(f"options expected-move: {len(opt_em)}/{len(all_syms)} optionable names priced")
 
     wsb_surge = {r["ticker"]: r.get("surge") for r in wsb_rows}
     wsb_rank = {r["ticker"]: r.get("rank") for r in wsb_rows}
@@ -185,6 +192,7 @@ def build_board() -> dict:
             "finra_short_ratio": finra_sv.get(sym),       # v1.3 measured-only (not in combined)
             "halt_reason": halts.get(sym),                # v1.3 measured-only (not in combined)
             "realized_vol": igv.get("realized_vol"),      # v1.4 measured-only (filter variant)
+            "opt_expmove": opt_em.get(sym),               # v1.5 measured-only (options expected move)
         }
 
     # --- 4. combined_score: mean percentile rank across non-null signals ---
@@ -268,13 +276,18 @@ def build_board() -> dict:
     _filt_top3 = set(sorted(_filt_elig, key=lambda s: -combined(s))[:3])
     signal_topk["filtered3"] = _filt_top3
     basket_members["filtered3"] = _filt_top3
+    # v1.5 options expected-move: top-K by implied expected move among tradable candidates
+    _opt = {s for s, _ in sorted(((s, v) for s, v in opt_em.items()
+            if v is not None and s in set(tradable)), key=lambda x: -x[1])[:TOP_K]}
+    signal_topk["options"] = _opt
+    basket_members["options"] = _opt
 
     # build the pick list. A symbol gets ONE row; basket = its primary basket (priority
     # wsb > stocktwits > gappers > random > control), top_k_of lists ALL signals that
     # flagged it.
     basket_priority = ["wsb", "stocktwits", "gappers", "random", "control",
                        "pennystocks", "shortsqueeze", "gtrends",
-                       "finra_shortvol", "halts", "filtered3"]   # new baskets lowest priority
+                       "finra_shortvol", "halts", "filtered3", "options"]   # new baskets lowest priority
     all_picks_syms = sorted(set().union(*basket_members.values()))
     picks = []
     for sym in all_picks_syms:

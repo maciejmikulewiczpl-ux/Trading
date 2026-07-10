@@ -380,6 +380,70 @@ def _is_call(occ_symbol: str) -> bool:
     return bool(m and m.group(1) == "C")
 
 
+def options_expected_move(tickers: list[str], horizon_days: int = 3, max_dte: int = 45) -> dict:
+    """Options-implied EXPECTED MOVE per name = a forward-looking "the market is pricing a big
+    move" signal. Value = near-dated ATM straddle mid / strike, sqrt-time normalized to
+    `horizon_days` (the bot's T+3 hold) so names with different nearest expiries are comparable.
+    ATM is found WITHOUT a spot fetch (the strike where call & put mids are nearest equal ~ ATM).
+    Uses QUOTES only (Alpaca free tier has no greeks/IV). Graceful-None per name so it can NEVER
+    break the board; ~0.1-1.7s/name so restrict to the candidate net. Measured-only signal."""
+    import math
+    from datetime import date, timedelta
+    try:
+        from alpaca.data.historical.option import OptionHistoricalDataClient
+        from alpaca.data.requests import OptionChainRequest
+        oc = OptionHistoricalDataClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"])
+    except Exception:
+        return {}
+    today = date.today()
+    out: dict[str, float] = {}
+    for t in tickers:
+        try:
+            try:
+                req = OptionChainRequest(underlying_symbol=t, expiration_date_gte=today,
+                                         expiration_date_lte=today + timedelta(days=max_dte))
+            except Exception:
+                req = OptionChainRequest(underlying_symbol=t)
+            chain = oc.get_option_chain(req)
+            exps: dict = {}
+            for k, s in chain.items():
+                q = getattr(s, "latest_quote", None)
+                if not q or not q.bid_price or not q.ask_price:
+                    continue
+                mid = (q.bid_price + q.ask_price) / 2
+                if mid <= 0:
+                    continue
+                e, typ, strike = _parse_occ(k)
+                if e is None or e < today or (e - today).days > max_dte:
+                    continue
+                exps.setdefault(e, {}).setdefault(strike, {})[typ] = mid
+            if not exps:
+                continue
+            cand = sorted(exps)
+            e = next((x for x in cand if (x - today).days >= 2), cand[0])   # skip 0-1DTE noise
+            both = {st: v for st, v in exps[e].items() if "C" in v and "P" in v}
+            if not both:
+                continue
+            atm = min(both, key=lambda st: abs(both[st]["C"] - both[st]["P"]))
+            raw = (both[atm]["C"] + both[atm]["P"]) / atm
+            days = max((e - today).days, 1)
+            out[t] = round(raw * math.sqrt(horizon_days / days) * 100, 3)
+        except Exception:
+            continue
+    return out
+
+
+def _parse_occ(sym: str):
+    """OCC option symbol: ROOT + YYMMDD + C/P + strike(8 digits, thousandths).
+    Returns (expiry_date, 'C'/'P', strike_float) or (None, None, None) if unparseable."""
+    from datetime import date
+    try:
+        body = sym[-15:]
+        return date(2000 + int(body[0:2]), int(body[2:4]), int(body[4:6])), body[6], int(body[7:]) / 1000.0
+    except Exception:
+        return None, None, None
+
+
 def main(argv) -> int:
     cmd = argv[1].lower() if len(argv) > 1 else ""
     if cmd == "ignition" and len(argv) >= 3:
