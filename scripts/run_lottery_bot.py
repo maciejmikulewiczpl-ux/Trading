@@ -69,6 +69,25 @@ LEVERAGED_INVERSE_ETFS = frozenset({
     "AMZU", "AMZD", "METU", "METD", "AMDL", "AMDS", "PLTU", "AMUU", "AVL",
 })
 
+# Broad-market index + bond/fixed-income ETFs: BASKETS, not "hype lottery" single names. They leak
+# onto the board via WSB/StockTwits mention counts (IGSB -- a short-term CORP-BOND ETF -- scored
+# combined_score 0.88 and was bought 2026-07-08; QQQ bought 07-07) but have ~zero explosive tail and
+# just bleed the notional (2026-07-10 scoreboard confirmed the sluggish-large-cap/ETF drag). Skip at
+# entry, same as LEVERAGED_INVERSE_ETFS (board still scores them for measurement continuity). Curated;
+# single-name hype is the thesis, so NO sector/thematic ETFs here (those can plausibly run) -- only
+# broad index + fixed income.
+NON_HYPE_ETFS = frozenset({
+    # broad US equity index
+    "SPY", "VOO", "IVV", "SPLG", "QQQ", "QQQM", "DIA", "IWM", "IWB", "IWV", "IWF", "IWD",
+    "VTI", "ITOT", "SCHB", "RSP", "VUG", "VTV", "MDY", "SCHX", "SCHG", "SCHV",
+    # broad international equity
+    "VEA", "VWO", "EFA", "EEM", "IEFA", "IEMG", "VXUS", "ACWI", "IXUS", "SCHF",
+    # bond / fixed income (whole category is non-hype)
+    "IGSB", "IGIB", "AGG", "BND", "BNDX", "LQD", "VCSH", "VCIT", "HYG", "JNK", "USHY",
+    "TLT", "IEF", "IEI", "SHY", "GOVT", "BIL", "SGOV", "SHV", "TIP", "VTIP", "STIP",
+    "MUB", "VTEB", "BSV", "BIV", "BLV", "MBB", "TLH", "SPTL", "SPTI", "SPSB",
+})
+
 NOTIONAL = 2000.0          # $ per pick (matches news-edge ORB_NOTIONAL_PER_TRADE for a direct PnL comparison)
 TRAIL_PCT = 10.0           # native trailing stop % (INTRADAY protection only now)
 MAX_SPREAD_PCT = 3.0       # skip names whose bid/ask spread is wider than this (illiquid / heavy slippage)
@@ -337,6 +356,9 @@ def run_entries(tc, dry_run: bool) -> int:
             continue
         if sym in LEVERAGED_INVERSE_ETFS:
             print(f"  {sym}: leveraged/inverse ETF -- skip (derivative vehicle, not a hype name).")
+            continue
+        if sym in NON_HYPE_ETFS:
+            print(f"  {sym}: broad-index/bond ETF -- skip (basket, not a hype single-name).")
             continue
         px = prices.get(sym)
         if px is None or px <= 0:
