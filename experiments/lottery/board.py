@@ -28,6 +28,12 @@ import experiments.lottery.sources as S  # noqa: E402
 ET = ZoneInfo("America/New_York")
 HERE = Path(__file__).resolve().parent
 PICKS_DIR = HERE / "picks"
+# append-only per-name signal snapshots -> the IRREPLACEABLE time-series for computing signal
+# VELOCITY / acceleration retroactively. Motivated 2026-07-10: signal LEVELS carry no multi-day
+# edge (multiday_selector.py), so DYNAMICS (how fast attention is rising) is the untested lead,
+# and rate-of-change can't be reconstructed later. Additive: does NOT touch picks/<date>.json,
+# the bot, or the scoreboard.
+HIST_FILE = ROOT / "logs" / "lottery_signal_history.jsonl"
 TOP_K = 5
 MIN_PRICE = 1.0
 VOL_FLOOR = 0.04   # v1.4 realized-daily-vol floor for the measured "filtered3" exit variant
@@ -295,8 +301,26 @@ def build_board() -> dict:
     }
 
 
+def _append_history(rec: dict, tag: str) -> None:
+    """Append this run's per-name signal snapshot to the append-only history (JSONL, one line per
+    run). Preserves the raw signal TIME-SERIES so velocity/acceleration can be computed later.
+    Additive + irreplaceable; never touches the immutable board / bot / scoreboard."""
+    HIST_FILE.parent.mkdir(parents=True, exist_ok=True)
+    line = {"ts": rec["logged_at"], "date": rec["date"], "tag": tag,
+            "signals": {p["symbol"]: p["signals"] for p in rec["picks"]}}
+    with open(HIST_FILE, "a") as f:
+        f.write(json.dumps(line) + "\n")
+    print(f"appended signal snapshot ({len(line['signals'])} names, tag={tag}) -> {HIST_FILE.name}")
+
+
 def main(argv) -> int:
     dry = "--dry" in argv
+    snapshot_only = "--snapshot-only" in argv   # scan + append history, do NOT write the board
+    tag = "board"
+    if "--tag" in argv:
+        i = argv.index("--tag")
+        if i + 1 < len(argv):
+            tag = argv[i + 1]
     rec = build_board()
     counts: dict[str, int] = {}
     for p in rec["picks"]:
@@ -306,6 +330,12 @@ def main(argv) -> int:
     if dry:
         print(json.dumps(rec, indent=2)[:3000])
         print("\n[--dry] not written.")
+        return 0
+    # append-only signal-history capture (irreplaceable) -- on EVERY real run, incl. a 2nd
+    # intraday --snapshot-only run and even when today's immutable board already exists.
+    _append_history(rec, tag)
+    if snapshot_only:
+        print("[--snapshot-only] appended history; did NOT write the immutable board.")
         return 0
     PICKS_DIR.mkdir(parents=True, exist_ok=True)
     out = PICKS_DIR / f"{rec['date']}.json"
