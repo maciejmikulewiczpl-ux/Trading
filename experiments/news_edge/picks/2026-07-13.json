@@ -1,0 +1,210 @@
+{
+  "date": "2026-07-13",
+  "logged_at": "2026-07-13T09:38:42-04:00",
+  "picks": [
+    {
+      "symbol": "BIIB",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Biogen upgraded to Buy from Hold at Truist, PT raised to $235 from $190, ahead of Phase 2 BIIB080 data at AAIC next week and approaching litifilimab Phase 3 readouts (Q4). Named, dated analyst catalyst; non-earnings. ST crowd 100% bull (n=13) = agrees with the upgrade.",
+      "sources": [
+        "websearch-investrade",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-upgrade",
+      "control": false
+    },
+    {
+      "symbol": "HUM",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Humana upgraded to Overweight from Equal Weight at Wells Fargo, target raised to $502 from $227, on expected constructive Q2 managed-care reports. Named, dated analyst catalyst. ST crowd 100% bull (n=9).",
+      "sources": [
+        "websearch-investrade",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "managedcare-upgrade",
+      "control": false
+    },
+    {
+      "symbol": "CNMD",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Conmed said to be weighing a sale after takeover interest (M&A). Real but rumor-stage so low conf. ST n=1 insufficient.",
+      "sources": [
+        "websearch-investrade",
+        "stocktwits"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "m-and-a",
+      "control": false
+    },
+    {
+      "symbol": "MU",
+      "signal": -1,
+      "confidence": 0.3,
+      "reason": "Caught in the AI-memory-trade reassessment: SK Hynix (Nasdaq debut Fri) -8% premarket / -15% Seoul, memory/chip names under pressure (LRCX/TER/COHR red). MU -1.24% premarket. NOTE: MU already reported (record beat, Jun 24); next earnings Sep 29 so NOT earnings-day -- sector-selloff avoid, no MU-specific fresh catalyst. ST crowd split 47%.",
+      "sources": [
+        "websearch-cnbc",
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 0.8,
+      "reddit_rank": 1,
+      "earnings_day": false,
+      "theme": "semis-memory",
+      "control": false
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "SanDisk +3.1% premarket, green while the memory complex is red (divergence) but no named SNDK-specific catalyst today -> momentum-unconfirmed -> signal 0. ST crowd bearish (22% bull, contrarian), pm-RVOL 1.81. Crowding/divergence flag.",
+      "sources": [
+        "websearch-cnbc",
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": 1.81,
+      "reddit_rank": 5,
+      "earnings_day": false,
+      "theme": "semis-storage",
+      "control": false
+    },
+    {
+      "symbol": "SOFI",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "#1 StockTwits trending + Reddit surge, but no fresh fundamental catalyst found -> neutral crowding flag. pm-RVOL 1.77. ST crowd 60%.",
+      "sources": [
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 1.77,
+      "reddit_rank": 24,
+      "earnings_day": false,
+      "theme": "fintech-crowding",
+      "control": false
+    },
+    {
+      "symbol": "QTTB",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper (Q32 Bio +72% on positive Phase 2a SIGNAL-AA alopecia data)",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-data",
+      "control": true,
+      "gap_pct": 70.22
+    },
+    {
+      "symbol": "KORU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -21.44
+    },
+    {
+      "symbol": "DRAM",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -9.13
+    },
+    {
+      "symbol": "STLA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.09
+    },
+    {
+      "symbol": "SSPC",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.4
+    },
+    {
+      "symbol": "SPCH",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.37
+    }
+  ]
+}
