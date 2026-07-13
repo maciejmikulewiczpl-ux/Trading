@@ -18,7 +18,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "biotech-upgrade",
-      "control": false
+      "control": false,
+      "ret_945_close": 4.319,
+      "gap_pct": 0.156
     },
     {
       "symbol": "HUM",
@@ -36,7 +38,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "managedcare-upgrade",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.413,
+      "gap_pct": 2.053
     },
     {
       "symbol": "CNMD",
@@ -52,7 +56,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "m-and-a",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.952,
+      "gap_pct": 2.668
     },
     {
       "symbol": "MU",
@@ -71,7 +77,9 @@
       "reddit_rank": 1,
       "earnings_day": false,
       "theme": "semis-memory",
-      "control": false
+      "control": false,
+      "ret_945_close": 2.985,
+      "gap_pct": -5.145
     },
     {
       "symbol": "SNDK",
@@ -90,7 +98,9 @@
       "reddit_rank": 5,
       "earnings_day": false,
       "theme": "semis-storage",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.285,
+      "gap_pct": -6.249
     },
     {
       "symbol": "SOFI",
@@ -108,7 +118,9 @@
       "reddit_rank": 24,
       "earnings_day": false,
       "theme": "fintech-crowding",
-      "control": false
+      "control": false,
+      "ret_945_close": -3.388,
+      "gap_pct": 1.064
     },
     {
       "symbol": "QTTB",
@@ -124,7 +136,8 @@
       "earnings_day": false,
       "theme": "biotech-data",
       "control": true,
-      "gap_pct": 70.22
+      "gap_pct": 70.22,
+      "ret_945_close": 16.253
     },
     {
       "symbol": "KORU",
@@ -140,7 +153,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -21.44
+      "gap_pct": -21.44,
+      "ret_945_close": -2.169
     },
     {
       "symbol": "DRAM",
@@ -156,7 +170,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -9.13
+      "gap_pct": -9.13,
+      "ret_945_close": 0.828
     },
     {
       "symbol": "STLA",
@@ -172,7 +187,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 4.09
+      "gap_pct": 4.09,
+      "ret_945_close": -2.535
     },
     {
       "symbol": "SSPC",
@@ -188,7 +204,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.4
+      "gap_pct": 3.4,
+      "ret_945_close": 1.869
     },
     {
       "symbol": "SPCH",
@@ -204,7 +221,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.37
+      "gap_pct": -3.37,
+      "ret_945_close": -1.976
     }
-  ]
+  ],
+  "outcomes_at": "2026-07-13T16:05:08-04:00"
 }
