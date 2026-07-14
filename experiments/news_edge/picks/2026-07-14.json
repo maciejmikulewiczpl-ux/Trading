@@ -18,7 +18,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "bank-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.061,
+      "gap_pct": 3.578
     },
     {
       "symbol": "JPM",
@@ -35,7 +37,9 @@
       "reddit_rank": 22,
       "earnings_day": true,
       "theme": "bank-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.216,
+      "gap_pct": -2.28
     },
     {
       "symbol": "IBM",
@@ -55,7 +59,9 @@
       "reddit_rank": 1,
       "earnings_day": true,
       "theme": "tech-earnings-miss",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.868,
+      "gap_pct": -22.098
     },
     {
       "symbol": "HCA",
@@ -74,7 +80,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "healthcare-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.525,
+      "gap_pct": -9.182
     },
     {
       "symbol": "VIRT",
@@ -93,7 +101,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "broker-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -3.406,
+      "gap_pct": -3.81
     },
     {
       "symbol": "ANRO",
@@ -111,7 +121,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "dilution",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.019,
+      "gap_pct": 1.782
     },
     {
       "symbol": "TER",
@@ -129,7 +141,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "semis-rebound",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.166,
+      "gap_pct": 6.586
     },
     {
       "symbol": "FAST",
@@ -147,7 +161,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "industrial-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -5.603,
+      "gap_pct": -1.552
     },
     {
       "symbol": "OKLO",
@@ -165,7 +181,9 @@
       "reddit_rank": 30,
       "earnings_day": false,
       "theme": "nuclear-crowding",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.785,
+      "gap_pct": 3.14
     },
     {
       "symbol": "ASTS",
@@ -183,7 +201,9 @@
       "reddit_rank": 11,
       "earnings_day": false,
       "theme": "space-crowding",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.991,
+      "gap_pct": 3.615
     },
     {
       "symbol": "CLSK",
@@ -199,7 +219,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 8.28
+      "gap_pct": 8.28,
+      "ret_945_close": -0.222
     },
     {
       "symbol": "KORU",
@@ -215,7 +236,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 8.04
+      "gap_pct": 8.04,
+      "ret_945_close": 3.807
     },
     {
       "symbol": "FIG",
@@ -231,7 +253,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -7.68
+      "gap_pct": -7.68,
+      "ret_945_close": 7.75
     },
     {
       "symbol": "NOW",
@@ -247,7 +270,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -6.5
+      "gap_pct": -6.5,
+      "ret_945_close": 0.749
     },
     {
       "symbol": "AMD",
@@ -263,7 +287,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.45
+      "gap_pct": 5.45,
+      "ret_945_close": -1.569
     },
     {
       "symbol": "AAOI",
@@ -279,7 +304,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.43
+      "gap_pct": 5.43,
+      "ret_945_close": 3.617
     },
     {
       "symbol": "PATH",
@@ -295,7 +321,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.55
+      "gap_pct": -4.55,
+      "ret_945_close": 2.895
     },
     {
       "symbol": "INTU",
@@ -311,7 +338,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.52
+      "gap_pct": -4.52,
+      "ret_945_close": 1.899
     },
     {
       "symbol": "BSX",
@@ -327,7 +355,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.47
+      "gap_pct": -4.47,
+      "ret_945_close": -0.384
     },
     {
       "symbol": "KTOS",
@@ -343,7 +372,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.68
+      "gap_pct": 3.68,
+      "ret_945_close": 1.812
     },
     {
       "symbol": "ABTC",
@@ -359,7 +389,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.58
+      "gap_pct": -3.58,
+      "ret_945_close": -1.386
     }
-  ]
+  ],
+  "outcomes_at": "2026-07-14T16:05:11-04:00"
 }
