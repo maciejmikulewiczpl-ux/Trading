@@ -1,0 +1,365 @@
+{
+  "date": "2026-07-14",
+  "logged_at": "2026-07-14T09:38:51-04:00",
+  "picks": [
+    {
+      "symbol": "GS",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Goldman Q2 beat big: EPS $20.98 vs $14.48 est, rev $20.34B vs $16.13B; stock +4.4% premarket (positive reaction, unlike sell-the-news peers). Named dated earnings catalyst. ST crowd 100% bull (n=5).",
+      "sources": [
+        "websearch-cnbc",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "bank-earnings",
+      "control": false
+    },
+    {
+      "symbol": "JPM",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "JPMorgan huge Q2 beat (EPS $6.14 vs $5.85, rev $58.0B vs $50.2B) but stock -2% premarket = sell-the-news; direction unclear so signal 0. Earnings-day. pm-RVOL 7.79 heavy participation. ST n=2 insufficient.",
+      "sources": [
+        "websearch-cnbc",
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {},
+      "premarket_rvol": 7.79,
+      "reddit_rank": 22,
+      "earnings_day": true,
+      "theme": "bank-earnings",
+      "control": false
+    },
+    {
+      "symbol": "IBM",
+      "signal": -1,
+      "confidence": 0.7,
+      "reason": "IBM -22% to -25% premarket on disappointing prelim Q2: adj EPS $2.93 vs $3.01, rev $17.2B vs $17.86B, software+infrastructure weakness. Clear bearish earnings catalyst (8-K 07:01). #1 Reddit surge (1->411) + #1 ST trending. ST crowd -1.",
+      "sources": [
+        "websearch-cnbc",
+        "edgar",
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 1,
+      "earnings_day": true,
+      "theme": "tech-earnings-miss",
+      "control": false
+    },
+    {
+      "symbol": "HCA",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "HCA Healthcare -9.2% premarket on earnings (8-K 07:40). Bearish earnings catalyst. ST crowd 100% bull (n=6) = contrarian dip-buying against the drop.",
+      "sources": [
+        "websearch-cnbc",
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "healthcare-earnings",
+      "control": false
+    },
+    {
+      "symbol": "VIRT",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Virtu Financial -6.2% premarket on earnings (8-K 07:55). Bearish reaction. ST crowd 100% bull (n=7) = contrarian dip-buy.",
+      "sources": [
+        "websearch-benzinga",
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "broker-earnings",
+      "control": false
+    },
+    {
+      "symbol": "ANRO",
+      "signal": -1,
+      "confidence": 0.35,
+      "reason": "Alto Neuroscience filed 424B5 (06:03) = securities offering/dilution plus 8-K. Fresh primary-source dilution filing = bearish (pre-registered signal type). ST 75% bull (n=12) dip-buy. Small-cap thinner liquidity.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "TER",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Teradyne +4.9% premarket in the memory/AI-capex chip-equipment rebound (AMAT +5.3%, MPWR +4.5%). SECTOR momentum, no fresh TER-specific catalyst -> low conf per momentum-unconfirmed rule. ST crowd 95% bull (n=20 strong).",
+      "sources": [
+        "websearch-tradingkey",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "semis-rebound",
+      "control": false
+    },
+    {
+      "symbol": "FAST",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "Fastenal reported (8-K 08:01) earnings-day. Direction not confirmed at scan time -> signal 0. ST crowd 100% bull (n=7).",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "industrial-earnings",
+      "control": false
+    },
+    {
+      "symbol": "OKLO",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Oklo Reddit mention surge (1->23 rank 30) + ST 85% bull (n=13), nuclear/AI-power theme, no fresh named OKLO catalyst -> neutral crowding flag. pm-RVOL 0.92.",
+      "sources": [
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.92,
+      "reddit_rank": 30,
+      "earnings_day": false,
+      "theme": "nuclear-crowding",
+      "control": false
+    },
+    {
+      "symbol": "ASTS",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "AST SpaceMobile Reddit surge (14->58 rank 11) + ST 83% bull (n=23), space/satellite theme, no fresh named catalyst -> crowding flag. pm-RVOL 0.56.",
+      "sources": [
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.56,
+      "reddit_rank": 11,
+      "earnings_day": false,
+      "theme": "space-crowding",
+      "control": false
+    },
+    {
+      "symbol": "CLSK",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 8.28
+    },
+    {
+      "symbol": "KORU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 8.04
+    },
+    {
+      "symbol": "FIG",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -7.68
+    },
+    {
+      "symbol": "NOW",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.5
+    },
+    {
+      "symbol": "AMD",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.45
+    },
+    {
+      "symbol": "AAOI",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.43
+    },
+    {
+      "symbol": "PATH",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.55
+    },
+    {
+      "symbol": "INTU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.52
+    },
+    {
+      "symbol": "BSX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.47
+    },
+    {
+      "symbol": "KTOS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.68
+    },
+    {
+      "symbol": "ABTC",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.58
+    }
+  ]
+}
