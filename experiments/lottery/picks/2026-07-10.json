@@ -30,7 +30,7 @@
       "combined_score": null,
       "ret_945_close": 0.283,
       "ret_1d": 1.916,
-      "ret_3d": null
+      "ret_3d": -4.808
     },
     {
       "symbol": "AMD",
@@ -58,7 +58,7 @@
       "combined_score": 0.3336,
       "ret_945_close": 1.974,
       "ret_1d": -4.331,
-      "ret_3d": null
+      "ret_3d": -5.207
     },
     {
       "symbol": "AMZN",
@@ -86,7 +86,7 @@
       "combined_score": null,
       "ret_945_close": -0.904,
       "ret_1d": 0.805,
-      "ret_3d": null
+      "ret_3d": 3.909
     },
     {
       "symbol": "ASTS",
@@ -115,7 +115,7 @@
       "combined_score": 0.5385,
       "ret_945_close": 1.426,
       "ret_1d": -7.709,
-      "ret_3d": null
+      "ret_3d": -9.606
     },
     {
       "symbol": "BOT",
@@ -143,7 +143,7 @@
       "combined_score": 0.037,
       "ret_945_close": 1.502,
       "ret_1d": -2.186,
-      "ret_3d": null
+      "ret_3d": -4.613
     },
     {
       "symbol": "CBOE",
@@ -169,7 +169,7 @@
       "combined_score": 0.4873,
       "ret_945_close": 0.981,
       "ret_1d": 3.192,
-      "ret_3d": null
+      "ret_3d": 3.263
     },
     {
       "symbol": "COIN",
@@ -198,7 +198,7 @@
       "combined_score": 0.5002,
       "ret_945_close": -2.448,
       "ret_1d": -1.072,
-      "ret_3d": null
+      "ret_3d": 5.091
     },
     {
       "symbol": "CRCL",
@@ -227,7 +227,7 @@
       "combined_score": 0.6175,
       "ret_945_close": -3.362,
       "ret_1d": -4.9,
-      "ret_3d": null
+      "ret_3d": -0.838
     },
     {
       "symbol": "CRS",
@@ -253,7 +253,7 @@
       "combined_score": 0.5539,
       "ret_945_close": 1.575,
       "ret_1d": -2.222,
-      "ret_3d": null
+      "ret_3d": -0.382
     },
     {
       "symbol": "DAL",
@@ -284,7 +284,7 @@
       "combined_score": 0.5601,
       "ret_945_close": 1.259,
       "ret_1d": -1.305,
-      "ret_3d": null
+      "ret_3d": -1.58
     },
     {
       "symbol": "EMAT",
@@ -310,7 +310,7 @@
       "combined_score": 0.2446,
       "ret_945_close": 3.102,
       "ret_1d": -2.124,
-      "ret_3d": null
+      "ret_3d": -4.602
     },
     {
       "symbol": "ES",
@@ -338,7 +338,7 @@
       "combined_score": 0.5449,
       "ret_945_close": 0.349,
       "ret_1d": 0.007,
-      "ret_3d": null
+      "ret_3d": -1.396
     },
     {
       "symbol": "EWJ",
@@ -364,7 +364,7 @@
       "combined_score": 0.2373,
       "ret_945_close": 0.542,
       "ret_1d": -1.914,
-      "ret_3d": null
+      "ret_3d": -1.1
     },
     {
       "symbol": "FBRX",
@@ -394,7 +394,7 @@
       "combined_score": 0.655,
       "ret_945_close": 11.997,
       "ret_1d": 0.682,
-      "ret_3d": null
+      "ret_3d": 0.136
     },
     {
       "symbol": "FRMI",
@@ -420,7 +420,7 @@
       "combined_score": 0.5136,
       "ret_945_close": 6.209,
       "ret_1d": -4.097,
-      "ret_3d": null
+      "ret_3d": -5.159
     },
     {
       "symbol": "FUBO",
@@ -449,7 +449,7 @@
       "combined_score": 0.4074,
       "ret_945_close": -8.2,
       "ret_1d": 6.949,
-      "ret_3d": null
+      "ret_3d": 11.075
     },
     {
       "symbol": "HCA",
@@ -475,7 +475,7 @@
       "combined_score": 0.2833,
       "ret_945_close": -0.734,
       "ret_1d": -3.856,
-      "ret_3d": null
+      "ret_3d": -6.808
     },
     {
       "symbol": "KOLD",
@@ -503,7 +503,7 @@
       "combined_score": 0.3872,
       "ret_945_close": -1.553,
       "ret_1d": 3.784,
-      "ret_3d": null
+      "ret_3d": 0.167
     },
     {
       "symbol": "KORU",
@@ -532,7 +532,7 @@
       "combined_score": 0.2387,
       "ret_945_close": 5.141,
       "ret_1d": -25.026,
-      "ret_3d": null
+      "ret_3d": -96.079
     },
     {
       "symbol": "LASR",
@@ -561,7 +561,7 @@
       "combined_score": 0.6199,
       "ret_945_close": -0.644,
       "ret_1d": -4.306,
-      "ret_3d": null
+      "ret_3d": -5.917
     },
     {
       "symbol": "LQDA",
@@ -590,7 +590,7 @@
       "combined_score": 0.4677,
       "ret_945_close": -1.843,
       "ret_1d": -8.509,
-      "ret_3d": null
+      "ret_3d": -0.257
     },
     {
       "symbol": "LUCY",
@@ -618,7 +618,7 @@
       "combined_score": null,
       "ret_945_close": 0.0,
       "ret_1d": -6.818,
-      "ret_3d": null
+      "ret_3d": -22.273
     },
     {
       "symbol": "MA",
@@ -646,7 +646,7 @@
       "combined_score": null,
       "ret_945_close": 0.061,
       "ret_1d": 2.189,
-      "ret_3d": null
+      "ret_3d": 1.722
     },
     {
       "symbol": "MARA",
@@ -674,7 +674,7 @@
       "combined_score": 0.6343,
       "ret_945_close": -4.252,
       "ret_1d": -3.295,
-      "ret_3d": null
+      "ret_3d": -2.501
     },
     {
       "symbol": "MCK",
@@ -700,7 +700,7 @@
       "combined_score": 0.3333,
       "ret_945_close": 1.133,
       "ret_1d": 0.819,
-      "ret_3d": null
+      "ret_3d": -1.143
     },
     {
       "symbol": "META",
@@ -729,7 +729,7 @@
       "combined_score": 0.5956,
       "ret_945_close": 0.824,
       "ret_1d": -1.851,
-      "ret_3d": null
+      "ret_3d": 1.792
     },
     {
       "symbol": "MSFT",
@@ -757,7 +757,7 @@
       "combined_score": 0.4195,
       "ret_945_close": -0.318,
       "ret_1d": 1.531,
-      "ret_3d": null
+      "ret_3d": 2.732
     },
     {
       "symbol": "NOK",
@@ -785,7 +785,7 @@
       "combined_score": 0.4016,
       "ret_945_close": -0.598,
       "ret_1d": -6.039,
-      "ret_3d": null
+      "ret_3d": -9.461
     },
     {
       "symbol": "OMC",
@@ -811,7 +811,7 @@
       "combined_score": 0.7207,
       "ret_945_close": -1.242,
       "ret_1d": 0.781,
-      "ret_3d": null
+      "ret_3d": -1.269
     },
     {
       "symbol": "OPEN",
@@ -840,7 +840,7 @@
       "combined_score": 0.639,
       "ret_945_close": -12.328,
       "ret_1d": -5.882,
-      "ret_3d": null
+      "ret_3d": -0.42
     },
     {
       "symbol": "PATH",
@@ -866,7 +866,7 @@
       "combined_score": 0.3298,
       "ret_945_close": -4.137,
       "ret_1d": 1.541,
-      "ret_3d": null
+      "ret_3d": 2.312
     },
     {
       "symbol": "PINS",
@@ -892,7 +892,7 @@
       "combined_score": 0.4693,
       "ret_945_close": -0.465,
       "ret_1d": 0.4,
-      "ret_3d": null
+      "ret_3d": 5.175
     },
     {
       "symbol": "PSNL",
@@ -921,7 +921,7 @@
       "combined_score": 0.4056,
       "ret_945_close": -1.305,
       "ret_1d": 7.006,
-      "ret_3d": null
+      "ret_3d": 12.198
     },
     {
       "symbol": "RS",
@@ -949,7 +949,7 @@
       "combined_score": null,
       "ret_945_close": 0.948,
       "ret_1d": 1.284,
-      "ret_3d": null
+      "ret_3d": 3.062
     },
     {
       "symbol": "RXT",
@@ -979,7 +979,7 @@
       "combined_score": 0.2,
       "ret_945_close": 20.843,
       "ret_1d": -15.449,
-      "ret_3d": null
+      "ret_3d": -16.854
     },
     {
       "symbol": "S",
@@ -1005,7 +1005,7 @@
       "combined_score": 0.5216,
       "ret_945_close": -3.458,
       "ret_1d": 3.832,
-      "ret_3d": null
+      "ret_3d": 9.483
     },
     {
       "symbol": "SNAP",
@@ -1031,7 +1031,7 @@
       "combined_score": 0.2333,
       "ret_945_close": -3.423,
       "ret_1d": -0.957,
-      "ret_3d": null
+      "ret_3d": 1.17
     },
     {
       "symbol": "SOFI",
@@ -1060,7 +1060,7 @@
       "combined_score": 0.5068,
       "ret_945_close": -3.119,
       "ret_1d": -3.485,
-      "ret_3d": null
+      "ret_3d": -4.815
     },
     {
       "symbol": "SOXS",
@@ -1088,7 +1088,7 @@
       "combined_score": 0.3374,
       "ret_945_close": -4.471,
       "ret_1d": 14.601,
-      "ret_3d": null
+      "ret_3d": 1027.853
     },
     {
       "symbol": "SUNE",
@@ -1116,7 +1116,7 @@
       "combined_score": null,
       "ret_945_close": 57.028,
       "ret_1d": -13.281,
-      "ret_3d": null
+      "ret_3d": -29.687
     },
     {
       "symbol": "TSLA",
@@ -1144,7 +1144,7 @@
       "combined_score": 0.3937,
       "ret_945_close": -0.037,
       "ret_1d": -3.166,
-      "ret_3d": null
+      "ret_3d": -3.298
     },
     {
       "symbol": "TSLL",
@@ -1170,7 +1170,7 @@
       "combined_score": 0.5399,
       "ret_945_close": 0.115,
       "ret_1d": -6.374,
-      "ret_3d": null
+      "ret_3d": -6.679
     },
     {
       "symbol": "U",
@@ -1196,7 +1196,7 @@
       "combined_score": 0.5594,
       "ret_945_close": -5.908,
       "ret_1d": -0.615,
-      "ret_3d": null
+      "ret_3d": 1.295
     },
     {
       "symbol": "UBER",
@@ -1222,7 +1222,7 @@
       "combined_score": 0.4626,
       "ret_945_close": -1.407,
       "ret_1d": -0.356,
-      "ret_3d": null
+      "ret_3d": -2.489
     },
     {
       "symbol": "WD",
@@ -1250,7 +1250,7 @@
       "combined_score": 0.3333,
       "ret_945_close": 0.289,
       "ret_1d": -2.727,
-      "ret_3d": null
+      "ret_3d": -1.543
     },
     {
       "symbol": "WDC",
@@ -1279,9 +1279,9 @@
       "combined_score": 0.5558,
       "ret_945_close": 2.395,
       "ret_1d": -4.658,
-      "ret_3d": null
+      "ret_3d": -11.89
     }
   ],
   "scored_at": "2026-07-10T16:10:10-04:00",
-  "backfilled_at": "2026-07-14T16:10:07-04:00"
+  "backfilled_at": "2026-07-15T16:10:07-04:00"
 }
