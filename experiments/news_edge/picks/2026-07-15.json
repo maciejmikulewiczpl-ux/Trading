@@ -1,0 +1,422 @@
+{
+  "date": "2026-07-15",
+  "logged_at": "2026-07-15T09:40:14-04:00",
+  "picks": [
+    {
+      "symbol": "PYPL",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "M&A: Stripe + Advent joint takeover bid $60.50/share (~$53B, ~28% premium); +16-22% premarket. Named dated deal catalyst. ST crowd 100% bull (n=13). Trades at discount to bid = deal-uncertainty, but M&A bids hold near price rather than fade like momentum.",
+      "sources": [
+        "websearch-reuters",
+        "websearch-benzinga",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 16,
+      "earnings_day": false,
+      "theme": "m&a",
+      "control": false
+    },
+    {
+      "symbol": "ASML",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Q2 beat + RAISED FY26 sales guide 2nd time this year (EUR43-45B, GM 54-56%) on extremely strong AI-chip EUV orders; +3-4% premarket (up ~7% at open). Named dated earnings catalyst, semis leadership. ST 80% bull (n=15). Moderate gap fits fresh-catalyst thesis.",
+      "sources": [
+        "websearch-cnbc",
+        "edgar",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.84,
+      "reddit_rank": 7,
+      "earnings_day": true,
+      "theme": "semis",
+      "control": false
+    },
+    {
+      "symbol": "BLK",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "BlackRock Q2 beat: EPS $13.91 vs $12.67, rev +31% YoY to $7.08B vs $6.82B on record AUM; +4.4% premarket clean positive reaction. Named dated earnings catalyst. ST 100% bull (n=6).",
+      "sources": [
+        "websearch-cnbc",
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "bank-earnings",
+      "control": false
+    },
+    {
+      "symbol": "MS",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Morgan Stanley Q2 big beat: EPS $3.46 vs $2.94, rev $21.35B vs $19.64B; +1% premarket. Named dated earnings catalyst. ST 100% bull (n=5). Smaller gap fits fresh-catalyst-not-yet-run thesis.",
+      "sources": [
+        "websearch-investing",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "bank-earnings",
+      "control": false
+    },
+    {
+      "symbol": "ELV",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Elevance Health -7.2% on Q2 earnings = clear bearish reaction (managed-care cost pressure, echoes sector weakness). Named dated earnings catalyst. ST 38% bull (n=8) crowd bearish too.",
+      "sources": [
+        "websearch-cnbc",
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "managed-care",
+      "control": false
+    },
+    {
+      "symbol": "DOCN",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "424B5 filed 07:01 = shelf takedown / secondary offering = dilution, mechanically bearish for the session. Named dated filing catalyst. ST split 50/50 (n=16).",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "CELC",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "FDA approved REVTORPYK (gedatolisib) for HR+/HER2- breast cancer but that was YESTERDAY (07-14) and it already ran +7%; TODAY gapping DOWN ~16% = sell-the-news/already-ran fade. ST 93% bull (n=15) diverging from falling price = contrarian caution. Direction unclear intraday.",
+      "sources": [
+        "websearch-yahoo",
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "fda-biotech",
+      "control": false
+    },
+    {
+      "symbol": "AEHR",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Blowout Q4 (EPS $0.11 vs -$0.01, record $60.7M bookings) + huge FY27 guide $130-150M (+160-200%) on AI/silicon-photonics orders. BUT +49% gap = extremely extended, chase risk; ST neutral 50/50 (n=14). Pre-reg: big gappers fade -> no confident chase.",
+      "sources": [
+        "websearch-benzinga",
+        "edgar",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 20,
+      "earnings_day": true,
+      "theme": "semis",
+      "control": false
+    },
+    {
+      "symbol": "JNJ",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "J&J Q2 beat (adj EPS $2.90 vs $2.85, sales $25.31B vs $25.05B) but stock -1.7% = mild sell-the-news; ST 82% bull (n=11) diverges from price. Direction unclear. Named dated earnings catalyst.",
+      "sources": [
+        "websearch-cnbc",
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "pharma-earnings",
+      "control": false
+    },
+    {
+      "symbol": "CTAS",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Cintas 8-K 08:31 (earnings) but no confirmed beat/miss direction from news; ST 92% bull (n=13) crowd-only. No confident call on price/crowd alone. Logged for context.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "services-earnings",
+      "control": false
+    },
+    {
+      "symbol": "CAG",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "Conagra 8-K 07:33 (earnings), ST trending + 75% bull (n=8) but direction unconfirmed. Named dated earnings catalyst, logged for context.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.96,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "food-earnings",
+      "control": false
+    },
+    {
+      "symbol": "AEHR",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 48.81
+    },
+    {
+      "symbol": "PYPL",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 15.95
+    },
+    {
+      "symbol": "CELC",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -15.94
+    },
+    {
+      "symbol": "PHOE",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -13.14
+    },
+    {
+      "symbol": "LCID",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 11.04
+    },
+    {
+      "symbol": "KRMN",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 9.06
+    },
+    {
+      "symbol": "SKHY",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -8.24
+    },
+    {
+      "symbol": "BLK",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 7.73
+    },
+    {
+      "symbol": "LPTH",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 6.72
+    },
+    {
+      "symbol": "RDW",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 4.98
+    },
+    {
+      "symbol": "ACHR",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 4.13
+    },
+    {
+      "symbol": "ORCL",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 3.5
+    },
+    {
+      "symbol": "XPEV",
+      "signal": 0,
+      "confidence": 0.0,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 3.37
+    }
+  ]
+}
