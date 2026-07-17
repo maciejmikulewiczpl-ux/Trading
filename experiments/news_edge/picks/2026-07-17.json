@@ -1,0 +1,257 @@
+{
+  "date": "2026-07-17",
+  "logged_at": "2026-07-17T09:38:28-04:00",
+  "picks": [
+    {
+      "symbol": "ABT",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Q2 EPS beat + RAISED FY2026 EPS guidance; +~4% premarket; liquid mega-cap health-care name bucking a broad risk-off tape",
+      "sources": [
+        "websearch",
+        "cnbc",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "earnings-beat-raise",
+      "control": false
+    },
+    {
+      "symbol": "TFC",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Q2 EPS $1.23 vs $1.08 est beat; +~1.4% premarket; low-vol regional bank so modest move expected",
+      "sources": [
+        "websearch",
+        "edgar"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "bank-earnings",
+      "control": false
+    },
+    {
+      "symbol": "ATAI",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Eli Lilly $2.8B all-cash acquisition announced; already ran +62% then +34%; pinned near deal price, no ORB breakout expected (pm_rvol 0.09)",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.09,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ma-buyout",
+      "control": false
+    },
+    {
+      "symbol": "TRV",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Q2 8-K filed premarket; post-earnings direction unconfirmed at scan time",
+      "sources": [
+        "edgar"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "insurance-earnings",
+      "control": false
+    },
+    {
+      "symbol": "NFLX",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Q2 revenue narrowly missed (12.56B vs 12.59B) + growth-cooling narrative; -10.6% gap; StockTwits crowd contrarian-bullish",
+      "sources": [
+        "websearch",
+        "cnbc",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.87,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "streaming-earnings",
+      "control": false
+    },
+    {
+      "symbol": "ISRG",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Beat but da Vinci procedure-growth guided to 13.5-15.5% vs 18% in 2025 (deceleration); -10.8% gap",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "medtech-earnings",
+      "control": false
+    },
+    {
+      "symbol": "TSM",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Solid Q2 results but semiconductor tape red sector-wide (SOXL -14%, MU/MRVL/SNDK/CLS down); mixed",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.68,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "semis",
+      "control": false
+    },
+    {
+      "symbol": "RGNX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -23.59
+    },
+    {
+      "symbol": "SOXL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -13.94
+    },
+    {
+      "symbol": "APLD",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -5.92
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.37
+    },
+    {
+      "symbol": "MU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.78
+    },
+    {
+      "symbol": "MRVL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.7
+    },
+    {
+      "symbol": "CLS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.39
+    },
+    {
+      "symbol": "USO",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.35
+    }
+  ]
+}
