@@ -19,7 +19,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "earnings-beat-raise",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.717,
+      "gap_pct": 1.974
     },
     {
       "symbol": "TFC",
@@ -35,7 +37,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "bank-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.546,
+      "gap_pct": -0.696
     },
     {
       "symbol": "ATAI",
@@ -53,7 +57,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "ma-buyout",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.77,
+      "gap_pct": -0.77
     },
     {
       "symbol": "TRV",
@@ -68,7 +74,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "insurance-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 2.389,
+      "gap_pct": 1.43
     },
     {
       "symbol": "NFLX",
@@ -87,7 +95,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "streaming-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.808,
+      "gap_pct": -12.456
     },
     {
       "symbol": "ISRG",
@@ -105,7 +115,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "medtech-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -4.817,
+      "gap_pct": -9.494
     },
     {
       "symbol": "TSM",
@@ -123,7 +135,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "semis",
-      "control": false
+      "control": false,
+      "ret_945_close": 2.751,
+      "gap_pct": -4.261
     },
     {
       "symbol": "RGNX",
@@ -139,7 +153,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -23.59
+      "gap_pct": -23.59,
+      "ret_945_close": 10.62
     },
     {
       "symbol": "SOXL",
@@ -155,7 +170,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -13.94
+      "gap_pct": -13.94,
+      "ret_945_close": 16.107
     },
     {
       "symbol": "APLD",
@@ -171,7 +187,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -5.92
+      "gap_pct": -5.92,
+      "ret_945_close": 6.25
     },
     {
       "symbol": "SNDK",
@@ -187,7 +204,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.37
+      "gap_pct": -4.37,
+      "ret_945_close": 2.019
     },
     {
       "symbol": "MU",
@@ -203,7 +221,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.78
+      "gap_pct": -3.78,
+      "ret_945_close": 5.874
     },
     {
       "symbol": "MRVL",
@@ -219,7 +238,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.7
+      "gap_pct": -3.7,
+      "ret_945_close": 5.786
     },
     {
       "symbol": "CLS",
@@ -235,7 +255,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.39
+      "gap_pct": -3.39,
+      "ret_945_close": 6.442
     },
     {
       "symbol": "USO",
@@ -251,7 +272,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.35
+      "gap_pct": 3.35,
+      "ret_945_close": 0.658
     }
-  ]
+  ],
+  "outcomes_at": "2026-07-17T16:05:10-04:00"
 }
