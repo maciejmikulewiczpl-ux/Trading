@@ -35,7 +35,7 @@
       "combined_score": 0.6303,
       "ret_945_close": -14.153,
       "ret_1d": -4.228,
-      "ret_3d": null
+      "ret_3d": -11.922
     },
     {
       "symbol": "APP",
@@ -61,7 +61,7 @@
       "combined_score": 0.2,
       "ret_945_close": -0.351,
       "ret_1d": -3.987,
-      "ret_3d": null
+      "ret_3d": -6.182
     },
     {
       "symbol": "ASML",
@@ -91,7 +91,7 @@
       "combined_score": 0.6378,
       "ret_945_close": 2.699,
       "ret_1d": -2.162,
-      "ret_3d": null
+      "ret_3d": -4.668
     },
     {
       "symbol": "BLDR",
@@ -117,7 +117,7 @@
       "combined_score": 0.7046,
       "ret_945_close": 1.168,
       "ret_1d": 2.833,
-      "ret_3d": null
+      "ret_3d": -4.47
     },
     {
       "symbol": "BTAI",
@@ -145,7 +145,7 @@
       "combined_score": null,
       "ret_945_close": -1.587,
       "ret_1d": -5.892,
-      "ret_3d": null
+      "ret_3d": -3.795
     },
     {
       "symbol": "BULL",
@@ -173,7 +173,7 @@
       "combined_score": 0.2532,
       "ret_945_close": 1.394,
       "ret_1d": -2.211,
-      "ret_3d": null
+      "ret_3d": -0.065
     },
     {
       "symbol": "CAG",
@@ -202,7 +202,7 @@
       "combined_score": 0.5572,
       "ret_945_close": 2.355,
       "ret_1d": 2.803,
-      "ret_3d": null
+      "ret_3d": 4.116
     },
     {
       "symbol": "CELC",
@@ -231,7 +231,7 @@
       "combined_score": 0.508,
       "ret_945_close": -3.13,
       "ret_1d": -3.439,
-      "ret_3d": null
+      "ret_3d": -3.909
     },
     {
       "symbol": "CMI",
@@ -257,7 +257,7 @@
       "combined_score": 0.2167,
       "ret_945_close": -1.434,
       "ret_1d": -2.727,
-      "ret_3d": null
+      "ret_3d": -3.995
     },
     {
       "symbol": "CP",
@@ -283,7 +283,7 @@
       "combined_score": 0.6379,
       "ret_945_close": -0.116,
       "ret_1d": 2.658,
-      "ret_3d": null
+      "ret_3d": 1.299
     },
     {
       "symbol": "CRWV",
@@ -311,7 +311,7 @@
       "combined_score": 0.4375,
       "ret_945_close": -2.694,
       "ret_1d": -5.395,
-      "ret_3d": null
+      "ret_3d": -5.284
     },
     {
       "symbol": "CSCO",
@@ -337,7 +337,7 @@
       "combined_score": 0.0778,
       "ret_945_close": -2.575,
       "ret_1d": -1.87,
-      "ret_3d": null
+      "ret_3d": -0.935
     },
     {
       "symbol": "D",
@@ -363,7 +363,7 @@
       "combined_score": 0.8728,
       "ret_945_close": -0.645,
       "ret_1d": 1.043,
-      "ret_3d": null
+      "ret_3d": -0.705
     },
     {
       "symbol": "DTE",
@@ -391,7 +391,7 @@
       "combined_score": 0.5164,
       "ret_945_close": -1.294,
       "ret_1d": 1.424,
-      "ret_3d": null
+      "ret_3d": -0.606
     },
     {
       "symbol": "GSK",
@@ -419,7 +419,7 @@
       "combined_score": null,
       "ret_945_close": 0.322,
       "ret_1d": 2.586,
-      "ret_3d": null
+      "ret_3d": -2.712
     },
     {
       "symbol": "IBM",
@@ -450,7 +450,7 @@
       "combined_score": 0.6648,
       "ret_945_close": -4.101,
       "ret_1d": 3.818,
-      "ret_3d": null
+      "ret_3d": 0.893
     },
     {
       "symbol": "IQ",
@@ -478,7 +478,7 @@
       "combined_score": null,
       "ret_945_close": -1.24,
       "ret_1d": 3.766,
-      "ret_3d": null
+      "ret_3d": 3.766
     },
     {
       "symbol": "IWM",
@@ -506,7 +506,7 @@
       "combined_score": 0.4845,
       "ret_945_close": 0.176,
       "ret_1d": -0.051,
-      "ret_3d": null
+      "ret_3d": -1.166
     },
     {
       "symbol": "JACK",
@@ -534,7 +534,7 @@
       "combined_score": null,
       "ret_945_close": 0.0,
       "ret_1d": 6.109,
-      "ret_3d": null
+      "ret_3d": -3.953
     },
     {
       "symbol": "LCID",
@@ -562,7 +562,7 @@
       "combined_score": null,
       "ret_945_close": 14.644,
       "ret_1d": 9.014,
-      "ret_3d": null
+      "ret_3d": 19.714
     },
     {
       "symbol": "LLY",
@@ -591,7 +591,7 @@
       "combined_score": 0.5141,
       "ret_945_close": 1.019,
       "ret_1d": 1.164,
-      "ret_3d": null
+      "ret_3d": -0.878
     },
     {
       "symbol": "LPTH",
@@ -619,7 +619,7 @@
       "combined_score": 0.5179,
       "ret_945_close": -3.707,
       "ret_1d": -8.005,
-      "ret_3d": null
+      "ret_3d": -9.186
     },
     {
       "symbol": "MS",
@@ -647,7 +647,7 @@
       "combined_score": 0.3224,
       "ret_945_close": 0.34,
       "ret_1d": -4.456,
-      "ret_3d": null
+      "ret_3d": -7.668
     },
     {
       "symbol": "NBIS",
@@ -676,7 +676,7 @@
       "combined_score": 0.5531,
       "ret_945_close": -0.329,
       "ret_1d": -13.936,
-      "ret_3d": null
+      "ret_3d": -8.424
     },
     {
       "symbol": "NEE",
@@ -702,7 +702,7 @@
       "combined_score": 0.2545,
       "ret_945_close": -0.804,
       "ret_1d": 0.292,
-      "ret_3d": null
+      "ret_3d": -1.184
     },
     {
       "symbol": "NVDA",
@@ -730,7 +730,7 @@
       "combined_score": 0.5538,
       "ret_945_close": 0.21,
       "ret_1d": -2.372,
-      "ret_3d": null
+      "ret_3d": -4.315
     },
     {
       "symbol": "OPEN",
@@ -758,7 +758,7 @@
       "combined_score": 0.2737,
       "ret_945_close": 3.716,
       "ret_1d": -3.376,
-      "ret_3d": null
+      "ret_3d": -6.118
     },
     {
       "symbol": "PHOE",
@@ -787,7 +787,7 @@
       "combined_score": 0.688,
       "ret_945_close": 0.0,
       "ret_1d": 0.0,
-      "ret_3d": null
+      "ret_3d": 48.166
     },
     {
       "symbol": "PR",
@@ -815,7 +815,7 @@
       "combined_score": null,
       "ret_945_close": -0.33,
       "ret_1d": 0.612,
-      "ret_3d": null
+      "ret_3d": 3.367
     },
     {
       "symbol": "PYPL",
@@ -846,7 +846,7 @@
       "combined_score": 0.6779,
       "ret_945_close": 3.181,
       "ret_1d": 2.215,
-      "ret_3d": null
+      "ret_3d": 2.369
     },
     {
       "symbol": "SBET",
@@ -872,7 +872,7 @@
       "combined_score": 0.4946,
       "ret_945_close": -1.226,
       "ret_1d": -5.419,
-      "ret_3d": null
+      "ret_3d": 0.985
     },
     {
       "symbol": "SKHY",
@@ -902,7 +902,7 @@
       "combined_score": 0.563,
       "ret_945_close": -4.366,
       "ret_1d": -13.422,
-      "ret_3d": null
+      "ret_3d": -14.187
     },
     {
       "symbol": "SOXS",
@@ -930,7 +930,7 @@
       "combined_score": 0.16,
       "ret_945_close": 5.827,
       "ret_1d": 13.37,
-      "ret_3d": null
+      "ret_3d": 17.559
     },
     {
       "symbol": "SPY",
@@ -959,7 +959,7 @@
       "combined_score": 0.5823,
       "ret_945_close": 0.0,
       "ret_1d": -0.517,
-      "ret_3d": null
+      "ret_3d": -1.672
     },
     {
       "symbol": "SQQQ",
@@ -985,7 +985,7 @@
       "combined_score": 0.3081,
       "ret_945_close": 1.247,
       "ret_1d": 4.873,
-      "ret_3d": null
+      "ret_3d": 9.49
     },
     {
       "symbol": "SUNE",
@@ -1013,7 +1013,7 @@
       "combined_score": null,
       "ret_945_close": -6.993,
       "ret_1d": -4.074,
-      "ret_3d": null
+      "ret_3d": -7.407
     },
     {
       "symbol": "TEL",
@@ -1039,7 +1039,7 @@
       "combined_score": 0.3333,
       "ret_945_close": -0.649,
       "ret_1d": 0.688,
-      "ret_3d": null
+      "ret_3d": 0.962
     },
     {
       "symbol": "UAMY",
@@ -1065,7 +1065,7 @@
       "combined_score": 0.3773,
       "ret_945_close": -3.945,
       "ret_1d": -10.118,
-      "ret_3d": null
+      "ret_3d": -9.444
     },
     {
       "symbol": "UP",
@@ -1093,7 +1093,7 @@
       "combined_score": 0.0933,
       "ret_945_close": -1.077,
       "ret_1d": -1.4,
-      "ret_3d": null
+      "ret_3d": -2.177
     },
     {
       "symbol": "UPS",
@@ -1119,7 +1119,7 @@
       "combined_score": 0.6212,
       "ret_945_close": -0.739,
       "ret_1d": 3.755,
-      "ret_3d": null
+      "ret_3d": 0.204
     },
     {
       "symbol": "UVXY",
@@ -1145,7 +1145,7 @@
       "combined_score": 0.2956,
       "ret_945_close": -2.697,
       "ret_1d": 3.76,
-      "ret_3d": null
+      "ret_3d": 8.751
     },
     {
       "symbol": "WBD",
@@ -1171,7 +1171,7 @@
       "combined_score": 0.1889,
       "ret_945_close": -0.073,
       "ret_1d": 0.073,
-      "ret_3d": null
+      "ret_3d": -4.954
     },
     {
       "symbol": "WEN",
@@ -1199,7 +1199,7 @@
       "combined_score": 0.3,
       "ret_945_close": -0.468,
       "ret_1d": 5.582,
-      "ret_3d": null
+      "ret_3d": 5.716
     },
     {
       "symbol": "XPEV",
@@ -1225,9 +1225,9 @@
       "combined_score": 0.2921,
       "ret_945_close": -0.899,
       "ret_1d": 1.922,
-      "ret_3d": null
+      "ret_3d": -4.461
     }
   ],
   "scored_at": "2026-07-15T16:10:04-04:00",
-  "backfilled_at": "2026-07-17T16:10:07-04:00"
+  "backfilled_at": "2026-07-20T16:10:09-04:00"
 }
