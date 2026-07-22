@@ -20,7 +20,8 @@
       "earnings_day": false,
       "theme": "ai-hardware",
       "control": false,
-      "gap_pct": 16.48
+      "gap_pct": 16.48,
+      "ret_945_close": 0.163
     },
     {
       "symbol": "ARWR",
@@ -39,7 +40,8 @@
       "earnings_day": false,
       "theme": "biotech-licensing",
       "control": false,
-      "gap_pct": 18.56
+      "gap_pct": 18.56,
+      "ret_945_close": -1.181
     },
     {
       "symbol": "T",
@@ -58,7 +60,8 @@
       "earnings_day": true,
       "theme": "telecom-earnings",
       "control": false,
-      "gap_pct": 4.33
+      "gap_pct": 4.33,
+      "ret_945_close": -0.904
     },
     {
       "symbol": "GEV",
@@ -77,7 +80,8 @@
       "earnings_day": true,
       "theme": "power-earnings",
       "control": false,
-      "gap_pct": -6.54
+      "gap_pct": -6.54,
+      "ret_945_close": -1.754
     },
     {
       "symbol": "MGY",
@@ -95,7 +99,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "dilution",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.02,
+      "gap_pct": 1.734
     },
     {
       "symbol": "ARWR",
@@ -111,7 +117,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 18.56
+      "gap_pct": 18.56,
+      "ret_945_close": -1.181
     },
     {
       "symbol": "SMCI",
@@ -127,7 +134,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 16.48
+      "gap_pct": 16.48,
+      "ret_945_close": 0.163
     },
     {
       "symbol": "RDDT",
@@ -143,7 +151,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -8.24
+      "gap_pct": -8.24,
+      "ret_945_close": 0.872
     },
     {
       "symbol": "GEV",
@@ -159,7 +168,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -6.54
+      "gap_pct": -6.54,
+      "ret_945_close": -1.754
     },
     {
       "symbol": "SMMT",
@@ -175,7 +185,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.47
+      "gap_pct": 5.47,
+      "ret_945_close": -2.261
     },
     {
       "symbol": "PATH",
@@ -191,7 +202,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.45
+      "gap_pct": -4.45,
+      "ret_945_close": -4.935
     },
     {
       "symbol": "T",
@@ -207,7 +219,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 4.33
+      "gap_pct": 4.33,
+      "ret_945_close": -0.904
     },
     {
       "symbol": "CVNA",
@@ -223,7 +236,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.93
+      "gap_pct": -3.93,
+      "ret_945_close": -1.212
     },
     {
       "symbol": "ONDS",
@@ -239,7 +253,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.39
+      "gap_pct": 3.39,
+      "ret_945_close": -4.017
     },
     {
       "symbol": "INFQ",
@@ -255,7 +270,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.13
+      "gap_pct": 3.13,
+      "ret_945_close": 0.097
     }
-  ]
+  ],
+  "outcomes_at": "2026-07-22T16:05:13-04:00"
 }
