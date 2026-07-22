@@ -1,0 +1,261 @@
+{
+  "date": "2026-07-22",
+  "logged_at": "2026-07-22T09:39:39-04:00",
+  "picks": [
+    {
+      "symbol": "SMCI",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Preliminary Q4 update: record ~$60B AI-server order backlog + gross-margin guide raised to 15-17% (from 8.2-8.4%). Fresh named fundamental catalyst. Note big gapper (+16%).",
+      "sources": [
+        "websearch",
+        "benzinga",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 2.71,
+      "reddit_rank": 4,
+      "earnings_day": false,
+      "theme": "ai-hardware",
+      "control": false,
+      "gap_pct": 16.48
+    },
+    {
+      "symbol": "ARWR",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Exclusive worldwide license of ARO-PNPLA3 (MASH) to Madrigal: $25M upfront + up to $975M milestones + royalties. Fresh named deal. Note big gapper (+18%).",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-licensing",
+      "control": false,
+      "gap_pct": 18.56
+    },
+    {
+      "symbol": "T",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Q2 adj EPS $0.65 beat $0.59 est; stock +4% premarket on the print.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 9.92,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "telecom-earnings",
+      "control": false,
+      "gap_pct": 4.33
+    },
+    {
+      "symbol": "GEV",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Q2: revenue beat + record orders but EPS MISS; stock -6.5% premarket on the reaction.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 2.57,
+      "reddit_rank": 29,
+      "earnings_day": true,
+      "theme": "power-earnings",
+      "control": false,
+      "gap_pct": -6.54
+    },
+    {
+      "symbol": "MGY",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "424B5 shelf/secondary offering filed 07-21 18:49 (dilution) alongside Q2 8-K; fresh dilutive catalyst, small-gap fresh-news bucket.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "ARWR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 18.56
+    },
+    {
+      "symbol": "SMCI",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 16.48
+    },
+    {
+      "symbol": "RDDT",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -8.24
+    },
+    {
+      "symbol": "GEV",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.54
+    },
+    {
+      "symbol": "SMMT",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.47
+    },
+    {
+      "symbol": "PATH",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.45
+    },
+    {
+      "symbol": "T",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.33
+    },
+    {
+      "symbol": "CVNA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.93
+    },
+    {
+      "symbol": "ONDS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.39
+    },
+    {
+      "symbol": "INFQ",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.13
+    }
+  ]
+}
