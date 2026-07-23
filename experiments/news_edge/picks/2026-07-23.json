@@ -1,0 +1,288 @@
+{
+  "date": "2026-07-23",
+  "logged_at": "2026-07-23T09:39:27-04:00",
+  "picks": [
+    {
+      "symbol": "RTX",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Q2 beat: rev +14.5% to $24.7B, non-GAAP EPS $1.89 (+13.7% vs est), raised FY guidance on strong aerospace/defense demand. +6% premarket.",
+      "sources": [
+        "websearch:seekingalpha",
+        "websearch:yahoo",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "defense",
+      "control": false,
+      "gap_pct": 6.3
+    },
+    {
+      "symbol": "LMT",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Q2 beat: EPS $7.94 vs $7.19 est on rev $20.06B; hiked full-year outlook. +6.6% premarket.",
+      "sources": [
+        "websearch:cnbc",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "defense",
+      "control": false,
+      "gap_pct": 6.6
+    },
+    {
+      "symbol": "CLF",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "Q2 earnings pre-open (Street est -$0.21 loss); surging +14% premarket implies beat/upbeat guide. Big gapper already ran hard = fade risk per pre-reg.",
+      "sources": [
+        "edgar:8-K",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "steel",
+      "control": false,
+      "gap_pct": 14.29
+    },
+    {
+      "symbol": "FCX",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Q2 earnings pre-open (est EPS $0.62, +14.8% Y/Y) amid strong copper demand; StockTwits crowd 100% bull. Direction unconfirmed at post time.",
+      "sources": [
+        "edgar:8-K",
+        "websearch:seekingalpha",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "copper",
+      "control": false
+    },
+    {
+      "symbol": "TSLA",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Q2 miss, free cash flow turned negative, margin pressure; AI capex spending fears. -9% premarket.",
+      "sources": [
+        "websearch:cnbc",
+        "websearch:stocktwits",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": 1.18,
+      "reddit_rank": 6,
+      "earnings_day": true,
+      "theme": "ev-earnings",
+      "control": false,
+      "gap_pct": -9.34
+    },
+    {
+      "symbol": "GOOGL",
+      "signal": -1,
+      "confidence": 0.45,
+      "reason": "Raised 2026 capex to $195-205B (from ~$190B) stoking AI-overspend fears; -5 to -6% despite earnings beat.",
+      "sources": [
+        "websearch:cnbc",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 2.63,
+      "reddit_rank": 4,
+      "earnings_day": true,
+      "theme": "ai-capex",
+      "control": false,
+      "gap_pct": -5.96
+    },
+    {
+      "symbol": "AAL",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Q2 earnings; Wall Street expected AAL to stumble. -7.7% premarket.",
+      "sources": [
+        "edgar:8-K",
+        "websearch:247wallst",
+        "stocktwits"
+      ],
+      "source_signals": {},
+      "premarket_rvol": 4.21,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "airlines",
+      "control": false,
+      "gap_pct": -7.67
+    },
+    {
+      "symbol": "TMUS",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Q2 earnings; -7% premarket reaction. StockTwits crowd mixed.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "telecom",
+      "control": false,
+      "gap_pct": -7.12
+    },
+    {
+      "symbol": "MBLY",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -8.99
+    },
+    {
+      "symbol": "GOOG",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.08
+    },
+    {
+      "symbol": "USO",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.97
+    },
+    {
+      "symbol": "SQQQ",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.52
+    },
+    {
+      "symbol": "TQQQ",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.46
+    },
+    {
+      "symbol": "QS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.09
+    },
+    {
+      "symbol": "AMZN",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.45
+    },
+    {
+      "symbol": "UPST",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.18
+    }
+  ]
+}
