@@ -26,7 +26,7 @@
         "opt_expmove": null
       },
       "combined_score": 0.5,
-      "ret_945_close": null,
+      "ret_945_close": 1.853,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -52,7 +52,7 @@
         "opt_expmove": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": -1.516,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -78,7 +78,7 @@
         "opt_expmove": null
       },
       "combined_score": 0.1667,
-      "ret_945_close": null,
+      "ret_945_close": -1.501,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -104,7 +104,7 @@
         "opt_expmove": null
       },
       "combined_score": 0.8333,
-      "ret_945_close": null,
+      "ret_945_close": 1.136,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -130,7 +130,7 @@
         "opt_expmove": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": 0.429,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -156,7 +156,7 @@
         "opt_expmove": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": -0.701,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -182,7 +182,7 @@
         "opt_expmove": null
       },
       "combined_score": 0.0,
-      "ret_945_close": null,
+      "ret_945_close": -0.437,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -208,7 +208,7 @@
         "opt_expmove": null
       },
       "combined_score": 0.3333,
-      "ret_945_close": null,
+      "ret_945_close": -0.266,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -234,7 +234,7 @@
         "opt_expmove": null
       },
       "combined_score": 0.6667,
-      "ret_945_close": null,
+      "ret_945_close": 2.407,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -260,9 +260,10 @@
         "opt_expmove": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": -3.523,
       "ret_1d": null,
       "ret_3d": null
     }
-  ]
+  ],
+  "scored_at": "2026-07-24T16:10:05-04:00"
 }
