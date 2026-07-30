@@ -1,0 +1,558 @@
+{
+  "date": "2026-07-30",
+  "logged_at": "2026-07-30T09:45:48-04:00",
+  "picks": [
+    {
+      "symbol": "MSFT",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Q4 FY26 beat: rev $90.01B vs $87.6B est; Azure +43% cc, FY Azure ARR crossed $100B first time. +14% gap (big-gapper fade risk).",
+      "sources": [
+        "websearch",
+        "cnbc",
+        "fortune"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 11.0,
+      "reddit_rank": 1,
+      "earnings_day": true,
+      "theme": "ai-cloud",
+      "control": false,
+      "gap_pct": 14.31
+    },
+    {
+      "symbol": "LRCX",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Record quarterly revenue & earnings for semicap equipment maker; +19% gap (big-gapper fade risk).",
+      "sources": [
+        "websearch",
+        "benzinga"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 10.6,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "semicap",
+      "control": false,
+      "gap_pct": 19.08
+    },
+    {
+      "symbol": "BE",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Q2 blowout: rev $1.07B vs $823M est, adj EPS $0.78 vs $0.40. +21% gap (big-gapper fade risk).",
+      "sources": [
+        "websearch",
+        "benzinga"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 4.43,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "fuel-cells",
+      "control": false,
+      "gap_pct": 20.98
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Memory earnings beat, AI-memory demand upcycle; st 100% bull. +15% gap on high-price name (big-gapper fade risk).",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.28,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "memory",
+      "control": false,
+      "gap_pct": 15.05
+    },
+    {
+      "symbol": "META",
+      "signal": -1,
+      "confidence": 0.6,
+      "reason": "EPS $6.18 missed by ~$1.04; raised 2026 capex floor to $130B (range 130-145B); FCF -91% YoY; weak rev guide. -9% gap; crowd bearish.",
+      "sources": [
+        "websearch",
+        "cnbc",
+        "moneymorning"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": 3.94,
+      "reddit_rank": 4,
+      "earnings_day": true,
+      "theme": "ai-capex",
+      "control": false,
+      "gap_pct": -9.41
+    },
+    {
+      "symbol": "QCOM",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Handset revenue -20% YoY; -3.3% smaller-gap fresh bearish. Note st crowd contrarian +1 (78% bull).",
+      "sources": [
+        "websearch",
+        "benzinga"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 35,
+      "earnings_day": true,
+      "theme": "semis-handset",
+      "control": false,
+      "gap_pct": -3.3
+    },
+    {
+      "symbol": "CVNA",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Weak annual guidance disappoints; Street unwilling to reward; -10% gap.",
+      "sources": [
+        "websearch",
+        "investing"
+      ],
+      "source_signals": {},
+      "premarket_rvol": 21.79,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "auto-retail",
+      "control": false,
+      "gap_pct": -10.24
+    },
+    {
+      "symbol": "NCLH",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Cut full-year outlook; -9.4% gap.",
+      "sources": [
+        "websearch",
+        "cnbc",
+        "fool"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "cruise",
+      "control": false,
+      "gap_pct": -9.44
+    },
+    {
+      "symbol": "TDOC",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Q2 revenue fell short; -18.5%. Note st crowd contrarian +1 (dip buyers).",
+      "sources": [
+        "websearch",
+        "cnbc"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "telehealth",
+      "control": false
+    },
+    {
+      "symbol": "MO",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Earnings-day gap down -8.2%; details thin (catalyst=earnings). st small-n +1.",
+      "sources": [
+        "websearch",
+        "edgar"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "tobacco",
+      "control": false,
+      "gap_pct": -8.23
+    },
+    {
+      "symbol": "MU",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "+7.8% on memory-sector sympathy (SNDK/AI-memory read-through); no own dated catalyst today.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 4.37,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "memory-sympathy",
+      "control": false
+    },
+    {
+      "symbol": "ARM",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Record rev $1.49B (+20%) & EPS $0.60 but soft outlook / smartphone-demand worry after -30% run; +11% gap vs underwhelmed narrative = conflicting. st neutral 44%.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 1.66,
+      "reddit_rank": 26,
+      "earnings_day": true,
+      "theme": "semis-ip",
+      "control": false,
+      "gap_pct": 11.47
+    },
+    {
+      "symbol": "NBIS",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "+18% AI-datacenter momentum but Meta-Compute overhang (Meta monetizing excess AI capacity pressures neoclouds); mixed. st 95% bull.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 2.59,
+      "reddit_rank": 8,
+      "earnings_day": false,
+      "theme": "ai-datacenter",
+      "control": false,
+      "gap_pct": 18.12
+    },
+    {
+      "symbol": "NOW",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "ServiceNow -4.6% earnings-day gap down; specific reason unconfirmed.",
+      "sources": [
+        "websearch"
+      ],
+      "source_signals": {},
+      "premarket_rvol": 0.24,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "software",
+      "control": false,
+      "gap_pct": -4.58
+    },
+    {
+      "symbol": "HOOD",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Beat estimates w/ double-digit rev growth but shares edged lower post-print = mixed. st 92% bull.",
+      "sources": [
+        "websearch",
+        "yahoo"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.76,
+      "reddit_rank": 13,
+      "earnings_day": true,
+      "theme": "fintech",
+      "control": false
+    },
+    {
+      "symbol": "BE",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 20.98
+    },
+    {
+      "symbol": "LRCX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 19.08
+    },
+    {
+      "symbol": "CIFR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 18.43
+    },
+    {
+      "symbol": "NBIS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 18.12
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 15.05
+    },
+    {
+      "symbol": "MSFT",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 14.31
+    },
+    {
+      "symbol": "ARM",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 11.47
+    },
+    {
+      "symbol": "CVNA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -10.24
+    },
+    {
+      "symbol": "NCLH",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -9.44
+    },
+    {
+      "symbol": "META",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -9.41
+    },
+    {
+      "symbol": "MO",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -8.23
+    },
+    {
+      "symbol": "MU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.79
+    },
+    {
+      "symbol": "VKTX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -5.35
+    },
+    {
+      "symbol": "STLA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.92
+    },
+    {
+      "symbol": "IBRX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.83
+    },
+    {
+      "symbol": "NOW",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.58
+    },
+    {
+      "symbol": "QCOM",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.3
+    }
+  ]
+}
