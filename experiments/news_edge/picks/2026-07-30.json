@@ -20,7 +20,8 @@
       "earnings_day": true,
       "theme": "ai-cloud",
       "control": false,
-      "gap_pct": 14.31
+      "gap_pct": 14.31,
+      "ret_945_close": 0.484
     },
     {
       "symbol": "LRCX",
@@ -39,7 +40,8 @@
       "earnings_day": true,
       "theme": "semicap",
       "control": false,
-      "gap_pct": 19.08
+      "gap_pct": 19.08,
+      "ret_945_close": -1.75
     },
     {
       "symbol": "BE",
@@ -58,7 +60,8 @@
       "earnings_day": true,
       "theme": "fuel-cells",
       "control": false,
-      "gap_pct": 20.98
+      "gap_pct": 20.98,
+      "ret_945_close": 0.703
     },
     {
       "symbol": "SNDK",
@@ -77,7 +80,8 @@
       "earnings_day": true,
       "theme": "memory",
       "control": false,
-      "gap_pct": 15.05
+      "gap_pct": 15.05,
+      "ret_945_close": 7.524
     },
     {
       "symbol": "META",
@@ -97,7 +101,8 @@
       "earnings_day": true,
       "theme": "ai-capex",
       "control": false,
-      "gap_pct": -9.41
+      "gap_pct": -9.41,
+      "ret_945_close": 1.342
     },
     {
       "symbol": "QCOM",
@@ -116,7 +121,8 @@
       "earnings_day": true,
       "theme": "semis-handset",
       "control": false,
-      "gap_pct": -3.3
+      "gap_pct": -3.3,
+      "ret_945_close": 2.664
     },
     {
       "symbol": "CVNA",
@@ -133,7 +139,8 @@
       "earnings_day": true,
       "theme": "auto-retail",
       "control": false,
-      "gap_pct": -10.24
+      "gap_pct": -10.24,
+      "ret_945_close": 1.076
     },
     {
       "symbol": "NCLH",
@@ -153,7 +160,8 @@
       "earnings_day": true,
       "theme": "cruise",
       "control": false,
-      "gap_pct": -9.44
+      "gap_pct": -9.44,
+      "ret_945_close": -0.368
     },
     {
       "symbol": "TDOC",
@@ -171,7 +179,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "telehealth",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.596,
+      "gap_pct": -19.348
     },
     {
       "symbol": "MO",
@@ -190,7 +200,8 @@
       "earnings_day": true,
       "theme": "tobacco",
       "control": false,
-      "gap_pct": -8.23
+      "gap_pct": -8.23,
+      "ret_945_close": -1.706
     },
     {
       "symbol": "MU",
@@ -208,7 +219,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "memory-sympathy",
-      "control": false
+      "control": false,
+      "ret_945_close": 7.221,
+      "gap_pct": 7.236
     },
     {
       "symbol": "ARM",
@@ -227,7 +240,8 @@
       "earnings_day": true,
       "theme": "semis-ip",
       "control": false,
-      "gap_pct": 11.47
+      "gap_pct": 11.47,
+      "ret_945_close": 0.711
     },
     {
       "symbol": "NBIS",
@@ -246,7 +260,8 @@
       "earnings_day": false,
       "theme": "ai-datacenter",
       "control": false,
-      "gap_pct": 18.12
+      "gap_pct": 18.12,
+      "ret_945_close": 1.773
     },
     {
       "symbol": "NOW",
@@ -262,7 +277,8 @@
       "earnings_day": true,
       "theme": "software",
       "control": false,
-      "gap_pct": -4.58
+      "gap_pct": -4.58,
+      "ret_945_close": -0.281
     },
     {
       "symbol": "HOOD",
@@ -280,7 +296,9 @@
       "reddit_rank": 13,
       "earnings_day": true,
       "theme": "fintech",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.373,
+      "gap_pct": 1.229
     },
     {
       "symbol": "BE",
@@ -296,7 +314,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 20.98
+      "gap_pct": 20.98,
+      "ret_945_close": 0.703
     },
     {
       "symbol": "LRCX",
@@ -312,7 +331,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 19.08
+      "gap_pct": 19.08,
+      "ret_945_close": -1.75
     },
     {
       "symbol": "CIFR",
@@ -328,7 +348,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 18.43
+      "gap_pct": 18.43,
+      "ret_945_close": 2.924
     },
     {
       "symbol": "NBIS",
@@ -344,7 +365,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 18.12
+      "gap_pct": 18.12,
+      "ret_945_close": 1.773
     },
     {
       "symbol": "SNDK",
@@ -360,7 +382,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 15.05
+      "gap_pct": 15.05,
+      "ret_945_close": 7.524
     },
     {
       "symbol": "MSFT",
@@ -376,7 +399,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 14.31
+      "gap_pct": 14.31,
+      "ret_945_close": 0.484
     },
     {
       "symbol": "ARM",
@@ -392,7 +416,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 11.47
+      "gap_pct": 11.47,
+      "ret_945_close": 0.711
     },
     {
       "symbol": "CVNA",
@@ -408,7 +433,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -10.24
+      "gap_pct": -10.24,
+      "ret_945_close": 1.076
     },
     {
       "symbol": "NCLH",
@@ -424,7 +450,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -9.44
+      "gap_pct": -9.44,
+      "ret_945_close": -0.368
     },
     {
       "symbol": "META",
@@ -440,7 +467,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -9.41
+      "gap_pct": -9.41,
+      "ret_945_close": 1.342
     },
     {
       "symbol": "MO",
@@ -456,7 +484,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -8.23
+      "gap_pct": -8.23,
+      "ret_945_close": -1.706
     },
     {
       "symbol": "MU",
@@ -472,7 +501,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 7.79
+      "gap_pct": 7.79,
+      "ret_945_close": 7.221
     },
     {
       "symbol": "VKTX",
@@ -488,7 +518,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -5.35
+      "gap_pct": -5.35,
+      "ret_945_close": 4.599
     },
     {
       "symbol": "STLA",
@@ -504,7 +535,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.92
+      "gap_pct": -4.92,
+      "ret_945_close": 4.363
     },
     {
       "symbol": "IBRX",
@@ -520,7 +552,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 4.83
+      "gap_pct": 4.83,
+      "ret_945_close": 4.738
     },
     {
       "symbol": "NOW",
@@ -536,7 +569,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.58
+      "gap_pct": -4.58,
+      "ret_945_close": -0.281
     },
     {
       "symbol": "QCOM",
@@ -552,7 +586,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.3
+      "gap_pct": -3.3,
+      "ret_945_close": 2.664
     }
-  ]
+  ],
+  "outcomes_at": "2026-07-30T16:05:13-04:00"
 }
