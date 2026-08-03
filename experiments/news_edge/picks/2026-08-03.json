@@ -1,0 +1,320 @@
+{
+  "date": "2026-08-03",
+  "logged_at": "2026-08-03T09:39:25-04:00",
+  "picks": [
+    {
+      "symbol": "BMY",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Q2 beat-and-raise: adj EPS $2.04 vs $1.60 est, rev $12.97B vs ~$11.86B, raised FY guide; +5% pm",
+      "sources": [
+        "cnbc",
+        "edgar-8k"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "pharma-earnings",
+      "control": false
+    },
+    {
+      "symbol": "BABA",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Unveiled Qwen3.8-Max AI model (one of its most powerful), official release next week; +4% pm",
+      "sources": [
+        "cnbc"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-models",
+      "control": false
+    },
+    {
+      "symbol": "MT",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "Deepening technology partnership with Microsoft; +2% pm (modest, fresh-news)",
+      "sources": [
+        "cnbc"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "steel-partnership",
+      "control": false
+    },
+    {
+      "symbol": "EBAY",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Wells Fargo downgrade to underweight; Depop acquisition seen dilutive to FY27 EPS; -3% pm (earnings Aug 5)",
+      "sources": [
+        "cnbc"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "downgrade",
+      "control": false
+    },
+    {
+      "symbol": "SWKS",
+      "signal": -1,
+      "confidence": 0.45,
+      "reason": "424B5 offering filed 09:29 ET (dilution) alongside earnings 8-K; fresh primary-source filing",
+      "sources": [
+        "edgar-424b5"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "TGTX",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Q2 EPS $0.05 missed consensus by ~89% (R&D ramp) despite 70% BRIUMVI rev growth + raised guide; -5% pm",
+      "sources": [
+        "247wallst",
+        "edgar-8k"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "biotech-earnings",
+      "control": false
+    },
+    {
+      "symbol": "AMC",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Record single-weekend revenue on Spider-Man: Brand New Day debut; +7% pm (meme/gapper fade risk)",
+      "sources": [
+        "thestreet"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.9,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "box-office",
+      "control": false
+    },
+    {
+      "symbol": "FERG",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Joining S&P 500 (announced Fri); +8% pm (index-add, often front-run/fades intraday)",
+      "sources": [
+        "cnbc"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "index-add",
+      "control": false
+    },
+    {
+      "symbol": "GME",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -8.84
+    },
+    {
+      "symbol": "REPL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -7.94
+    },
+    {
+      "symbol": "SCO",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.92
+    },
+    {
+      "symbol": "UCO",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -7.52
+    },
+    {
+      "symbol": "AZN",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -7.28
+    },
+    {
+      "symbol": "MU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -5.85
+    },
+    {
+      "symbol": "FSLR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.08
+    },
+    {
+      "symbol": "SPCG",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.56
+    },
+    {
+      "symbol": "GENI",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.47
+    },
+    {
+      "symbol": "SNOW",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.38
+    },
+    {
+      "symbol": "MLTX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.23
+    }
+  ]
+}
