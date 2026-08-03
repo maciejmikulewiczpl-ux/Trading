@@ -1,6 +1,6 @@
 {
-  "date": "2026-08-02",
-  "generated": "2026-08-02T09:20:13-04:00",
+  "date": "2026-08-03",
+  "generated": "2026-08-03T09:20:30-04:00",
   "probs_asof": "2026-06-30",
   "surge_pct": 0.3,
   "fwd_days": 10,
@@ -35,7 +35,7 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "coiled near range-top, +3% 5d, 14% short",
-      "days_to_catalyst": 118,
+      "days_to_catalyst": 117,
       "nearest_phase": "PHASE3",
       "exit_by": null,
       "cat_quality": "phase3",
@@ -63,7 +63,7 @@
       "conviction": "HIGH",
       "stop": 53.39,
       "trail_pct": 28,
-      "structure": "Phase 3 ~118d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
+      "structure": "Phase 3 ~117d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
     },
     {
       "cash_runway_months": 45.0,
@@ -86,7 +86,7 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "coiled near range-top, +4% 5d, 31% short",
-      "days_to_catalyst": 118,
+      "days_to_catalyst": 117,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-11-21",
       "cat_quality": "phase2",
@@ -114,7 +114,7 @@
       "conviction": "MED",
       "stop": 23.91,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~118d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-11-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~117d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-11-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": null,
@@ -137,7 +137,7 @@
       "p_up": 0.0911,
       "p_down": 0.0318,
       "why": "vol building 1.3x, coiled near range-top, +16% 5d, 4% short",
-      "days_to_catalyst": 92,
+      "days_to_catalyst": 91,
       "nearest_phase": "PHASE2",
       "exit_by": "2026-10-26",
       "cat_quality": "phase2",
@@ -165,7 +165,7 @@
       "conviction": "MED",
       "stop": 571.97,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~92d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-10-26 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~91d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-10-26 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": null,
@@ -188,7 +188,7 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "1% short",
-      "days_to_catalyst": 148,
+      "days_to_catalyst": 147,
       "nearest_phase": "PHASE2",
       "exit_by": "2026-12-21",
       "cat_quality": "phase2",
@@ -216,7 +216,7 @@
       "conviction": "MED",
       "stop": 188.2,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~148d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~147d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": null,
@@ -239,7 +239,7 @@
       "p_up": 0.09,
       "p_down": 0.0283,
       "why": "vol building 1.7x, +2% 5d, 9% short",
-      "days_to_catalyst": 95,
+      "days_to_catalyst": 94,
       "nearest_phase": "PHASE2",
       "exit_by": "2026-10-29",
       "cat_quality": "phase2",
@@ -267,7 +267,7 @@
       "conviction": "MED",
       "stop": 89.64,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~95d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-10-29 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~94d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-10-29 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 40.9,
@@ -336,7 +336,7 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "coiled near range-top, +8% 5d, 12% short",
-      "days_to_catalyst": 87,
+      "days_to_catalyst": 86,
       "nearest_phase": "PHASE3",
       "exit_by": null,
       "cat_quality": "phase3",
@@ -364,7 +364,7 @@
       "conviction": "MED",
       "stop": 28.55,
       "trail_pct": 28,
-      "structure": "Phase 3 ~87d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
+      "structure": "Phase 3 ~86d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
     },
     {
       "cash_runway_months": null,
@@ -529,7 +529,7 @@
       "p_up": 0.0911,
       "p_down": 0.0318,
       "why": "coiled near range-top, +16% 5d, 21% short",
-      "days_to_catalyst": 101,
+      "days_to_catalyst": 100,
       "nearest_phase": "PHASE2",
       "exit_by": "2026-11-04",
       "cat_quality": "phase2",
@@ -547,7 +547,7 @@
       "conviction": "MED",
       "stop": 4.7,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~101d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-11-04 (~1wk BEFORE data); don't hold the binary.  \u26a0 DILUTION RISK: <6mo cash \u2014 a secondary/ATM could cut the run-up."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~100d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-11-04 (~1wk BEFORE data); don't hold the binary.  \u26a0 DILUTION RISK: <6mo cash \u2014 a secondary/ATM could cut the run-up."
     },
     {
       "cash_runway_months": 28.6,
@@ -656,7 +656,7 @@
       "p_up": 0.0911,
       "p_down": 0.0318,
       "why": "vol building 1.3x, coiled near range-top, +16% 5d, 4% short",
-      "days_to_catalyst": 92,
+      "days_to_catalyst": 91,
       "nearest_phase": "PHASE2",
       "exit_by": "2026-10-26",
       "cat_quality": "phase2",
@@ -684,7 +684,7 @@
       "conviction": "MED",
       "stop": 571.97,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~92d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-10-26 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~91d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-10-26 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": null,
@@ -707,7 +707,7 @@
       "p_up": 0.09,
       "p_down": 0.0283,
       "why": "vol building 1.7x, +2% 5d, 9% short",
-      "days_to_catalyst": 95,
+      "days_to_catalyst": 94,
       "nearest_phase": "PHASE2",
       "exit_by": "2026-10-29",
       "cat_quality": "phase2",
@@ -735,7 +735,7 @@
       "conviction": "MED",
       "stop": 89.64,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~95d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-10-29 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~94d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-10-29 (~1wk BEFORE data); don't hold the binary."
     }
   ]
 }
