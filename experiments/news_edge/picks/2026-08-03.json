@@ -18,7 +18,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "pharma-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.274,
+      "gap_pct": 1.394
     },
     {
       "symbol": "BABA",
@@ -35,7 +37,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "ai-models",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.842,
+      "gap_pct": 3.558
     },
     {
       "symbol": "MT",
@@ -52,7 +56,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "steel-partnership",
-      "control": false
+      "control": false,
+      "ret_945_close": 2.339,
+      "gap_pct": 0.813
     },
     {
       "symbol": "EBAY",
@@ -69,7 +75,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "downgrade",
-      "control": false
+      "control": false,
+      "ret_945_close": -3.126,
+      "gap_pct": -2.026
     },
     {
       "symbol": "SWKS",
@@ -86,7 +94,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "dilution",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.189,
+      "gap_pct": -1.894
     },
     {
       "symbol": "TGTX",
@@ -104,7 +114,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "biotech-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -4.601,
+      "gap_pct": -2.14
     },
     {
       "symbol": "AMC",
@@ -121,7 +133,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "box-office",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.538,
+      "gap_pct": 6.607
     },
     {
       "symbol": "FERG",
@@ -138,7 +152,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "index-add",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.166,
+      "gap_pct": 7.166
     },
     {
       "symbol": "GME",
@@ -154,7 +170,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -8.84
+      "gap_pct": -8.84,
+      "ret_945_close": -2.965
     },
     {
       "symbol": "REPL",
@@ -170,7 +187,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -7.94
+      "gap_pct": -7.94,
+      "ret_945_close": 14.172
     },
     {
       "symbol": "SCO",
@@ -186,7 +204,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 7.92
+      "gap_pct": 7.92,
+      "ret_945_close": -1.296
     },
     {
       "symbol": "UCO",
@@ -202,7 +221,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -7.52
+      "gap_pct": -7.52,
+      "ret_945_close": 1.518
     },
     {
       "symbol": "AZN",
@@ -218,7 +238,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -7.28
+      "gap_pct": -7.28,
+      "ret_945_close": 1.865
     },
     {
       "symbol": "MU",
@@ -234,7 +255,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -5.85
+      "gap_pct": -5.85,
+      "ret_945_close": 5.603
     },
     {
       "symbol": "FSLR",
@@ -250,7 +272,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.08
+      "gap_pct": 5.08,
+      "ret_945_close": 3.629
     },
     {
       "symbol": "SPCG",
@@ -266,7 +289,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.56
+      "gap_pct": 3.56,
+      "ret_945_close": -9.369
     },
     {
       "symbol": "GENI",
@@ -282,7 +306,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.47
+      "gap_pct": -3.47,
+      "ret_945_close": 5.055
     },
     {
       "symbol": "SNOW",
@@ -298,7 +323,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.38
+      "gap_pct": 3.38,
+      "ret_945_close": -1.697
     },
     {
       "symbol": "MLTX",
@@ -314,7 +340,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.23
+      "gap_pct": -3.23,
+      "ret_945_close": -1.955
     }
-  ]
+  ],
+  "outcomes_at": "2026-08-03T16:05:13-04:00"
 }
