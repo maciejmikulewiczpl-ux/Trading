@@ -21,7 +21,8 @@
       "earnings_day": true,
       "theme": "ecommerce-software",
       "control": false,
-      "gap_pct": 20.32
+      "gap_pct": 20.32,
+      "ret_945_close": -1.316
     },
     {
       "symbol": "LLY",
@@ -42,7 +43,8 @@
       "earnings_day": true,
       "theme": "pharma-glp1",
       "control": false,
-      "gap_pct": 6.91
+      "gap_pct": 6.91,
+      "ret_945_close": -1.435
     },
     {
       "symbol": "DIS",
@@ -61,7 +63,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "media",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.136,
+      "gap_pct": 3.958
     },
     {
       "symbol": "KTOS",
@@ -80,7 +84,8 @@
       "earnings_day": true,
       "theme": "defense",
       "control": false,
-      "gap_pct": 9.45
+      "gap_pct": 9.45,
+      "ret_945_close": -2.198
     },
     {
       "symbol": "ZETA",
@@ -99,7 +104,8 @@
       "earnings_day": true,
       "theme": "adtech",
       "control": false,
-      "gap_pct": 5.55
+      "gap_pct": 5.55,
+      "ret_945_close": -2.99
     },
     {
       "symbol": "UPST",
@@ -118,7 +124,8 @@
       "earnings_day": true,
       "theme": "fintech-lending",
       "control": false,
-      "gap_pct": 3.94
+      "gap_pct": 3.94,
+      "ret_945_close": -7.745
     },
     {
       "symbol": "AMD",
@@ -139,7 +146,8 @@
       "earnings_day": true,
       "theme": "semis",
       "control": false,
-      "gap_pct": -7.4
+      "gap_pct": -7.4,
+      "ret_945_close": -1.661
     },
     {
       "symbol": "UBER",
@@ -159,7 +167,8 @@
       "earnings_day": true,
       "theme": "rideshare",
       "control": false,
-      "gap_pct": -5.31
+      "gap_pct": -5.31,
+      "ret_945_close": -1.071
     },
     {
       "symbol": "SEDG",
@@ -178,7 +187,8 @@
       "earnings_day": true,
       "theme": "solar",
       "control": false,
-      "gap_pct": -19.82
+      "gap_pct": -19.82,
+      "ret_945_close": -6.434
     },
     {
       "symbol": "TMDX",
@@ -197,7 +207,8 @@
       "earnings_day": true,
       "theme": "medtech",
       "control": false,
-      "gap_pct": -13.58
+      "gap_pct": -13.58,
+      "ret_945_close": 2.884
     },
     {
       "symbol": "FUBO",
@@ -217,7 +228,8 @@
       "earnings_day": true,
       "theme": "streaming",
       "control": false,
-      "gap_pct": -10.62
+      "gap_pct": -10.62,
+      "ret_945_close": 11.093
     },
     {
       "symbol": "CVS",
@@ -234,7 +246,8 @@
       "earnings_day": true,
       "theme": "healthcare",
       "control": false,
-      "gap_pct": -8.56
+      "gap_pct": -8.56,
+      "ret_945_close": 1.229
     },
     {
       "symbol": "APPS",
@@ -250,7 +263,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 38.07
+      "gap_pct": 38.07,
+      "ret_945_close": -6.419
     },
     {
       "symbol": "KODK",
@@ -266,7 +280,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 12.64
+      "gap_pct": 12.64,
+      "ret_945_close": 4.078
     },
     {
       "symbol": "SPCX",
@@ -282,7 +297,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -12.35
+      "gap_pct": -12.35,
+      "ret_945_close": -3.779
     },
     {
       "symbol": "OSS",
@@ -298,7 +314,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -11.69
+      "gap_pct": -11.69,
+      "ret_945_close": -1.705
     },
     {
       "symbol": "AMPX",
@@ -314,7 +331,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 11.37
+      "gap_pct": 11.37,
+      "ret_945_close": -4.98
     },
     {
       "symbol": "GLXY",
@@ -330,7 +348,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -10.89
+      "gap_pct": -10.89,
+      "ret_945_close": -4.133
     },
     {
       "symbol": "BCRX",
@@ -346,7 +365,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 6.53
+      "gap_pct": 6.53,
+      "ret_945_close": -2.435
     },
     {
       "symbol": "PGEN",
@@ -362,7 +382,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.82
+      "gap_pct": 5.82,
+      "ret_945_close": 4.374
     },
     {
       "symbol": "CRCL",
@@ -378,7 +399,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.93
+      "gap_pct": -4.93,
+      "ret_945_close": 2.847
     },
     {
       "symbol": "ASTS",
@@ -394,7 +416,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.23
+      "gap_pct": -4.23,
+      "ret_945_close": 0.889
     },
     {
       "symbol": "SLV",
@@ -410,7 +433,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 4.09
+      "gap_pct": 4.09,
+      "ret_945_close": 0.089
     }
-  ]
+  ],
+  "outcomes_at": "2026-08-05T16:05:12-04:00"
 }
