@@ -1,0 +1,416 @@
+{
+  "date": "2026-08-05",
+  "logged_at": "2026-08-05T09:38:39-04:00",
+  "picks": [
+    {
+      "symbol": "SHOP",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Q2 rev $3.58B +34% vs $3.45B est, GMV +32%, guided Q3 low-30s% > 26% est; +26% gap = blowout but big-gap fade risk caps confidence.",
+      "sources": [
+        "websearch",
+        "edgar-8k",
+        "qz",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 17.81,
+      "reddit_rank": 32,
+      "earnings_day": true,
+      "theme": "ecommerce-software",
+      "control": false,
+      "gap_pct": 20.32
+    },
+    {
+      "symbol": "LLY",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Q2 EPS+rev beat and RAISED FY26 revenue guide on Zepbound/Mounjaro demand; +6.5% clean large-cap reaction.",
+      "sources": [
+        "websearch",
+        "edgar-8k",
+        "cnbc",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": 42,
+      "earnings_day": true,
+      "theme": "pharma-glp1",
+      "control": false,
+      "gap_pct": 6.91
+    },
+    {
+      "symbol": "DIS",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "FQ3 adj EPS $2.06 vs $1.86 est, streaming rev +11%; rev slight miss but +4.9% on parks+streaming strength.",
+      "sources": [
+        "websearch",
+        "cnbc",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "media",
+      "control": false
+    },
+    {
+      "symbol": "KTOS",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Q2 earnings, +9.4% positive premarket reaction (defense/drone demand); direction from price, magnitude confirms.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "defense",
+      "control": false,
+      "gap_pct": 9.45
+    },
+    {
+      "symbol": "ZETA",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Q2 earnings, +5.5% positive premarket reaction; adtech beat, modest gap.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "adtech",
+      "control": false,
+      "gap_pct": 5.55
+    },
+    {
+      "symbol": "UPST",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Q2 earnings, +3.9% positive premarket reaction; small fresh-news gap (pre-registered sweet spot).",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "fintech-lending",
+      "control": false,
+      "gap_pct": 3.94
+    },
+    {
+      "symbol": "AMD",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Q2 slight beat (1.66 adj EPS) but Q3 rev guide only ~in-line 13B; -8.5% sell-the-news. Crowd dip-buying bullish (contrarian).",
+      "sources": [
+        "websearch",
+        "cnbc",
+        "edgar-8k",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.54,
+      "reddit_rank": 1,
+      "earnings_day": true,
+      "theme": "semis",
+      "control": false,
+      "gap_pct": -7.4
+    },
+    {
+      "symbol": "UBER",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Lackluster Q2 + weak Q3 profit forecast outweighs robotaxi news; -5.3% premarket.",
+      "sources": [
+        "websearch",
+        "cnbc",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.23,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "rideshare",
+      "control": false,
+      "gap_pct": -5.31
+    },
+    {
+      "symbol": "SEDG",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Q2 earnings miss; -19.8% large bearish reaction, continuation-risk name.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "solar",
+      "control": false,
+      "gap_pct": -19.82
+    },
+    {
+      "symbol": "TMDX",
+      "signal": -1,
+      "confidence": 0.45,
+      "reason": "Q2 earnings, -13.6% bearish premarket reaction (organ-transport growth disappointment).",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "medtech",
+      "control": false,
+      "gap_pct": -13.58
+    },
+    {
+      "symbol": "FUBO",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Q2 earnings, -10.6% bearish reaction; low-priced (8.5) streaming name.",
+      "sources": [
+        "websearch",
+        "edgar-8k",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "streaming",
+      "control": false,
+      "gap_pct": -10.62
+    },
+    {
+      "symbol": "CVS",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Q2 EPS beat + RAISED FY guide + Lilly weight-loss deal, yet gapped -8.6% (sell-the-news); fundamentals vs price conflict = no confident direction.",
+      "sources": [
+        "websearch",
+        "cnbc"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "healthcare",
+      "control": false,
+      "gap_pct": -8.56
+    },
+    {
+      "symbol": "APPS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 38.07
+    },
+    {
+      "symbol": "KODK",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 12.64
+    },
+    {
+      "symbol": "SPCX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -12.35
+    },
+    {
+      "symbol": "OSS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -11.69
+    },
+    {
+      "symbol": "AMPX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 11.37
+    },
+    {
+      "symbol": "GLXY",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -10.89
+    },
+    {
+      "symbol": "BCRX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.53
+    },
+    {
+      "symbol": "PGEN",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.82
+    },
+    {
+      "symbol": "CRCL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.93
+    },
+    {
+      "symbol": "ASTS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.23
+    },
+    {
+      "symbol": "SLV",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.09
+    }
+  ]
+}
