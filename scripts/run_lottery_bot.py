@@ -121,13 +121,26 @@ def _load_lottery_env() -> None:
             os.environ[k.strip()] = v.strip().strip('"').strip("'")   # override: THIS is the account
 
 
+# 2026-08-06: 30-day verdict RETIRED combined_score as the selector (it found same-day pops
+# -- W1 lift 29x -- but LOST to random at the T+3 hold, both OOS halves). Switched the live
+# selector to the options-implied EXPECTED MOVE (opt_expmove) -- the forward-looking lead
+# (measured "options" basket: W1 lift 67x, ret_3d +11.65% PF 2.29). FORWARD-TEST, not a proven
+# edge: tail-driven on ~3 weeks, re-eval at the next 30-day mark, do NOT scale. combined_score
+# is still logged + scored on the board as the benchmark; only the BOT's traded picks changed.
+SELECT_SIGNAL = "opt_expmove"
+
+
+def _sel_value(p: dict):
+    return (p.get("signals") or {}).get(SELECT_SIGNAL)
+
+
 def _todays_picks(date_str: str) -> list[dict]:
     f = ROOT / "experiments" / "lottery" / "picks" / f"{date_str}.json"
     if not f.exists():
         return []
     rec = json.load(open(f))
-    picks = [p for p in rec.get("picks", []) if p.get("combined_score") is not None]
-    picks.sort(key=lambda x: -x["combined_score"])
+    picks = [p for p in rec.get("picks", []) if _sel_value(p) is not None]
+    picks.sort(key=lambda x: -_sel_value(x))
     return picks[:TOP_N]
 
 
@@ -335,8 +348,8 @@ def run_entries(tc, dry_run: bool) -> int:
     if not picks:
         print(f"lottery bot: no board picks for {date_str} -- idle, nothing to buy.")
         return 0
-    print(f"lottery bot: top-{len(picks)} by combined_score for {date_str}: "
-          + ", ".join(f"{p['symbol']}(cs={p['combined_score']:.2f})" for p in picks))
+    print(f"lottery bot: top-{len(picks)} by {SELECT_SIGNAL} for {date_str}: "
+          + ", ".join(f"{p['symbol']}({SELECT_SIGNAL}={_sel_value(p):.2f})" for p in picks))
 
     state = _load_state()
     try:
