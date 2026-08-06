@@ -167,6 +167,20 @@ def build_board() -> dict:
     opt_em = S.options_expected_move(all_syms)
     print(f"options expected-move: {len(opt_em)}/{len(all_syms)} optionable names priced")
 
+    # v1.6 (2026-08-06) options+cheap blend. pattern_hunt.py found the multi-day WINNERS cluster at
+    # CHEAP price x HIGH expected-move (opt_expmove Q5 W3-tail 10.2% vs 0%; cheap-price OOS-robust in
+    # both halves; the combo tail rate = 2.1x base). Blend = mean percentile-rank of opt_expmove
+    # (higher better) and cheapness (lower price better). Requires BOTH -> None otherwise. The LIVE
+    # bot selects by this (opt_cheap_score); "options" (pure expected-move) stays scored as the
+    # side-by-side benchmark so the data shows whether the cheap tilt actually helps.
+    _opt_pool = {s: opt_em.get(s) for s in all_syms}
+    _cheap_pool = {s: (-prices[s] if prices.get(s) else None) for s in all_syms}
+
+    def _opt_cheap(sym: str):
+        a = _percentile_rank(_opt_pool, sym)
+        b = _percentile_rank(_cheap_pool, sym)
+        return round((a + b) / 2, 4) if (a is not None and b is not None) else None
+
     wsb_surge = {r["ticker"]: r.get("surge") for r in wsb_rows}
     wsb_rank = {r["ticker"]: r.get("rank") for r in wsb_rows}
     st_rank = {s: i + 1 for i, s in enumerate(st_syms)}   # 1 = top trending
@@ -193,6 +207,7 @@ def build_board() -> dict:
             "halt_reason": halts.get(sym),                # v1.3 measured-only (not in combined)
             "realized_vol": igv.get("realized_vol"),      # v1.4 measured-only (filter variant)
             "opt_expmove": opt_em.get(sym),               # v1.5 measured-only (options expected move)
+            "opt_cheap_score": _opt_cheap(sym),           # v1.6 opt_expmove x cheapness blend (LIVE selector)
         }
 
     # --- 4. combined_score: mean percentile rank across non-null signals ---
@@ -281,13 +296,19 @@ def build_board() -> dict:
             if v is not None and s in set(tradable)), key=lambda x: -x[1])[:TOP_K]}
     signal_topk["options"] = _opt
     basket_members["options"] = _opt
+    # v1.6 options+cheap: top-K by the opt_expmove x cheapness blend (the live selector)
+    _oc_scored = [(s, _opt_cheap(s)) for s in tradable]
+    _oc = {s for s, v in sorted(((s, v) for s, v in _oc_scored if v is not None),
+           key=lambda x: -x[1])[:TOP_K]}
+    signal_topk["options_cheap"] = _oc
+    basket_members["options_cheap"] = _oc
 
     # build the pick list. A symbol gets ONE row; basket = its primary basket (priority
     # wsb > stocktwits > gappers > random > control), top_k_of lists ALL signals that
     # flagged it.
     basket_priority = ["wsb", "stocktwits", "gappers", "random", "control",
                        "pennystocks", "shortsqueeze", "gtrends",
-                       "finra_shortvol", "halts", "filtered3", "options"]   # new baskets lowest priority
+                       "finra_shortvol", "halts", "filtered3", "options", "options_cheap"]   # lowest priority
     all_picks_syms = sorted(set().union(*basket_members.values()))
     picks = []
     for sym in all_picks_syms:
@@ -295,6 +316,7 @@ def build_board() -> dict:
         flagged = sorted(name for name, members in signal_topk.items() if sym in members)
         picks.append({
             "symbol": sym,
+            "price": prices.get(sym),                     # v1.6 log price (cheapness signal + analysis)
             "basket": primary,
             "top_k_of": flagged,
             "signals": signals_for(sym),

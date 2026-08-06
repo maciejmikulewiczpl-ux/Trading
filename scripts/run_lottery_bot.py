@@ -127,7 +127,12 @@ def _load_lottery_env() -> None:
 # (measured "options" basket: W1 lift 67x, ret_3d +11.65% PF 2.29). FORWARD-TEST, not a proven
 # edge: tail-driven on ~3 weeks, re-eval at the next 30-day mark, do NOT scale. combined_score
 # is still logged + scored on the board as the benchmark; only the BOT's traded picks changed.
-SELECT_SIGNAL = "opt_expmove"
+# 2026-08-06 REFINEMENT (pattern_hunt.py): the multi-day WINNERS cluster at CHEAP price x HIGH
+# expected-move (cheap-price OOS-robust both halves; combo tail rate 2.1x base). Switched the live
+# selector opt_expmove -> opt_cheap_score (board blend = mean percentile-rank of expected-move +
+# cheapness). Pure "options" (expected-move only) stays scored side-by-side as the benchmark, so
+# analyze.py shows whether the cheap tilt actually helps. Still a forward-test; re-eval ~early Sept.
+SELECT_SIGNAL = "opt_cheap_score"
 
 
 def _sel_value(p: dict):
