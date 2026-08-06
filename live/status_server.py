@@ -731,10 +731,14 @@ def _newsedge() -> dict:
 # and the lottery bot's repurposed dual-mom paper account via .env.lottery.
 # ---------------------------------------------------------------------------
 LOTTERY_PICKS_DIR = ROOT / "experiments" / "lottery" / "picks"
-# Hype bot inception: its first real trades (NBIS/TRV/SPCL) filled 2026-06-15. The
-# account is the retired dual-mom paper account (dual-mom liquidated 2026-06-12), so
-# P/L history before this date is dual-mom's and is clipped out of the Hype views.
-HYPE_INCEPTION = "2026-06-15"
+# Hype bot inception RE-BASED 2026-08-07: the selector switched from combined_score (RETIRED at
+# the 30-day verdict -- it found same-day pops but LOST to random at the T+3 hold) to the options
+# expected-move signal (commit f189863; first options-selected trades 2026-08-07 09:44 ET). Per
+# user, the Summary/Hype P/L views are re-based to this date so they capture ONLY the new
+# options-selector era -- not the ~2mo combined_score run (06-15..08-06) nor the earlier dual-mom
+# account (liquidated 2026-06-12). Minor: a few old combined_score positions finish closing in the
+# first ~3 days of this window (unavoidable strategy-change overlap). Prior value was "2026-06-15".
+HYPE_INCEPTION = "2026-08-07"
 
 _LOTTERY = {"built": False, "tc": None, "dc": None}
 _lottery_cache = {"ts": 0.0, "data": None}
