@@ -1336,6 +1336,44 @@ def _status(tc, dc=None) -> dict:
     return _cache["data"]
 
 
+MEANREV_TRADES = ROOT / "logs" / "meanrev_trades.csv"
+MEANREV_POS = ROOT / "logs" / "meanrev_positions.json"
+
+
+def _meanrev() -> dict:
+    """Mean-reversion forward-test lab (experiments/meanrev/lab.py): the OUT-OF-SAMPLE track record of
+    the Connors RSI-2 oversold-bounce edge (backtest bar +0.47%/trade, 66% win). Data-only, no account."""
+    import csv as _csv
+    import statistics as _st
+    trades = []
+    try:
+        trades = list(_csv.DictReader(open(MEANREV_TRADES)))
+    except Exception:
+        pass
+    rets = [float(t["ret_pct"]) for t in trades if t.get("ret_pct") not in (None, "")]
+    stats = None
+    if rets:
+        sv = sorted(rets); eq = 1.0
+        for r in rets:
+            eq *= (1 + r / 100)
+        stats = {"n": len(rets), "mean": round(_st.mean(rets), 3), "median": round(_st.median(rets), 3),
+                 "win": round(sum(1 for x in rets if x > 0) / len(rets) * 100),
+                 "best": round(max(rets), 1), "worst": round(min(rets), 1),
+                 "worst5": round(_st.mean(sv[:max(1, len(sv) // 20)]), 1),
+                 "sum": round(sum(rets), 1), "compounded": round((eq - 1) * 100, 1)}
+    open_pos = []
+    try:
+        p = json.loads(MEANREV_POS.read_text())
+        open_pos = [{"sym": s, "entry_date": v.get("entry_date"), "entry_px": v.get("entry_px"), "days": v.get("days")}
+                    for s, v in p.items() if not s.startswith("_")]
+    except Exception:
+        pass
+    return {"stats": stats, "open": sorted(open_pos, key=lambda x: x.get("entry_date") or ""),
+            "recent": trades[-20:][::-1],
+            "backtest": {"mean": 0.47, "win": 66, "worst": -18, "n": 1412},
+            "note": "Cost-free forward test, no account. Connors RSI(2)<10 + above 200d SMA; exit RSI>60 or T+5. Bull-tested — a bear is the real exam."}
+
+
 def _summary(tc, dc=None) -> dict:
     """Compact day-by-day P/L for all three bots (ORB baseline, news-edge, lottery)
     for the Summary tab. Reuses the cached per-account gathers — no extra Alpaca calls.
@@ -1617,10 +1655,10 @@ function plBreakdownCard(dp, todayStr, tab){
   return h;
 }
 function topNav(active){
-  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["lottery","Hype"],["summary","Summary"],["biotech","Biotech"],["futures","Futures"],["regime","Market"]].map(
+  return `<div class="tabs" style="margin-bottom:14px">`+[["trading","Trading"],["news","News-Edge"],["lottery","Hype"],["summary","Summary"],["biotech","Biotech"],["futures","Futures"],["meanrev","Mean-Rev"],["regime","Market"]].map(
     ([k,l])=>`<button class="tab${active===k?" active":""}" onclick="setTopView('${k}')">${l}</button>`).join("")+`</div>`;
 }
-let lastRegime=null, lastLottery=null, lastSummary=null, lastBiotech=null, lastFutures=null;
+let lastRegime=null, lastLottery=null, lastSummary=null, lastBiotech=null, lastFutures=null, lastMeanrev=null;
 function showLoading(tab){
   const r=document.getElementById("root");
   if(r) r.innerHTML=topNav(tab)+`<div class="card"><div class="empty">loading…</div></div>`;
@@ -1661,6 +1699,7 @@ function setTopView(v){
   else if(v==="summary"){ lastSummary?renderSummary(lastSummary):showLoading("summary"); fetchSummary(); }
   else if(v==="biotech"){ lastBiotech?renderBiotech(lastBiotech):showLoading("biotech"); fetchBiotech(); }
   else if(v==="futures"){ lastFutures?renderFutures(lastFutures):showLoading("futures"); fetchFutures(); }
+  else if(v==="meanrev"){ lastMeanrev?renderMeanrev(lastMeanrev):showLoading("meanrev"); fetchMeanrev(); }
   else if(v==="regime"){ lastRegime?renderRegime(lastRegime):showLoading("regime"); fetchRegime(); }
   else { lastData?render(lastData):showLoading("trading"); }
 }
@@ -2422,6 +2461,40 @@ async function fetchFutures(){
   try{ const r=await fetch("/api/futures",{cache:"no-store"}); lastFutures=await r.json(); if(topView==="futures") renderFutures(lastFutures); }
   catch(e){ if(topView==="futures") document.getElementById("root").innerHTML=topNav("futures")+`<div class="card empty">futures data unavailable</div>`; }
 }
+function renderMeanrev(d){
+  let h=topNav("meanrev");
+  const s=d&&d.stats, bt=(d&&d.backtest)||{}, op=(d&&d.open)||[], rec=(d&&d.recent)||[];
+  h+=`<div class="banner s-idle"><h1>Mean-reversion — steady-income forward test</h1><p>Buy quality large-caps when OVERSOLD in an uptrend (Connors RSI-2), exit on the bounce. Cost-free paper lab, no account — an out-of-sample check on the backtested edge.</p></div>`;
+  if(!s){
+    h+=`<div class="card"><div class="empty">No closed trades yet — the lab runs 16:30 ET daily and needs a few days to produce exits.${op.length?' ('+op.length+' open now)':''}</div></div>`;
+  } else {
+    const pc=v=>`<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${v}%</span>`;
+    h+=`<div class="card"><h2>Forward track record — ${s.n} closed trade${s.n===1?'':'s'}</h2>`;
+    h+=`<table><tr><th>metric</th><th>forward (live)</th><th>backtest bar</th></tr>`;
+    h+=`<tr><td>mean / trade</td><td>${pc(s.mean)}</td><td>+${bt.mean}%</td></tr>`;
+    h+=`<tr><td>win rate</td><td>${s.win}%</td><td>${bt.win}%</td></tr>`;
+    h+=`<tr><td>median</td><td>${pc(s.median)}</td><td>—</td></tr>`;
+    h+=`<tr><td>best / worst</td><td>${pc(s.best)} / ${pc(s.worst)}</td><td>worst ${bt.worst}%</td></tr>`;
+    h+=`<tr><td>worst-5% avg (tail)</td><td>${pc(s.worst5)}</td><td>—</td></tr>`;
+    h+=`<tr><td>sum of returns</td><td>${pc(s.sum)}</td><td>—</td></tr>`;
+    h+=`</table><div class="hint" style="margin-top:6px">Forward mean beating ~<b>+0.4%</b>/trade with the win-rate near <b>66%</b> = the backtest edge is holding out-of-sample.</div></div>`;
+  }
+  h+=`<div class="card"><h2>Open positions (${op.length})</h2>`;
+  if(op.length){ h+=`<table><tr><th>sym</th><th>entry</th><th>@ px</th><th>days held</th></tr>`;
+    for(const p of op) h+=`<tr><td>${p.sym}</td><td>${p.entry_date}</td><td>$${p.entry_px}</td><td>${p.days}</td></tr>`;
+    h+=`</table>`; } else h+=`<div class="empty">flat — no oversold-in-uptrend signals open</div>`;
+  h+=`</div>`;
+  if(rec.length){ h+=`<div class="card"><h2>Recent closed trades</h2><table><tr><th>sym</th><th>in</th><th>out</th><th>ret</th><th>days</th><th>exit</th></tr>`;
+    for(const t of rec){ const r=parseFloat(t.ret_pct); h+=`<tr><td>${t.symbol}</td><td>${t.entry_date}</td><td>${t.exit_date}</td><td class="${r>=0?'pos':'neg'}">${r>=0?'+':''}${r}%</td><td>${t.days}</td><td style="font-size:11px">${t.exit_reason}</td></tr>`; }
+    h+=`</table></div>`; }
+  h+=`<div class="card" style="border-color:#7c3a3a"><div class="hint"><b>⚠</b> ${(d&&d.note)||''}</div></div>`;
+  h+=`<div class="foot"><span>mean-rev lab</span><span></span></div>`;
+  setRoot(h);
+}
+async function fetchMeanrev(){
+  try{ const r=await fetch("/api/meanrev",{cache:"no-store"}); lastMeanrev=await r.json(); if(topView==="meanrev") renderMeanrev(lastMeanrev); }
+  catch(e){ if(topView==="meanrev") document.getElementById("root").innerHTML=topNav("meanrev")+`<div class="card empty">mean-rev data unavailable</div>`; }
+}
 let fails=0;
 async function tick(){
   try{ const r=await fetch("/api/status",{cache:"no-store"}); const d=await r.json(); lastData=d; fails=0;
@@ -2515,6 +2588,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.startswith("/api/futures"):
             try:
                 body = json.dumps(_futures()).encode("utf-8")
+                self._send(200, body, "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
+        elif self.path.startswith("/api/meanrev"):
+            try:
+                body = json.dumps(_meanrev()).encode("utf-8")
                 self._send(200, body, "application/json")
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(), "application/json")
