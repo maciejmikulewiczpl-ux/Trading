@@ -1,0 +1,16 @@
+[Unit]
+Description=Mean-reversion forward-test lab (daily EOD scan; data-only, NO trading account)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/trading
+ExecStart=/home/ubuntu/trading/scripts/launch_meanrev.sh
+Restart=no
+KillSignal=SIGINT
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

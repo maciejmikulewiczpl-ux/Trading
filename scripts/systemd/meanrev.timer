@@ -1,0 +1,12 @@
+[Unit]
+Description=Fire the mean-reversion forward-test lab at 16:30 ET on US weekdays (after the close)
+# 16:30 ET so today's daily bar has settled. The lab signals + "enters" at the signal-day close and
+# is guarded against re-processing the same session, so a blanket Mon..Fri timer is safe (no-ops on
+# holidays / when no new daily bar exists).
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 16:30:00 America/New_York
+Unit=meanrev.service
+
+[Install]
+WantedBy=timers.target
