@@ -1,0 +1,12 @@
+[Unit]
+Description=Fire the news catalyst multi-day-hold bot at 09:45 ET on US weekdays
+# Fires just after the laptop news scan (~09:33 ET) pushes today's picks; staggered 1 min after
+# the hype bot (09:44) since both run on the same VM. The wrapper waits/pulls for today's picks
+# and no-ops idle on holidays / picks-less days, so a blanket Mon..Fri timer is safe.
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 09:45:00 America/New_York
+Unit=news-hold.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,19 @@
+[Unit]
+Description=News catalyst MULTI-DAY hold bot (.env.news account; re-structured 2026-08-07 from same-day ORB)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Short-lived: pulls today's news picks, buys signal=1 catalysts ($2000 notional + 10% trail),
+# runs T+3 time-stops, exits. Reuses run_lottery_bot.py via LOTTERY_* env overrides set in the
+# wrapper. Idle exit 0 on days with no picks or market closed.
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/trading
+ExecStart=/home/ubuntu/trading/scripts/launch_news_hold.sh
+Restart=no
+KillSignal=SIGINT
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

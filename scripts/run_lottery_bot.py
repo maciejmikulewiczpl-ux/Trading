@@ -102,17 +102,22 @@ TOP_N = 3                  # top-3 by combined_score
 TIME_STOP_DAYS = 3         # close at T+3 trading-ish days if still open (the 10% trailing stop
                            # exits most winners before then). Same-day exit tested + REVERTED
                            # 2026-07-01 (capped the +1-2d tail that drives PnL); --eod-close is a manual tool.
-STATE_FILE = ROOT / "logs" / "lottery_positions.json"
-EXEC_LOG = ROOT / "logs" / "lottery_execution.csv"   # intended-quote vs actual-fill (slippage/capacity)
+# 2026-08-07: config is env-overridable so the SAME battle-tested engine (close-guard, liquidity
+# guard, whole-share sizing, trailing-stop polling) can run a 2ND INSTANCE for the news multi-day
+# CATALYST bot. ALL defaults = the hype bot, unchanged. Follows the news-orb ORB_* override pattern.
+_TAG = os.environ.get("LOTTERY_TAG", "lottery")                 # names state/exec/heartbeat/log
+_ENV_FILE = os.environ.get("LOTTERY_ENV_FILE", ".env.lottery")   # which account
+_PICKS_SUBDIR = os.environ.get("LOTTERY_PICKS_DIR", "lottery")   # experiments/<subdir>/picks
+STATE_FILE = ROOT / "logs" / f"{_TAG}_positions.json"
+EXEC_LOG = ROOT / "logs" / f"{_TAG}_execution.csv"   # intended-quote vs actual-fill (slippage/capacity)
 
 log = logging.getLogger("lottery_bot")
 
 
 def _load_lottery_env() -> None:
-    f = ROOT / ".env.lottery"
+    f = ROOT / _ENV_FILE
     if not f.exists():
-        print("FATAL: .env.lottery not found (repurposed dual-mom account keys). Aborting.",
-              file=sys.stderr)
+        print(f"FATAL: {_ENV_FILE} not found. Aborting.", file=sys.stderr)
         sys.exit(2)
     for line in f.read_text().splitlines():
         line = line.strip()
@@ -132,7 +137,7 @@ def _load_lottery_env() -> None:
 # selector opt_expmove -> opt_cheap_score (board blend = mean percentile-rank of expected-move +
 # cheapness). Pure "options" (expected-move only) stays scored side-by-side as the benchmark, so
 # analyze.py shows whether the cheap tilt actually helps. Still a forward-test; re-eval ~early Sept.
-SELECT_SIGNAL = "opt_cheap_score"
+SELECT_SIGNAL = os.environ.get("LOTTERY_SELECT", "opt_cheap_score")   # hype default; "catalyst" = news signal=1
 
 
 def _sel_value(p: dict):
@@ -140,11 +145,16 @@ def _sel_value(p: dict):
 
 
 def _todays_picks(date_str: str) -> list[dict]:
-    f = ROOT / "experiments" / "lottery" / "picks" / f"{date_str}.json"
+    f = ROOT / "experiments" / _PICKS_SUBDIR / "picks" / f"{date_str}.json"
     if not f.exists():
         return []
     rec = json.load(open(f))
-    picks = [p for p in rec.get("picks", []) if _sel_value(p) is not None]
+    ps = rec if isinstance(rec, list) else rec.get("picks", [])
+    if SELECT_SIGNAL == "catalyst":     # news multi-day bot: signal=1 catalyst names, top-N by confidence
+        cats = [p for p in ps if p.get("signal") in (1, "1") and not p.get("control")]
+        cats.sort(key=lambda p: -(p.get("confidence") or 0))
+        return cats[:TOP_N]
+    picks = [p for p in ps if _sel_value(p) is not None]
     picks.sort(key=lambda x: -_sel_value(x))
     return picks[:TOP_N]
 
@@ -353,8 +363,11 @@ def run_entries(tc, dry_run: bool) -> int:
     if not picks:
         print(f"lottery bot: no board picks for {date_str} -- idle, nothing to buy.")
         return 0
-    print(f"lottery bot: top-{len(picks)} by {SELECT_SIGNAL} for {date_str}: "
-          + ", ".join(f"{p['symbol']}({SELECT_SIGNAL}={_sel_value(p):.2f})" for p in picks))
+    def _lbl(p):
+        v = _sel_value(p)
+        return f"{p['symbol']}({SELECT_SIGNAL}={v:.2f})" if v is not None else \
+            f"{p['symbol']}(conf={p.get('confidence')},{p.get('theme')})"
+    print(f"lottery bot: top-{len(picks)} by {SELECT_SIGNAL} for {date_str}: " + ", ".join(_lbl(p) for p in picks))
 
     state = _load_state()
     try:
@@ -417,7 +430,7 @@ def run_entries(tc, dry_run: bool) -> int:
             print(f"  BUY submitted {sym} {qty} sh @ ~${px:.2f} (order {order.id}).")
             bid, ask = quotes.get(sym, (None, None))
             state[sym] = {"entry_date": date_str, "qty": qty, "ref_price": px,
-                          "combined_score": p["combined_score"], "trail_attached": False,
+                          "combined_score": p.get("combined_score"), "trail_attached": False,
                           "buy_order_id": str(order.id),
                           "exec": {"submit_ts": datetime.now(ET).isoformat(timespec="seconds"),
                                    "intended_px": px, "bid": bid, "ask": ask, "qty": qty},
@@ -516,7 +529,7 @@ def _emit_heartbeat(phase: str) -> None:
     try:
         sys.path.insert(0, str(ROOT))
         from live import heartbeat
-        hb = ROOT / "logs" / "heartbeat_lottery.json"
+        hb = ROOT / "logs" / f"heartbeat_{_TAG}.json"
         heartbeat.write(datetime.now().timestamp() + 86400, path=hb, phase=phase,
                         tag="lottery_")
     except Exception:
@@ -524,7 +537,7 @@ def _emit_heartbeat(phase: str) -> None:
 
 
 def main() -> int:
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s lottery_ %(message)s")
+    logging.basicConfig(level=logging.INFO, format=f"%(asctime)s {_TAG}_ %(message)s")
     _load_lottery_env()
     args = sys.argv[1:]
     dry_run = "--dry-run" in args
