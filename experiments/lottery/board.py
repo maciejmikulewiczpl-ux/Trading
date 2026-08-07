@@ -166,6 +166,13 @@ def build_board() -> dict:
     print("computing options expected-move (ATM straddle, quotes-only) ...")
     opt_em = S.options_expected_move(all_syms)
     print(f"options expected-move: {len(opt_em)}/{len(all_syms)} optionable names priced")
+    # v1.7 (2026-08-07) options FLOW = call share of prior-session option premium (smart-money
+    # bullish positioning; distinct from expected-move which is direction-neutral). Measured-only,
+    # forward-test; noisy on the free IEX feed (a fraction of true volume) so the call/put TILT is
+    # the signal. External research says flow is "data not edge" -> forward-test whether it helps.
+    print("computing options flow (call-premium share) ...")
+    opt_flow = S.options_flow(all_syms)
+    print(f"options flow: {len(opt_flow)}/{len(all_syms)} names with option volume")
 
     # v1.6 (2026-08-06) options+cheap blend. pattern_hunt.py found the multi-day WINNERS cluster at
     # CHEAP price x HIGH expected-move (opt_expmove Q5 W3-tail 10.2% vs 0%; cheap-price OOS-robust in
@@ -208,6 +215,7 @@ def build_board() -> dict:
             "realized_vol": igv.get("realized_vol"),      # v1.4 measured-only (filter variant)
             "opt_expmove": opt_em.get(sym),               # v1.5 measured-only (options expected move)
             "opt_cheap_score": _opt_cheap(sym),           # v1.6 opt_expmove x cheapness blend (LIVE selector)
+            "opt_call_share": opt_flow.get(sym),          # v1.7 options-flow (call premium share; measured)
         }
 
     # --- 4. combined_score: mean percentile rank across non-null signals ---
@@ -302,13 +310,18 @@ def build_board() -> dict:
            key=lambda x: -x[1])[:TOP_K]}
     signal_topk["options_cheap"] = _oc
     basket_members["options_cheap"] = _oc
+    # v1.7 options-flow: top-K by call-premium share (bullish smart-money flow)
+    _of = {s for s, v in sorted(((s, opt_flow.get(s)) for s in tradable if opt_flow.get(s) is not None),
+           key=lambda x: -x[1])[:TOP_K]}
+    signal_topk["options_flow"] = _of
+    basket_members["options_flow"] = _of
 
     # build the pick list. A symbol gets ONE row; basket = its primary basket (priority
     # wsb > stocktwits > gappers > random > control), top_k_of lists ALL signals that
     # flagged it.
     basket_priority = ["wsb", "stocktwits", "gappers", "random", "control",
                        "pennystocks", "shortsqueeze", "gtrends",
-                       "finra_shortvol", "halts", "filtered3", "options", "options_cheap"]   # lowest priority
+                       "finra_shortvol", "halts", "filtered3", "options", "options_cheap", "options_flow"]
     all_picks_syms = sorted(set().union(*basket_members.values()))
     picks = []
     for sym in all_picks_syms:

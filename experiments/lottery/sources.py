@@ -444,6 +444,51 @@ def _parse_occ(sym: str):
         return None, None, None
 
 
+def options_flow(tickers: list[str], max_dte: int = 21) -> dict:
+    """Options-FLOW signal per name = the CALL SHARE of near-dated option PREMIUM (volume x price) in
+    the prior session: a 'smart money positioning bullish' proxy, DISTINCT from expected-move (which
+    is direction-neutral). >0.5 = call-heavy flow. Uses daily option bars (free tier; IEX sees only a
+    fraction of true option volume, so it's a NOISY proxy -- the call/put TILT is the signal, not the
+    absolute). Graceful-None per name; ~1s/name (bounded to <=120 near-dated contracts). Measured-only."""
+    import datetime as dt
+    try:
+        from alpaca.data.historical.option import OptionHistoricalDataClient
+        from alpaca.data.requests import OptionChainRequest, OptionBarsRequest
+        from alpaca.data.timeframe import TimeFrame
+        oc = OptionHistoricalDataClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"])
+    except Exception:
+        return {}
+    today = dt.date.today()
+    out: dict[str, float] = {}
+    for t in tickers:
+        try:
+            ch = oc.get_option_chain(OptionChainRequest(underlying_symbol=t, expiration_date_gte=today,
+                 expiration_date_lte=today + dt.timedelta(days=max_dte)))
+            syms = list(ch.keys())[:120]
+            if not syms:
+                continue
+            bars = oc.get_option_bars(OptionBarsRequest(symbol_or_symbols=syms, timeframe=TimeFrame.Day,
+                   start=dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=4))).df
+            cprem = pprem = 0.0
+            for s in syms:
+                try:
+                    r = bars.xs(s, level=0).iloc[-1]
+                except Exception:
+                    continue
+                vol = float(r.volume or 0); px = float(r.close or 0)
+                _, typ, _ = _parse_occ(s)
+                if typ == "C":
+                    cprem += vol * px
+                elif typ == "P":
+                    pprem += vol * px
+            tot = cprem + pprem
+            if tot > 0:
+                out[t] = round(cprem / tot, 4)      # call share of premium; >0.5 = bullish flow
+        except Exception:
+            continue
+    return out
+
+
 def main(argv) -> int:
     cmd = argv[1].lower() if len(argv) > 1 else ""
     if cmd == "ignition" and len(argv) >= 3:
