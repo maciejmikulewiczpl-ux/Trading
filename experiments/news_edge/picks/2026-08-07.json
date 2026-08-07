@@ -1,0 +1,451 @@
+{
+  "date": "2026-08-07",
+  "logged_at": "2026-08-07T09:39:33-04:00",
+  "picks": [
+    {
+      "symbol": "DKNG",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Q2 EPS beat ($0.09 vs $0.02 est), sportsbook +24% YoY, 2nd straight positive net income; +4.7% premarket despite slight rev miss. Smaller-gap fresh earnings.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 42,
+      "earnings_day": true,
+      "theme": "gaming-earnings",
+      "control": false
+    },
+    {
+      "symbol": "ACMR",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Q2 revenue growth beat on China chip-buildout demand; up ~5.1% premarket. Named earnings catalyst, smaller gap.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "semis-china",
+      "control": false
+    },
+    {
+      "symbol": "HTZ",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "Record Q2 beat (RPD +9%, EBITDA $81M vs $18M), but +20% and short-squeeze (~30% float short) = extended big-gapper; pre-reg fade risk caps conviction.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 14.59,
+      "reddit_rank": 1,
+      "earnings_day": true,
+      "theme": "rental-earnings",
+      "control": false
+    },
+    {
+      "symbol": "TTD",
+      "signal": -1,
+      "confidence": 0.7,
+      "reason": "Q2 miss ($0.34 vs $0.40), rev +3% only, CFO/CMO/commercial-chief all replaced, Q3 guide $650M vs $805M expected; -22% after hours.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 109.25,
+      "reddit_rank": 9,
+      "earnings_day": true,
+      "theme": "adtech-earnings",
+      "control": false
+    },
+    {
+      "symbol": "WEN",
+      "signal": -1,
+      "confidence": 0.55,
+      "reason": "Headline EPS/rev beat but systemwide sales -6.5% (US -8.2%), withdrew 2026 outlook, cut dividend to $0.28; down -3.4% on the print.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 13,
+      "earnings_day": true,
+      "theme": "restaurants-earnings",
+      "control": false
+    },
+    {
+      "symbol": "TTWO",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Reports AFTER close today (GTA6-watch); catalyst not yet realized - holding a long into tonights binary is a gamble, not a frontrunner.",
+      "sources": [
+        "edgar",
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 27,
+      "earnings_day": true,
+      "theme": "gaming",
+      "control": false
+    },
+    {
+      "symbol": "UA",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "Mixed Q1 FY27: adj EPS beat ($0.05 vs $0.02), profit outlook maintained, BUT rev -3% and FY revenue guide cut. Implied move +/-23%, direction unclear.",
+      "sources": [
+        "edgar",
+        "websearch"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "apparel-earnings",
+      "control": false
+    },
+    {
+      "symbol": "CAR",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Reddit sympathy surge alongside HTZ short-squeeze; no confirmed own catalyst today. Crowding, not a signal.",
+      "sources": [
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 22,
+      "earnings_day": false,
+      "theme": "rental",
+      "control": false
+    },
+    {
+      "symbol": "NBIS",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "AI-infra name trending but earnings not until Aug 12; recent -8% profit-taking, no fresh dated catalyst today.",
+      "sources": [
+        "stocktwits",
+        "reddit",
+        "websearch"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.43,
+      "reddit_rank": 10,
+      "earnings_day": false,
+      "theme": "ai-infra",
+      "control": false
+    },
+    {
+      "symbol": "AAOI",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "AI-optical mover (+8.8% gap) on capacity-expansion coverage but no fresh dated catalyst today; earnings still ahead. Momentum/volatility, unconfirmed.",
+      "sources": [
+        "stocktwits",
+        "reddit",
+        "websearch"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 2.68,
+      "reddit_rank": 14,
+      "earnings_day": false,
+      "theme": "ai-optical",
+      "control": false
+    },
+    {
+      "symbol": "RCL",
+      "signal": 0,
+      "confidence": 0.15,
+      "reason": "Filed 8-K today but Q2 earnings were Jul 28 (stale); todays filing not an earnings catalyst.",
+      "sources": [
+        "edgar",
+        "websearch"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "cruise",
+      "control": false
+    },
+    {
+      "symbol": "AVAV",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Fresh 8-K this morning (defense/drones) but content/direction unconfirmed; not tagging a confident call on an unverified filing.",
+      "sources": [
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "defense-drones",
+      "control": false
+    },
+    {
+      "symbol": "DOCS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 80.16
+    },
+    {
+      "symbol": "TEAM",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 34.2
+    },
+    {
+      "symbol": "SEZL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -31.23
+    },
+    {
+      "symbol": "TWLO",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 23.22
+    },
+    {
+      "symbol": "ABNB",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 13.32
+    },
+    {
+      "symbol": "SERV",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -12.05
+    },
+    {
+      "symbol": "U",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.58
+    },
+    {
+      "symbol": "NB",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.13
+    },
+    {
+      "symbol": "TRLV",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.21
+    },
+    {
+      "symbol": "OKLO",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.69
+    },
+    {
+      "symbol": "MP",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.12
+    },
+    {
+      "symbol": "BMNR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.23
+    },
+    {
+      "symbol": "SLV",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.72
+    },
+    {
+      "symbol": "VST",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.12
+    }
+  ]
+}
