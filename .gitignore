@@ -31,7 +31,16 @@ __pycache__/
 .claude/settings.local.json
 
 # Runtime artifacts
-logs/
+logs/*
+# Analytical data files KEPT + backed up to GitHub for future edge analysis (2026-08-10).
+# (logs/* ignores runtime noise but these named data files are re-included; positions.json
+# stays ignored below = runtime state, not data.) Each is committed by the machine that writes
+# it: signal-history + ledger on the Surface, execution + meanrev on the VM (only one machine
+# appends each, so no cross-machine conflict).
+!logs/lottery_signal_history.jsonl
+!logs/lottery_trade_ledger.csv
+!logs/lottery_execution.csv
+!logs/meanrev_trades.csv
 backtest/orb_trades.csv
 # dot-prefixed .pkl in backtest = regenerable data cache (bars, pit, swing, put-spread, daily-base)
 backtest/.*.pkl
