@@ -1,0 +1,203 @@
+{
+  "date": "2026-08-10",
+  "logged_at": "2026-08-10T09:26:04-04:00",
+  "picks": [
+    {
+      "symbol": "ABCL",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Positive Phase 2 top-line for ABCL635 (menopause VMS) out pre-open: placebo-adjusted reduction 5.3 hot flashes/day, p<0.001, favorable tolerability. Stock +~27% (Fri $6.93 -> ~$8.82). Fresh binary win this morning; big-gap fade risk noted.",
+      "sources": [
+        "edgar",
+        "webnews",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-data",
+      "control": false
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "SanDisk + SK Hynix unveiled first High Bandwidth Flash (HBF) industry standard, expanding AI-memory TAM; multiple analyst PT hikes. +~8% premarket. Fresh named catalyst but already gapped.",
+      "sources": [
+        "webnews",
+        "stocktwits-trending"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-memory",
+      "control": false
+    },
+    {
+      "symbol": "MU",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "AI-memory boom read-through (SanDisk/SK Hynix HBF standard) + Wall St PT hikes on memory; +~6% premarket. Same macro theme as SNDK (2nd of theme).",
+      "sources": [
+        "webnews",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.05,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-memory",
+      "control": false
+    },
+    {
+      "symbol": "SION",
+      "signal": -1,
+      "confidence": 0.8,
+      "reason": "Sionna Therapeutics crashed -89.5% premarket on clear clinical failure (8-K 07:15). Top premarket loser. StockTwits crowd bullish = contrarian dip-buying, not a reason to buy.",
+      "sources": [
+        "edgar",
+        "webnews",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-data",
+      "control": false
+    },
+    {
+      "symbol": "ACHR",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Q2 earnings AFTER close today; pre-earnings runup. Reddit mention surge 25x (rank 14) + StockTwits trending + pm_rvol 29x = crowding/anticipation, not a confirmed directional catalyst. T+3 hold would straddle tonight binary.",
+      "sources": [
+        "edgar",
+        "reddit",
+        "stocktwits-trending"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 29.22,
+      "reddit_rank": 14,
+      "earnings_day": true,
+      "theme": "evtol",
+      "control": false
+    },
+    {
+      "symbol": "REPL",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "RP1/Tudriqev accelerated FDA approval already drove +112% last week (goal date Aug 2); today 8-K 07:50 = follow-up, catalyst already priced. Momentum continuation, not fresh.",
+      "sources": [
+        "edgar",
+        "webnews",
+        "stocktwits-trending"
+      ],
+      "source_signals": {},
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-data",
+      "control": false
+    },
+    {
+      "symbol": "AXSM",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "8-K 07:05 (likely Q2 earnings), recent analyst bullishness. Direction unconfirmed pre-open -> earnings-day, no confident call on price action.",
+      "sources": [
+        "edgar",
+        "stocktwits-trending"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "biotech-pharma",
+      "control": false
+    },
+    {
+      "symbol": "MLTX",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "8-K 07:15 (likely earnings), analyst bullishness. No confirmed directional catalyst pre-open.",
+      "sources": [
+        "edgar",
+        "stocktwits-trending"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "biotech-pharma",
+      "control": false
+    },
+    {
+      "symbol": "DUOL",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "8-K 09:02 = Q2 earnings; direction unconfirmed at scan time. Earnings-day gapper.",
+      "sources": [
+        "edgar"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "software",
+      "control": false
+    },
+    {
+      "symbol": "HTZ",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Reddit mention surge rank 1 (166 mentions, 4.4x) = crowding flag with no named catalyst found. Chatter only, never a signal by itself.",
+      "sources": [
+        "reddit",
+        "stocktwits-trending"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.35,
+      "reddit_rank": 1,
+      "earnings_day": false,
+      "theme": "meme",
+      "control": false
+    },
+    {
+      "symbol": "RKLB",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Rocket Lab reports AFTER close today; pre-earnings runup + StockTwits trending + Reddit surge (rank 5). Anticipation, not a confirmed catalyst; T+3 straddles earnings.",
+      "sources": [
+        "reddit",
+        "stocktwits-trending"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 2.79,
+      "reddit_rank": 5,
+      "earnings_day": true,
+      "theme": "space",
+      "control": false
+    }
+  ]
+}
