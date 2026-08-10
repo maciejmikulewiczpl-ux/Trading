@@ -1,6 +1,6 @@
 {
-  "date": "2026-08-09",
-  "generated": "2026-08-09T09:18:32-04:00",
+  "date": "2026-08-10",
+  "generated": "2026-08-10T09:31:06-04:00",
   "probs_asof": "2026-06-30",
   "surge_pct": 0.3,
   "fwd_days": 10,
@@ -35,7 +35,7 @@
       "p_up": 0.09,
       "p_down": 0.0283,
       "why": "vol building 1.5x, +4% 5d, 6% short",
-      "days_to_catalyst": 141,
+      "days_to_catalyst": 140,
       "nearest_phase": "PHASE3",
       "exit_by": null,
       "cat_quality": "phase3",
@@ -58,7 +58,7 @@
       "conviction": "HIGH",
       "stop": 404.13,
       "trail_pct": 28,
-      "structure": "Phase 3 ~141d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
+      "structure": "Phase 3 ~140d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
     },
     {
       "cash_runway_months": 38.5,
@@ -81,7 +81,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.6x, +13% 5d, 26% short",
-      "days_to_catalyst": 114,
+      "days_to_catalyst": 113,
       "nearest_phase": "PHASE2,PHASE3",
       "exit_by": "2026-11-24",
       "cat_quality": "phase2",
@@ -109,7 +109,7 @@
       "conviction": "MED",
       "stop": 1.61,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~114d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-11-24 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~113d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-11-24 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 28.5,
@@ -132,7 +132,7 @@
       "p_up": 0.0911,
       "p_down": 0.0318,
       "why": "vol building 1.4x, coiled near range-top, +22% 5d, 22% short",
-      "days_to_catalyst": 50,
+      "days_to_catalyst": 49,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-09-21",
       "cat_quality": "phase2",
@@ -160,7 +160,7 @@
       "conviction": "MED",
       "stop": 10.12,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~50d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-09-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~49d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-09-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 10.1,
@@ -183,7 +183,7 @@
       "p_up": 0.0911,
       "p_down": 0.0318,
       "why": "coiled near range-top, +16% 5d, 23% short",
-      "days_to_catalyst": 22,
+      "days_to_catalyst": 21,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-08-24",
       "cat_quality": "phase2",
@@ -211,7 +211,7 @@
       "conviction": "MED",
       "stop": 5.05,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~22d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-08-24 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~21d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-08-24 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": null,
@@ -269,7 +269,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.5x, coiled near range-top, +17% 5d, 14% short",
-      "days_to_catalyst": 141,
+      "days_to_catalyst": 140,
       "nearest_phase": "PHASE3",
       "exit_by": null,
       "cat_quality": "phase3",
@@ -297,7 +297,7 @@
       "conviction": "MED",
       "stop": 270.57,
       "trail_pct": 28,
-      "structure": "Phase 3 ~141d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
+      "structure": "Phase 3 ~140d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
     },
     {
       "cash_runway_months": 55.5,
@@ -305,7 +305,7 @@
       "symbol": "ALT",
       "name": "Altimmune, Inc.",
       "price": 3.08,
-      "heat": 0.51,
+      "heat": 0.52,
       "setup": 0.74,
       "near_high": 0.621,
       "extended": false,
@@ -341,26 +341,26 @@
       "structure": "no near-term Phase-2 catalyst - momentum/heat play only (higher uncertainty)."
     },
     {
-      "cash_runway_months": 31.6,
+      "cash_runway_months": 19.7,
       "dilution_risk": false,
-      "symbol": "GERN",
-      "name": "Geron Corporation",
-      "price": 1.48,
-      "heat": 0.75,
-      "setup": 0.63,
-      "near_high": 0.736,
+      "symbol": "STOK",
+      "name": "Stoke Therapeutics, Inc.",
+      "price": 32.71,
+      "heat": 0.71,
+      "setup": 0.89,
+      "near_high": 0.813,
       "extended": false,
-      "pos_in_range": 0.694,
-      "tightness": 0.355,
-      "market_cap": 949451053.7560415,
-      "in_band": true,
-      "dollar_vol": 15288382.0,
+      "pos_in_range": 0.942,
+      "tightness": 0.175,
+      "market_cap": 2110653316.744461,
+      "in_band": false,
+      "dollar_vol": 22970100.0,
       "liquid": true,
-      "short_pct": 0.1091,
+      "short_pct": 0.26209998,
       "bucket_label": "vol>=1.5x & +5%/5d",
       "p_up": 0.1034,
       "p_down": 0.0332,
-      "why": "vol building 1.8x, +15% 5d, 11% short",
+      "why": "vol building 1.7x, coiled near range-top, +13% 5d, 26% short",
       "days_to_catalyst": null,
       "nearest_phase": null,
       "exit_by": null,
@@ -368,21 +368,21 @@
       "platform": false,
       "catalysts": [
         {
-          "date": "2027-02",
-          "phase": "PHASE1",
-          "title": "A Study to Evaluate the Safety, Pharmacokineti"
+          "date": "2027-03",
+          "phase": "PHASE3",
+          "title": "A Double-blind Study Evaluating the Efficacy, "
         },
         {
-          "date": "2028-06-30",
-          "phase": "PHASE3",
-          "title": "A Study Comparing Imetelstat Versus Best Avail"
+          "date": "2029-03-31",
+          "phase": "PHASE2",
+          "title": "An Open-Label Extension Study of STK-001 for P"
         }
       ],
       "insider_buys": 0,
       "insider_usd": 0,
       "insider_recent": null,
       "conviction": "LOW",
-      "stop": 1.11,
+      "stop": 24.53,
       "trail_pct": 28,
       "structure": "no near-term Phase-2 catalyst - momentum/heat play only (higher uncertainty)."
     }
@@ -394,7 +394,7 @@
       "symbol": "SGMT",
       "name": "Sagimet Biosciences Inc.",
       "price": 9.06,
-      "heat": 0.91,
+      "heat": 0.92,
       "setup": 0.73,
       "near_high": 0.967,
       "extended": true,
@@ -471,7 +471,7 @@
       "name": "Natera, Inc.",
       "price": 322.1,
       "heat": 0.91,
-      "setup": 0.68,
+      "setup": 0.69,
       "near_high": 0.997,
       "extended": true,
       "pos_in_range": 1.0,
@@ -547,7 +547,7 @@
       "name": "Precigen, Inc.",
       "price": 7.23,
       "heat": 0.9,
-      "setup": 0.69,
+      "setup": 0.68,
       "near_high": 0.996,
       "extended": true,
       "pos_in_range": 1.0,
@@ -561,7 +561,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.8x, coiled near range-top, +15% 5d, 21% short",
-      "days_to_catalyst": 94,
+      "days_to_catalyst": 93,
       "nearest_phase": "PHASE2",
       "exit_by": "2026-11-04",
       "cat_quality": "phase2",
@@ -579,7 +579,7 @@
       "conviction": "MED",
       "stop": 5.42,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~94d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-11-04 (~1wk BEFORE data); don't hold the binary.  \u26a0 DILUTION RISK: <6mo cash \u2014 a secondary/ATM could cut the run-up."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~93d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-11-04 (~1wk BEFORE data); don't hold the binary.  \u26a0 DILUTION RISK: <6mo cash \u2014 a secondary/ATM could cut the run-up."
     },
     {
       "cash_runway_months": 13.5,
@@ -653,7 +653,7 @@
       "p_up": 0.0911,
       "p_down": 0.0318,
       "why": "vol building 1.4x, coiled near range-top, +22% 5d, 22% short",
-      "days_to_catalyst": 50,
+      "days_to_catalyst": 49,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-09-21",
       "cat_quality": "phase2",
@@ -681,7 +681,7 @@
       "conviction": "MED",
       "stop": 10.12,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~50d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-09-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~49d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-09-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 17.9,
