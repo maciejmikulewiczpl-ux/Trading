@@ -12,7 +12,7 @@ New-Item -ItemType Directory -Force -Path (Join-Path $ROOT 'logs') | Out-Null
 "=== lottery board START $((Get-Date).ToString('o')) ===" | Add-Content -Path $log -Encoding utf8
 & (Join-Path $ROOT '.venv\Scripts\python.exe') (Join-Path $ROOT 'experiments\lottery\notify_board.py') *>> $log 2>&1
 # commit the immutable picks JSON so the bot on the VM can read today's board.
-& git -C $ROOT add experiments/lottery/picks *>> $log 2>&1
+& git -C $ROOT add experiments/lottery/picks logs/lottery_signal_history.jsonl logs/lottery_trade_ledger.csv *>> $log 2>&1
 & git -C $ROOT commit -q -m "lottery board $stamp" *>> $log 2>&1
 & git -C $ROOT push origin main *>> $log 2>&1
 # nudge the VM to pull so launch_lottery_bot.sh finds today's board immediately.
