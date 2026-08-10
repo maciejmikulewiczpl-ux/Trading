@@ -2468,16 +2468,20 @@ function renderMeanrev(d){
   if(!s){
     h+=`<div class="card"><div class="empty">No closed trades yet — the lab runs 16:30 ET daily and needs a few days to produce exits.${op.length?' ('+op.length+' open now)':''}</div></div>`;
   } else {
+    const MIN_N=20, early=s.n<MIN_N;
     const pc=v=>`<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${v}%</span>`;
-    h+=`<div class="card"><h2>Forward track record — ${s.n} closed trade${s.n===1?'':'s'}</h2>`;
+    h+=`<div class="card"><h2>Forward track record — ${s.n} closed trade${s.n===1?'':'s'}${early?' <span style="color:var(--orange);font-size:12px">· too few to read</span>':''}</h2>`;
+    if(early){ h+=`<div class="hint" style="margin-bottom:8px;color:var(--orange)">⏳ Only ${s.n} exit${s.n===1?'':'s'} so far — nowhere near enough to judge the edge (need ~${MIN_N}+). A signal this selective (RSI-2 below 10 in an uptrend) fires only every few days, so this fills in slowly. Numbers below are the raw log, <b>not</b> a verdict.</div>`; }
     h+=`<table><tr><th>metric</th><th>forward (live)</th><th>backtest bar</th></tr>`;
     h+=`<tr><td>mean / trade</td><td>${pc(s.mean)}</td><td>+${bt.mean}%</td></tr>`;
-    h+=`<tr><td>win rate</td><td>${s.win}%</td><td>${bt.win}%</td></tr>`;
+    h+=`<tr><td>win rate</td><td>${s.win}% <span style="color:var(--dim)">(${s.n})</span></td><td>${bt.win}%</td></tr>`;
     h+=`<tr><td>median</td><td>${pc(s.median)}</td><td>—</td></tr>`;
     h+=`<tr><td>best / worst</td><td>${pc(s.best)} / ${pc(s.worst)}</td><td>worst ${bt.worst}%</td></tr>`;
     h+=`<tr><td>worst-5% avg (tail)</td><td>${pc(s.worst5)}</td><td>—</td></tr>`;
     h+=`<tr><td>sum of returns</td><td>${pc(s.sum)}</td><td>—</td></tr>`;
-    h+=`</table><div class="hint" style="margin-top:6px">Forward mean beating ~<b>+0.4%</b>/trade with the win-rate near <b>66%</b> = the backtest edge is holding out-of-sample.</div></div>`;
+    h+=`</table>`;
+    if(!early){ h+=`<div class="hint" style="margin-top:6px">Forward mean beating ~<b>+0.4%</b>/trade with the win-rate near <b>66%</b> = the backtest edge is holding out-of-sample.</div>`; }
+    h+=`</div>`;
   }
   h+=`<div class="card"><h2>Open positions (${op.length})</h2>`;
   if(op.length){ h+=`<table><tr><th>sym</th><th>entry</th><th>@ px</th><th>days held</th></tr>`;
