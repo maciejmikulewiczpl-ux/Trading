@@ -19,7 +19,9 @@
       "reddit_rank": 1,
       "earnings_day": true,
       "theme": "ai-datacenter",
-      "control": false
+      "control": false,
+      "ret_945_close": -5.135,
+      "gap_pct": 21.735
     },
     {
       "symbol": "BW",
@@ -37,7 +39,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "power-equipment",
-      "control": false
+      "control": false,
+      "ret_945_close": -8.717,
+      "gap_pct": 31.834
     },
     {
       "symbol": "FSLR",
@@ -55,7 +59,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "solar",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.243,
+      "gap_pct": 4.003
     },
     {
       "symbol": "PLUG",
@@ -72,7 +78,9 @@
       "reddit_rank": 5,
       "earnings_day": true,
       "theme": "hydrogen",
-      "control": false
+      "control": false,
+      "ret_945_close": -3.063,
+      "gap_pct": 19.139
     },
     {
       "symbol": "NWS",
@@ -87,7 +95,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "media",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.756,
+      "gap_pct": 0.015
     },
     {
       "symbol": "CAH",
@@ -104,7 +114,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "healthcare-distribution",
-      "control": false
+      "control": false,
+      "ret_945_close": -5.751,
+      "gap_pct": 3.185
     },
     {
       "symbol": "HIMS",
@@ -122,7 +134,9 @@
       "reddit_rank": 4,
       "earnings_day": true,
       "theme": "telehealth",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.005,
+      "gap_pct": -7.3
     },
     {
       "symbol": "UPWK",
@@ -140,7 +154,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "gig-economy",
-      "control": false
+      "control": false,
+      "ret_945_close": -4.282,
+      "gap_pct": -18.357
     },
     {
       "symbol": "INTC",
@@ -158,7 +174,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "semis-dilution",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.941,
+      "gap_pct": -0.892
     },
     {
       "symbol": "JOBY",
@@ -176,7 +194,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "evtol-dilution",
-      "control": false
+      "control": false,
+      "ret_945_close": -4.52,
+      "gap_pct": -3.681
     },
     {
       "symbol": "SFD",
@@ -193,7 +213,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "packaged-food",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.644,
+      "gap_pct": -3.437
     },
     {
       "symbol": "ONON",
@@ -209,7 +231,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -21.35
+      "gap_pct": -21.35,
+      "ret_945_close": 2.47
     },
     {
       "symbol": "BW",
@@ -225,7 +248,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 20.47
+      "gap_pct": 20.47,
+      "ret_945_close": -8.717
     },
     {
       "symbol": "FRMI",
@@ -241,7 +265,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 20.14
+      "gap_pct": 20.14,
+      "ret_945_close": 4.023
     },
     {
       "symbol": "UPWK",
@@ -257,7 +282,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -13.29
+      "gap_pct": -13.29,
+      "ret_945_close": -4.282
     },
     {
       "symbol": "RIOT",
@@ -273,7 +299,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 12.03
+      "gap_pct": 12.03,
+      "ret_945_close": -5.135
     },
     {
       "symbol": "SE",
@@ -289,7 +316,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 9.76
+      "gap_pct": 9.76,
+      "ret_945_close": 1.453
     },
     {
       "symbol": "LWLG",
@@ -305,7 +333,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.59
+      "gap_pct": 5.59,
+      "ret_945_close": -2.635
     },
     {
       "symbol": "DELL",
@@ -321,7 +350,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.81
+      "gap_pct": -4.81,
+      "ret_945_close": -0.5
     },
     {
       "symbol": "IMSR",
@@ -337,7 +367,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 4.04
+      "gap_pct": 4.04,
+      "ret_945_close": 1.607
     },
     {
       "symbol": "VG",
@@ -353,7 +384,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.29
+      "gap_pct": -3.29,
+      "ret_945_close": -3.67
     },
     {
       "symbol": "RKLB",
@@ -369,7 +401,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.12
+      "gap_pct": -3.12,
+      "ret_945_close": 5.338
     }
-  ]
+  ],
+  "outcomes_at": "2026-08-11T16:05:06-04:00"
 }
