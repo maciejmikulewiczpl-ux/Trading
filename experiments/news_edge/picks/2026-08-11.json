@@ -1,0 +1,375 @@
+{
+  "date": "2026-08-11",
+  "logged_at": "2026-08-11T09:38:56-04:00",
+  "picks": [
+    {
+      "symbol": "RIOT",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "20-yr 191MW AI data-center lease ~$9.1B base revenue (Leading Frontier AI Lab / Anthropic) + Q2 rev beat $174.2M vs $154.3M est; +22% premkt (big gapper)",
+      "sources": [
+        "cnbc",
+        "benzinga",
+        "coingape"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 1,
+      "earnings_day": true,
+      "theme": "ai-datacenter",
+      "control": false
+    },
+    {
+      "symbol": "BW",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Babcock & Wilcox Q2 beat + raised FY guidance; +34% premkt (big gapper)",
+      "sources": [
+        "thedesperatetrader",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "power-equipment",
+      "control": false
+    },
+    {
+      "symbol": "FSLR",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Baird upgrade to Outperform, PT $318 (~30% upside); +3% premkt fresh smaller-gap catalyst",
+      "sources": [
+        "cnbc",
+        "yahoo"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "solar",
+      "control": false
+    },
+    {
+      "symbol": "PLUG",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Q2 loss smaller than expected; +13% premkt (earnings-day, low-priced)",
+      "sources": [
+        "cnbc"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 12.36,
+      "reddit_rank": 5,
+      "earnings_day": true,
+      "theme": "hydrogen",
+      "control": false
+    },
+    {
+      "symbol": "NWS",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "News Corp blowout Q4 FY26: record profit, adj EPS $0.35, rev +11% to $2.34B, EBITDA +31%",
+      "sources": [
+        "yahoo"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "media",
+      "control": false
+    },
+    {
+      "symbol": "CAH",
+      "signal": 1,
+      "confidence": 0.3,
+      "reason": "Cardinal Health mixed FQ4: adj EPS $2.60 vs $2.42 est; +2% premkt (modest)",
+      "sources": [
+        "yahoo"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "healthcare-distribution",
+      "control": false
+    },
+    {
+      "symbol": "HIMS",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "Q2 gross margin 76 to 64 pct on GLP-1 mix, net loss $0.37/sh, trimmed FY EBITDA outlook; -5.7% premkt (crowd still bullish = contrarian)",
+      "sources": [
+        "cnbc",
+        "ts2"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 4,
+      "earnings_day": true,
+      "theme": "telehealth",
+      "control": false
+    },
+    {
+      "symbol": "UPWK",
+      "signal": -1,
+      "confidence": 0.6,
+      "reason": "Cut full-year revenue guidance; -13 to -18% premkt",
+      "sources": [
+        "cnbc",
+        "aol"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "gig-economy",
+      "control": false
+    },
+    {
+      "symbol": "INTC",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "$20B upsized stock offering at $95 (dilution); -3% premkt",
+      "sources": [
+        "cnbc",
+        "ts2"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 10.78,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "semis-dilution",
+      "control": false
+    },
+    {
+      "symbol": "JOBY",
+      "signal": -1,
+      "confidence": 0.35,
+      "reason": "424B5 8/11: $750M ATM equity offering + 2032 convertible notes (~$1B raise) = dilution",
+      "sources": [
+        "sec-edgar",
+        "stocktitan"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.91,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "evtol-dilution",
+      "control": false
+    },
+    {
+      "symbol": "SFD",
+      "signal": -1,
+      "confidence": 0.3,
+      "reason": "Smithfield Q2 topped estimates but shares -3% premkt (sell-the-news)",
+      "sources": [
+        "yahoo"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "packaged-food",
+      "control": false
+    },
+    {
+      "symbol": "ONON",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -21.35
+    },
+    {
+      "symbol": "BW",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 20.47
+    },
+    {
+      "symbol": "FRMI",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 20.14
+    },
+    {
+      "symbol": "UPWK",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -13.29
+    },
+    {
+      "symbol": "RIOT",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 12.03
+    },
+    {
+      "symbol": "SE",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 9.76
+    },
+    {
+      "symbol": "LWLG",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.59
+    },
+    {
+      "symbol": "DELL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.81
+    },
+    {
+      "symbol": "IMSR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.04
+    },
+    {
+      "symbol": "VG",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.29
+    },
+    {
+      "symbol": "RKLB",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.12
+    }
+  ]
+}
