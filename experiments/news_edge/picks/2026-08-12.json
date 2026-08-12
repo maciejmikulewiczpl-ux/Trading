@@ -1,0 +1,421 @@
+{
+  "date": "2026-08-12",
+  "logged_at": "2026-08-12T09:39:09-04:00",
+  "picks": [
+    {
+      "symbol": "CRWV",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "CoreWeave Q2 earnings beat: rev $2.58B +112% y/y vs $2.56B est, adj loss -$1.03 vs -$1.22 est; +18-20% premkt (big gapper, fade risk)",
+      "sources": [
+        "cnbc",
+        "benzinga"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 4.54,
+      "reddit_rank": 6,
+      "earnings_day": true,
+      "theme": "ai-cloud",
+      "control": false
+    },
+    {
+      "symbol": "NBIS",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Nebius Q2 EBITDA + rev beat FactSet consensus; day-prior Goldman street-high PT (tight GPU supply, sold-out capacity, asset-light cloud); +12-16% premkt (big gapper)",
+      "sources": [
+        "cnbc",
+        "benzinga",
+        "yahoo"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.86,
+      "reddit_rank": 3,
+      "earnings_day": true,
+      "theme": "ai-cloud",
+      "control": false
+    },
+    {
+      "symbol": "COHR",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Coherent +5.7% premkt on Lumentum optical earnings tailwind (AI photonics); smaller-gap fresh sympathy. NOTE own earnings after close today = event risk builds intraday",
+      "sources": [
+        "cnbc",
+        "yahoo"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.07,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-optical",
+      "control": false
+    },
+    {
+      "symbol": "LITE",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Lumentum FQ4 adj EPS + rev beat, Nvidia optics bet paying off; +8-10% premkt (earnings-day, mid gapper); pm_rvol low = move may be spent",
+      "sources": [
+        "invezz",
+        "cnbc"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.43,
+      "reddit_rank": 21,
+      "earnings_day": true,
+      "theme": "ai-optical",
+      "control": false
+    },
+    {
+      "symbol": "CAVA",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "CAVA Q2 beat: EPS $0.19 vs $0.18, rev $368.4M vs $360.1M, SRS +9.0% (5.3% traffic), guidance reaffirmed; +11-13% premkt (big gapper, fade risk)",
+      "sources": [
+        "investing",
+        "yahoo"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 29,
+      "earnings_day": true,
+      "theme": "restaurant-earnings",
+      "control": false
+    },
+    {
+      "symbol": "BE",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Bloom Energy +16% premkt (AI-power theme, Evercore AI-demand note referenced) but no clean dated catalyst confirmed = declined; big gapper",
+      "sources": [
+        "websearch"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.23,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-power",
+      "control": false
+    },
+    {
+      "symbol": "SMCI",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "Super Micro +12.8% premkt, heavy Reddit/StockTwits (rank 5) but move is AI-server momentum/sympathy, no fresh dated catalyst = declined",
+      "sources": [
+        "reddit",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.5,
+      "reddit_rank": 5,
+      "earnings_day": false,
+      "theme": "ai-server",
+      "control": false
+    },
+    {
+      "symbol": "NOK",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "Nokia +9.7% premkt on high RVOL 2.97 (real participation) but catalyst unconfirmed = declined pending confirmation",
+      "sources": [
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 2.97,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "telecom",
+      "control": false
+    },
+    {
+      "symbol": "SMCX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 25.65
+    },
+    {
+      "symbol": "VELO",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 20.99
+    },
+    {
+      "symbol": "CRWV",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 20.56
+    },
+    {
+      "symbol": "UAMY",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": -16.97
+    },
+    {
+      "symbol": "BE",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 16.46
+    },
+    {
+      "symbol": "NBIS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 16.25
+    },
+    {
+      "symbol": "CAVA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 14.94
+    },
+    {
+      "symbol": "WYFI",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 13.27
+    },
+    {
+      "symbol": "SMCI",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 12.78
+    },
+    {
+      "symbol": "LITE",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 9.88
+    },
+    {
+      "symbol": "NOK",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 9.73
+    },
+    {
+      "symbol": "DFTX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 8.94
+    },
+    {
+      "symbol": "BW",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 7.68
+    },
+    {
+      "symbol": "COHR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 7.14
+    },
+    {
+      "symbol": "APLD",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 6.11
+    },
+    {
+      "symbol": "JMIA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 5.68
+    },
+    {
+      "symbol": "CBRS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "control",
+      "control": true,
+      "gap_pct": 5.42
+    }
+  ]
+}
