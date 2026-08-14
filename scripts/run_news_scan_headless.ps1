@@ -33,6 +33,9 @@ if (-not (Test-Path $claude)) { $claude = 'claude' }   # fall back to PATH
 "=== agent done (exit $LASTEXITCODE); wrapper pushing to origin ===" | Add-Content -Path $log -Encoding utf8
 # git push is gated for the headless AGENT (outward-facing), so the WRAPPER does it —
 # a plain deterministic command, no agent approval. This is what gets the picks to the VM.
+# Pull-rebase BEFORE push: the VM pushes data commits daily (since 2026-08-10), so a plain
+# push is rejected as non-fast-forward. Integrate first (disjoint files = clean rebase).
+& git -C $ROOT pull --rebase --autostash origin main *>> $log 2>&1
 & git -C $ROOT push origin main *>> $log 2>&1
 # Phone push with today's picks summary (deterministic helper, not the agent) so you get
 # the morning's frontrunner/avoid list on your phone wherever you are.

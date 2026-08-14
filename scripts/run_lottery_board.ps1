@@ -14,6 +14,12 @@ New-Item -ItemType Directory -Force -Path (Join-Path $ROOT 'logs') | Out-Null
 # commit the immutable picks JSON so the bot on the VM can read today's board.
 & git -C $ROOT add experiments/lottery/picks logs/lottery_signal_history.jsonl logs/lottery_trade_ledger.csv *>> $log 2>&1
 & git -C $ROOT commit -q -m "lottery board $stamp" *>> $log 2>&1
+# Pull-rebase BEFORE push: the VM pushes its own data commits daily (since 2026-08-10),
+# so the Surface falls behind and a plain push is rejected (non-fast-forward) — which
+# silently stranded the 08-12..08-14 boards on the laptop. Files are disjoint (Surface
+# writes picks/signal_history/ledger; VM writes execution/meanrev) so the rebase is clean.
+# --autostash guards against any unstaged tracked changes in the headless run.
+& git -C $ROOT pull --rebase --autostash origin main *>> $log 2>&1
 & git -C $ROOT push origin main *>> $log 2>&1
 # nudge the VM to pull so launch_lottery_bot.sh finds today's board immediately.
 & ssh -o BatchMode=yes -o ConnectTimeout=15 trading-vm "cd /home/ubuntu/trading && git pull --ff-only" *>> $log 2>&1
