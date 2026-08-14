@@ -18,7 +18,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "index-inclusion",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.212,
+      "gap_pct": 11.354
     },
     {
       "symbol": "SNDK",
@@ -36,7 +38,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "semis-memory",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.405,
+      "gap_pct": 7.772
     },
     {
       "symbol": "WDAY",
@@ -52,7 +56,9 @@
       "reddit_rank": 27,
       "earnings_day": false,
       "theme": "buyout",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.973,
+      "gap_pct": 0.411
     },
     {
       "symbol": "FOX",
@@ -67,7 +73,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "media",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.963,
+      "gap_pct": 3.107
     },
     {
       "symbol": "CAPR",
@@ -85,7 +93,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "fda",
-      "control": false
+      "control": false,
+      "ret_945_close": -3.569,
+      "gap_pct": 80.806
     },
     {
       "symbol": "IMXI",
@@ -103,7 +113,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "m&a",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.714,
+      "gap_pct": 21.23
     },
     {
       "symbol": "RCAT",
@@ -120,7 +132,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "drones",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.628,
+      "gap_pct": 11.546
     },
     {
       "symbol": "AVAV",
@@ -137,7 +151,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "drones",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.407,
+      "gap_pct": 6.472
     },
     {
       "symbol": "AMAT",
@@ -155,7 +171,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "semis-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.287,
+      "gap_pct": -6.893
     },
     {
       "symbol": "INV",
@@ -170,7 +188,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "earnings-miss",
-      "control": false
+      "control": false,
+      "ret_945_close": -14.4,
+      "gap_pct": -43.845
     },
     {
       "symbol": "AMPG",
@@ -188,7 +208,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "earnings-miss",
-      "control": false
+      "control": false,
+      "ret_945_close": -4.893,
+      "gap_pct": -27.621
     },
     {
       "symbol": "UCTT",
@@ -203,7 +225,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "dilution",
-      "control": false
+      "control": false,
+      "ret_945_close": -5.196,
+      "gap_pct": -6.442
     },
     {
       "symbol": "MVIS",
@@ -218,7 +242,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "dilution",
-      "control": false
+      "control": false,
+      "ret_945_close": 5.036,
+      "gap_pct": -39.177
     },
     {
       "symbol": "BYND",
@@ -237,7 +263,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "reverse-split",
-      "control": false
+      "control": false,
+      "ret_945_close": 7.44,
+      "gap_pct": 2861.937
     },
     {
       "symbol": "VCX",
@@ -253,7 +281,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -23.03
+      "gap_pct": -23.03,
+      "ret_945_close": 6.587
     },
     {
       "symbol": "TSSI",
@@ -269,7 +298,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -21.39
+      "gap_pct": -21.39,
+      "ret_945_close": 1.788
     },
     {
       "symbol": "NU",
@@ -285,7 +315,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 15.18
+      "gap_pct": 15.18,
+      "ret_945_close": -2.936
     },
     {
       "symbol": "AEHR",
@@ -301,7 +332,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 14.09
+      "gap_pct": 14.09,
+      "ret_945_close": -2.679
     },
     {
       "symbol": "YSS",
@@ -317,7 +349,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -12.96
+      "gap_pct": -12.96,
+      "ret_945_close": 13.026
     },
     {
       "symbol": "BRUN",
@@ -333,7 +366,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 10.36
+      "gap_pct": 10.36,
+      "ret_945_close": -0.455
     },
     {
       "symbol": "UMAC",
@@ -349,7 +383,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 9.72
+      "gap_pct": 9.72,
+      "ret_945_close": 12.257
     },
     {
       "symbol": "LPTH",
@@ -365,7 +400,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 7.44
+      "gap_pct": 7.44,
+      "ret_945_close": 5.292
     },
     {
       "symbol": "AMPX",
@@ -381,7 +417,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 7.37
+      "gap_pct": 7.37,
+      "ret_945_close": -0.118
     },
     {
       "symbol": "SNDQ",
@@ -397,7 +434,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -6.29
+      "gap_pct": -6.29,
+      "ret_945_close": -1.5
     },
     {
       "symbol": "QMCO",
@@ -413,7 +451,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.94
+      "gap_pct": 3.94,
+      "ret_945_close": -1.767
     },
     {
       "symbol": "NEM",
@@ -429,7 +468,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.01
+      "gap_pct": 3.01,
+      "ret_945_close": 0.102
     }
-  ]
+  ],
+  "outcomes_at": "2026-08-14T16:05:09-04:00"
 }
