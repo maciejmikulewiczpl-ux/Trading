@@ -1,0 +1,435 @@
+{
+  "date": "2026-08-14",
+  "logged_at": "2026-08-14T09:39:27-04:00",
+  "picks": [
+    {
+      "symbol": "RDDT",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Added to S&P 500 (replacing AvalonBay), effective before open Tue Aug 18; JPM est ~16.7M shares of index-fund buying (~3x ADV). Up ~12% pre. Forced-buying multi-day tailwind into 8/18.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "index-inclusion",
+      "control": false
+    },
+    {
+      "symbol": "SNDK",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "JPMorgan upgrade to Overweight from Neutral; +5% pre. Named analyst catalyst on memory/NAND. StockTwits crowd contrarian-bearish.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 0.51,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "semis-memory",
+      "control": false
+    },
+    {
+      "symbol": "WDAY",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Reuters: Silver Lake in talks to buy Workday; +2% pre after +18% Thu (best day in 10y). Buyout speculation, top Reddit mention-surge.",
+      "sources": [
+        "websearch",
+        "reddit"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": 27,
+      "earnings_day": false,
+      "theme": "buyout",
+      "control": false
+    },
+    {
+      "symbol": "FOX",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "JPMorgan + Wells Fargo upgrades citing momentum in Roku ($22B acquisition target); +2% pre.",
+      "sources": [
+        "websearch"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "media",
+      "control": false
+    },
+    {
+      "symbol": "CAPR",
+      "signal": 1,
+      "confidence": 0.2,
+      "reason": "Lancet published Phase 3 HOPE-3 DMD data (54% slower decline); Cantor upgrade to OW, PT $28; PDUFA 8/22. Up ~97% pre = extreme gap, moonshot/fade risk, low conf per big-gapper caution.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.63,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "fda",
+      "control": false
+    },
+    {
+      "symbol": "IMXI",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "NYDFS approved Western Union's $16-cash acquisition (+~25-35%) BUT California DFPI suspended its approval extension 8/13. Deal-arb, capped upside + regulatory overhang = unclear.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "m&a",
+      "control": false
+    },
+    {
+      "symbol": "RCAT",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Drone-sector momentum, top StockTwits trending (crowd 100% bull) + reddit; no named dated catalyst found -> momentum-unconfirmed.",
+      "sources": [
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "drones",
+      "control": false
+    },
+    {
+      "symbol": "AVAV",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "AeroVironment; drone/defense momentum, StockTwits 100% bull; no named dated catalyst found today -> momentum-unconfirmed.",
+      "sources": [
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "drones",
+      "control": false
+    },
+    {
+      "symbol": "AMAT",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "FQ3: EPS $3.50 beat $3.45 but revenue $9.12B missed $9.18B; stock down ~3.9% pre on soft rev / WFE outlook. Earnings gap-down.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": 1.5,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "semis-earnings",
+      "control": false
+    },
+    {
+      "symbol": "INV",
+      "signal": -1,
+      "confidence": 0.6,
+      "reason": "Innventure -44% pre: Q2 missed revenue by >50% and indefinitely suspended 2026 targets for Accelsius cooling. Disastrous print.",
+      "sources": [
+        "websearch"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "earnings-miss",
+      "control": false
+    },
+    {
+      "symbol": "AMPG",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "AmpliTech -26.7% pre: missed Q2 EPS by $0.23 and declined to reaffirm $50M FY revenue goal.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "earnings-miss",
+      "control": false
+    },
+    {
+      "symbol": "UCTT",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Ultra Clean filed 424B5 (securities offering) + 8-K pre-open = dilution; semi-equipment name into AMAT weakness.",
+      "sources": [
+        "edgar"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "MVIS",
+      "signal": -1,
+      "confidence": 0.35,
+      "reason": "MicroVision filed 424B5 (securities offering) = dilution overhang.",
+      "sources": [
+        "edgar"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "dilution",
+      "control": false
+    },
+    {
+      "symbol": "BYND",
+      "signal": -1,
+      "confidence": 0.3,
+      "reason": "1-for-30 reverse split effective today (Nasdaq bid-price compliance) - cosmetic, historically fades; no fundamental catalyst. StockTwits retail bullish (contrarian).",
+      "sources": [
+        "websearch",
+        "edgar",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "reverse-split",
+      "control": false
+    },
+    {
+      "symbol": "VCX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -23.03
+    },
+    {
+      "symbol": "TSSI",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -21.39
+    },
+    {
+      "symbol": "NU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 15.18
+    },
+    {
+      "symbol": "AEHR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 14.09
+    },
+    {
+      "symbol": "YSS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -12.96
+    },
+    {
+      "symbol": "BRUN",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 10.36
+    },
+    {
+      "symbol": "UMAC",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 9.72
+    },
+    {
+      "symbol": "LPTH",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.44
+    },
+    {
+      "symbol": "AMPX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.37
+    },
+    {
+      "symbol": "SNDQ",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -6.29
+    },
+    {
+      "symbol": "QMCO",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.94
+    },
+    {
+      "symbol": "NEM",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.01
+    }
+  ]
+}
