@@ -31,7 +31,7 @@
       "combined_score": 0.4444,
       "ret_945_close": null,
       "ret_1d": -0.639,
-      "ret_3d": null
+      "ret_3d": 1.809
     },
     {
       "symbol": "BE",
@@ -60,7 +60,7 @@
       "combined_score": 0.3333,
       "ret_945_close": null,
       "ret_1d": -2.688,
-      "ret_3d": null
+      "ret_3d": -11.524
     },
     {
       "symbol": "BURL",
@@ -89,7 +89,7 @@
       "combined_score": 0.6667,
       "ret_945_close": null,
       "ret_1d": -2.224,
-      "ret_3d": null
+      "ret_3d": -5.257
     },
     {
       "symbol": "CNQ",
@@ -118,7 +118,7 @@
       "combined_score": null,
       "ret_945_close": null,
       "ret_1d": 0.746,
-      "ret_3d": null
+      "ret_3d": 4.235
     },
     {
       "symbol": "COST",
@@ -147,7 +147,7 @@
       "combined_score": 0.0,
       "ret_945_close": null,
       "ret_1d": -0.089,
-      "ret_3d": null
+      "ret_3d": -0.009
     },
     {
       "symbol": "EBAY",
@@ -176,7 +176,7 @@
       "combined_score": 0.5556,
       "ret_945_close": null,
       "ret_1d": -1.415,
-      "ret_3d": null
+      "ret_3d": -2.242
     },
     {
       "symbol": "IREN",
@@ -205,7 +205,7 @@
       "combined_score": 0.8889,
       "ret_945_close": null,
       "ret_1d": -1.631,
-      "ret_3d": null
+      "ret_3d": -6.21
     },
     {
       "symbol": "MAR",
@@ -234,7 +234,7 @@
       "combined_score": 0.2222,
       "ret_945_close": null,
       "ret_1d": 1.186,
-      "ret_3d": null
+      "ret_3d": 1.399
     },
     {
       "symbol": "POOL",
@@ -263,7 +263,7 @@
       "combined_score": 0.7778,
       "ret_945_close": null,
       "ret_1d": -2.627,
-      "ret_3d": null
+      "ret_3d": -6.419
     },
     {
       "symbol": "VZ",
@@ -292,8 +292,8 @@
       "combined_score": 0.1111,
       "ret_945_close": null,
       "ret_1d": 0.508,
-      "ret_3d": null
+      "ret_3d": 0.705
     }
   ],
-  "backfilled_at": "2026-08-17T16:10:11-04:00"
+  "backfilled_at": "2026-08-18T16:10:10-04:00"
 }
