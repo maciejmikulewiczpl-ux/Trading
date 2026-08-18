@@ -1,0 +1,20 @@
+{
+  "date": "2026-08-18",
+  "logged_at": "2026-08-18T12:34:44-04:00",
+  "recs": [
+    {
+      "symbol": "AMLX",
+      "action": "hold",
+      "catalyst_changed": true,
+      "confidence": 0.72,
+      "reason": "Positive dated development, thesis-confirming: two 8-Ks today (07:09 and 09:03 ET) report Phase 3 LUCIDITY topline for avexitide in post-bariatric hypoglycemia MET the FDA-agreed primary endpoint (~55% reduction in Level 2/3 hypoglycemic events vs placebo, n=78). This is the anticipated binary readout playing out favorably (+10.7% unrealized). No 424B5/offering filed today (no dilution priced), so no adverse catalyst. Forward risk = a post-data equity raise is common for AMLX (prior $175M follow-on) plus AMX0035 disclosure litigation overhang, but neither is a named/dated development today so per rules do not exit/trim on forward risk or price action alone. Hold; let mechanical T+3/trail run.",
+      "sources": [
+        "SEC EDGAR 8-K AMLX 2026-08-18 07:09 and 09:03 ET (CIK 0001658551)",
+        "stocktitan.net/news/AMLX Phase 3 avexitide LUCIDITY topline",
+        "tipranks.com Amylyx Highlights Positive Phase 3 Avexitide LUCIDITY Results"
+      ],
+      "px_at_reeval": "31.91",
+      "upl_pct_at_reeval": 10.72
+    }
+  ]
+}
