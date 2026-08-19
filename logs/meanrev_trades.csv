@@ -3,3 +3,4 @@ entry_date,exit_date,symbol,entry_px,exit_px,ret_pct,days,exit_reason
 2026-08-12,2026-08-13,MA,559.76,567.34,1.35,1,bounce
 2026-08-12,2026-08-14,AAPL,302.2,305.94,1.24,2,bounce
 2026-08-13,2026-08-14,GE,360.6,368.3,2.13,1,bounce
+2026-08-14,2026-08-19,AMZN,262.64,265.8,1.2,3,bounce
