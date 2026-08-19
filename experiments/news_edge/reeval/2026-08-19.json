@@ -1,0 +1,20 @@
+{
+  "date": "2026-08-19",
+  "logged_at": "2026-08-19T12:33:06-04:00",
+  "recs": [
+    {
+      "symbol": "AMLX",
+      "action": "trim",
+      "catalyst_changed": true,
+      "confidence": 0.6,
+      "reason": "Original bullish catalyst intact: positive Phase 3 LUCIDITY topline (avexitide met primary endpoint, 55% reduction in Level 2/3 hypoglycemic events, Aug 17-18) drove pick to +32.6%. NEW named/dated development: after close Aug 18 Amylyx announced a $350M underwritten public offering (+$52.5M overallotment; 424B5 filed 17:17 ET) = material dilution overhang. Not yet priced as of ~12:30 ET; stock $38.22, ABOVE the $35.11 pre-offering close, so market is absorbing the raise (growth-raise to fund avexitide launch, not distress). Trim: de-risk a +32% winner into an unpriced dilutive offering that caps near-term upside, but thesis (de-risked drug + funded launch) still holds.",
+      "sources": [
+        "SEC EDGAR 424B5 Amylyx Pharmaceuticals 2026-08-18 17:17",
+        "https://www.biospace.com/press-releases/amylyx-pharmaceuticals-announces-350-0-million-proposed-public-offering-of-common-stock",
+        "https://www.stocktitan.net/news/AMLX/amylyx-pharmaceuticals-announces-positive-topline-results-from-phase-gqsgxk76yem7.html"
+      ],
+      "px_at_reeval": "38.22",
+      "upl_pct_at_reeval": 32.62
+    }
+  ]
+}
