@@ -1,0 +1,32 @@
+{
+  "date": "2026-08-20",
+  "logged_at": "2026-08-20T12:33:44-04:00",
+  "recs": [
+    {
+      "symbol": "AMLX",
+      "action": "trim",
+      "catalyst_changed": false,
+      "confidence": 0.45,
+      "reason": "Phase 3 LUCIDITY win (avexitide, post-bariatric hypoglycemia) from 08-18 intact; NDA planned end-2026; analyst PT hikes (Mizuho 42/Guggenheim 55/Baird 52). BUT concurrent $350M offering = dilution overhang and position very extended (+37.8% unrealized). No NEW dated development today, so not an exit; trim balances locking part of an extraordinary gain against the still-intact catalyst.",
+      "sources": [
+        "https://finance.yahoo.com/healthcare/articles/amlx-stock-heads-best-day-141027699.html",
+        "https://en.cryptonomist.ch/2026/08/19/amylyx-pharmaceuticals-inc-stock-soars-to-35-11-but-350m-offering-clouds-outlook/"
+      ],
+      "px_at_reeval": 39.7232,
+      "upl_pct_at_reeval": 37.83
+    },
+    {
+      "symbol": "DE",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.6,
+      "reason": "Fiscal Q3 earnings today (8-K 06:00 ET): EPS $5.10 vs $4.45 est, revenue $12.608B vs $10.916B est; FY net-income guidance raised to $4.75-5.00B; construction offset soft large-ag. Stock +~3.6%. Catalyst played out positively, confirms thesis -> hold.",
+      "sources": [
+        "https://www.gurufocus.com/news/9045041/is-deere-co-de-stock-overvalued-after-q3-earnings-beat",
+        "https://www.investing.com/news/earnings/deere-shares-climb-as-fiscal-q3-earnings-and-revenue-top-estimates-4869169"
+      ],
+      "px_at_reeval": 633.365,
+      "upl_pct_at_reeval": 5.49
+    }
+  ]
+}
