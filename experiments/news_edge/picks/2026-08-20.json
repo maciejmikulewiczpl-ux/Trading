@@ -19,7 +19,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "ag-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 3.978,
+      "gap_pct": 1.814
     },
     {
       "symbol": "URGN",
@@ -37,7 +39,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "biotech-deal",
-      "control": false
+      "control": false,
+      "ret_945_close": -4.685,
+      "gap_pct": -1.69
     },
     {
       "symbol": "WMT",
@@ -56,7 +60,8 @@
       "earnings_day": true,
       "theme": "retail-earnings",
       "control": false,
-      "gap_pct": -7.88
+      "gap_pct": -7.88,
+      "ret_945_close": -0.33
     },
     {
       "symbol": "AAP",
@@ -74,7 +79,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "auto-retail",
-      "control": false
+      "control": false,
+      "ret_945_close": -5.97,
+      "gap_pct": -16.518
     },
     {
       "symbol": "MRNA",
@@ -93,7 +100,8 @@
       "earnings_day": false,
       "theme": "biotech-fda",
       "control": false,
-      "gap_pct": -16.71
+      "gap_pct": -16.71,
+      "ret_945_close": -6.272
     },
     {
       "symbol": "PFGC",
@@ -110,7 +118,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "food-distribution",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.082,
+      "gap_pct": -0.899
     },
     {
       "symbol": "RIG",
@@ -127,7 +137,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "energy-offshore",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.908,
+      "gap_pct": 2.573
     },
     {
       "symbol": "BULL",
@@ -143,7 +155,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 11.11
+      "gap_pct": 11.11,
+      "ret_945_close": -7.268
     },
     {
       "symbol": "MSTR",
@@ -159,7 +172,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.84
+      "gap_pct": 5.84,
+      "ret_945_close": 0.691
     },
     {
       "symbol": "STLA",
@@ -175,7 +189,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -5.15
+      "gap_pct": -5.15,
+      "ret_945_close": 2.33
     },
     {
       "symbol": "LABD",
@@ -191,7 +206,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.15
+      "gap_pct": 5.15,
+      "ret_945_close": 2.987
     },
     {
       "symbol": "COIN",
@@ -207,7 +223,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 4.63
+      "gap_pct": 4.63,
+      "ret_945_close": 0.454
     },
     {
       "symbol": "BABA",
@@ -223,7 +240,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.57
+      "gap_pct": -4.57,
+      "ret_945_close": 4.405
     },
     {
       "symbol": "GRRR",
@@ -239,7 +257,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.85
+      "gap_pct": -3.85,
+      "ret_945_close": 2.834
     },
     {
       "symbol": "BMNR",
@@ -255,7 +274,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.56
+      "gap_pct": 3.56,
+      "ret_945_close": 0.587
     },
     {
       "symbol": "RARE",
@@ -271,7 +291,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.09
+      "gap_pct": 3.09,
+      "ret_945_close": -3.414
     }
-  ]
+  ],
+  "outcomes_at": "2026-08-20T16:05:09-04:00"
 }
