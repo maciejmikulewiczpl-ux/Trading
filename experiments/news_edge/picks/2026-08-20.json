@@ -1,0 +1,277 @@
+{
+  "date": "2026-08-20",
+  "logged_at": "2026-08-20T09:38:10-04:00",
+  "picks": [
+    {
+      "symbol": "DE",
+      "signal": 1,
+      "confidence": 0.65,
+      "reason": "FQ3 beat: EPS $5.10 vs $4.45, rev $12.6B vs $10.9B; narrowed/raised FY net-income guide; mgmt calls 2026 the bottom of ag cycle. +3% pm. Fresh moderate-gap beat/raise = frontrunner setup.",
+      "sources": [
+        "edgar-8K",
+        "yahoo",
+        "investing.com"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "ag-earnings",
+      "control": false
+    },
+    {
+      "symbol": "URGN",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Fresh 8-K: Option and Research License with IntraGel for TumoCure (SRGel platform) in advanced head and neck cancer plus up to $7M equity investment. Real dated catalyst, modest size. Crowd 93% bull.",
+      "sources": [
+        "edgar-8K",
+        "sec"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-deal",
+      "control": false
+    },
+    {
+      "symbol": "WMT",
+      "signal": -1,
+      "confidence": 0.6,
+      "reason": "Q2 sales beat plus raised FY, but Q3 EPS guide 62-64c below consensus disappointed; shares -6 to -8% pm. Guidance-driven sell = avoid the open long.",
+      "sources": [
+        "cnbc",
+        "edgar-8K"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "retail-earnings",
+      "control": false,
+      "gap_pct": -7.88
+    },
+    {
+      "symbol": "AAP",
+      "signal": -1,
+      "confidence": 0.65,
+      "reason": "Q2 revenue miss / mixed results; gapping ~-17% pm. Clear bearish earnings reaction. StockTwits crowd 67% bull = contrarian confirms avoid.",
+      "sources": [
+        "benzinga",
+        "edgar-8K"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "auto-retail",
+      "control": false
+    },
+    {
+      "symbol": "MRNA",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Already ran ~+177% Wed on INTerpath-001 melanoma cancer-vaccine win plus mFLUSIVA flu approval plus PT hikes. Gapping DOWN -16.7% today = exhaustion/fade, not a fresh long. WSB rank 1 = extreme crowding. No confident directional call chasing a run.",
+      "sources": [
+        "yahoo",
+        "stockstotrade"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.02,
+      "reddit_rank": 1,
+      "earnings_day": false,
+      "theme": "biotech-fda",
+      "control": false,
+      "gap_pct": -16.71
+    },
+    {
+      "symbol": "PFGC",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "Fresh 8-K filer, food-distribution; crowd 100% bull but catalyst/direction unconfirmed. Tracked for context, not a call.",
+      "sources": [
+        "edgar-8K"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "food-distribution",
+      "control": false
+    },
+    {
+      "symbol": "RIG",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "Fresh 8-K, offshore driller; crowd 92% bull but catalyst unconfirmed. Tracked for context, not a call.",
+      "sources": [
+        "edgar-8K"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "energy-offshore",
+      "control": false
+    },
+    {
+      "symbol": "BULL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 11.11
+    },
+    {
+      "symbol": "MSTR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.84
+    },
+    {
+      "symbol": "STLA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -5.15
+    },
+    {
+      "symbol": "LABD",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 5.15
+    },
+    {
+      "symbol": "COIN",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.63
+    },
+    {
+      "symbol": "BABA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.57
+    },
+    {
+      "symbol": "GRRR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -3.85
+    },
+    {
+      "symbol": "BMNR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.56
+    },
+    {
+      "symbol": "RARE",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.09
+    }
+  ]
+}
