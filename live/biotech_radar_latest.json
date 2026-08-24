@@ -1,6 +1,6 @@
 {
-  "date": "2026-08-22",
-  "generated": "2026-08-22T15:01:21-04:00",
+  "date": "2026-08-24",
+  "generated": "2026-08-24T09:17:31-04:00",
   "probs_asof": "2026-06-30",
   "surge_pct": 0.3,
   "fwd_days": 10,
@@ -35,7 +35,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.5x, coiled near range-top, +9% 5d, 28% short",
-      "days_to_catalyst": 37,
+      "days_to_catalyst": 35,
       "nearest_phase": "PHASE2",
       "exit_by": "2026-09-21",
       "cat_quality": "phase2",
@@ -63,7 +63,7 @@
       "conviction": "MED",
       "stop": 24.22,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~37d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-09-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~35d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-09-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 51.2,
@@ -127,7 +127,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.6x, coiled near range-top, +10% 5d, 15% short",
-      "days_to_catalyst": 128,
+      "days_to_catalyst": 126,
       "nearest_phase": "PHASE1",
       "exit_by": null,
       "cat_quality": "phase1_weak",
@@ -155,7 +155,7 @@
       "conviction": "MED",
       "stop": 8.92,
       "trail_pct": 28,
-      "structure": "Phase 1 only ~128d - SAFETY/dosage (~3% avg uplift). WEAK run-up - skip unless it's a platform play. NOT the Phase-2 efficacy setup."
+      "structure": "Phase 1 only ~126d - SAFETY/dosage (~3% avg uplift). WEAK run-up - skip unless it's a platform play. NOT the Phase-2 efficacy setup."
     },
     {
       "cash_runway_months": 47.8,
@@ -178,7 +178,7 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "+5% 5d, 16% short",
-      "days_to_catalyst": 85,
+      "days_to_catalyst": 83,
       "nearest_phase": "PHASE3",
       "exit_by": null,
       "cat_quality": "phase3",
@@ -196,7 +196,7 @@
       "conviction": "MED",
       "stop": 5.99,
       "trail_pct": 28,
-      "structure": "Phase 3 ~85d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
+      "structure": "Phase 3 ~83d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
     },
     {
       "cash_runway_months": 17.5,
@@ -420,7 +420,7 @@
       "p_up": 0.0911,
       "p_down": 0.0318,
       "why": "vol building 1.3x, coiled near range-top, +21% 5d, 28% short",
-      "days_to_catalyst": 130,
+      "days_to_catalyst": 128,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-12-23",
       "cat_quality": "phase2",
@@ -438,7 +438,7 @@
       "conviction": "MED",
       "stop": 11.6,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~130d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-23 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~128d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-23 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": null,
