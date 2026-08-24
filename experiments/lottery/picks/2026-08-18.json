@@ -313,7 +313,7 @@
       "combined_score": null,
       "ret_945_close": 0.0,
       "ret_1d": -8.824,
-      "ret_3d": null
+      "ret_3d": -12.284
     },
     {
       "symbol": "CVNA",
@@ -1493,5 +1493,5 @@
     }
   ],
   "scored_at": "2026-08-18T16:10:05-04:00",
-  "backfilled_at": "2026-08-21T16:10:16-04:00"
+  "backfilled_at": "2026-08-24T16:10:13-04:00"
 }
