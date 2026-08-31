@@ -23,3 +23,4 @@ entry_date,exit_date,symbol,entry_px,exit_px,ret_pct,days,exit_reason
 2026-08-21,2026-08-27,TXN,264.28,266.56,0.86,4,bounce
 2026-08-27,2026-08-28,AMZN,256.15,266.39,4.0,1,bounce
 2026-08-25,2026-08-28,CVX,199.91,201.84,0.97,3,bounce
+2026-08-25,2026-08-31,XOM,160.62,161.01,0.24,4,bounce
