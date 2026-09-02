@@ -26,3 +26,4 @@ entry_date,exit_date,symbol,entry_px,exit_px,ret_pct,days,exit_reason
 2026-08-25,2026-08-31,XOM,160.62,161.01,0.24,4,bounce
 2026-08-27,2026-09-01,JNJ,265.76,271.3,2.08,3,bounce
 2026-08-27,2026-09-01,ABBV,258.14,260.02,0.73,3,bounce
+2026-08-26,2026-09-02,LLY,1189.35,1159.72,-2.49,5,time-stop
