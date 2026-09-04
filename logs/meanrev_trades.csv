@@ -32,3 +32,4 @@ entry_date,exit_date,symbol,entry_px,exit_px,ret_pct,days,exit_reason
 2026-09-01,2026-09-03,CAT,779.1,799.92,2.67,2,bounce
 2026-09-01,2026-09-03,GS,1001.76,1037.36,3.55,2,bounce
 2026-09-01,2026-09-03,MS,211.14,217.15,2.85,2,bounce
+2026-09-01,2026-09-04,GE,331.06,337.03,1.8,3,bounce
