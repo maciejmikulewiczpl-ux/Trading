@@ -31,7 +31,7 @@
         "opt_call_share": 0.6114
       },
       "combined_score": 0.3743,
-      "ret_945_close": null,
+      "ret_945_close": -0.076,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -60,7 +60,7 @@
         "opt_call_share": 0.2375
       },
       "combined_score": 0.1,
-      "ret_945_close": null,
+      "ret_945_close": -0.511,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -91,7 +91,7 @@
         "opt_call_share": 0.9404
       },
       "combined_score": 0.4529,
-      "ret_945_close": null,
+      "ret_945_close": 0.832,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -120,7 +120,7 @@
         "opt_call_share": 0.6043
       },
       "combined_score": 0.25,
-      "ret_945_close": null,
+      "ret_945_close": 0.302,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -149,7 +149,7 @@
         "opt_call_share": 0.4783
       },
       "combined_score": 0.2833,
-      "ret_945_close": null,
+      "ret_945_close": -0.159,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -180,7 +180,7 @@
         "opt_call_share": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": -0.73,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -212,7 +212,7 @@
         "opt_call_share": 0.8804
       },
       "combined_score": 0.22,
-      "ret_945_close": null,
+      "ret_945_close": -4.997,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -241,7 +241,7 @@
         "opt_call_share": 0.8504
       },
       "combined_score": 0.4037,
-      "ret_945_close": null,
+      "ret_945_close": -0.871,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -275,7 +275,7 @@
         "opt_call_share": 0.5368
       },
       "combined_score": 0.5111,
-      "ret_945_close": null,
+      "ret_945_close": 3.902,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -304,7 +304,7 @@
         "opt_call_share": 0.9026
       },
       "combined_score": 0.2333,
-      "ret_945_close": null,
+      "ret_945_close": -0.024,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -339,7 +339,7 @@
         "opt_call_share": 0.5676
       },
       "combined_score": 0.477,
-      "ret_945_close": null,
+      "ret_945_close": -7.534,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -368,7 +368,7 @@
         "opt_call_share": 0.8514
       },
       "combined_score": 0.5523,
-      "ret_945_close": null,
+      "ret_945_close": 3.645,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -402,7 +402,7 @@
         "opt_call_share": 0.6789
       },
       "combined_score": 0.7505,
-      "ret_945_close": null,
+      "ret_945_close": -4.793,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -434,7 +434,7 @@
         "opt_call_share": 0.9023
       },
       "combined_score": 0.2267,
-      "ret_945_close": null,
+      "ret_945_close": -0.65,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -463,7 +463,7 @@
         "opt_call_share": 0.9783
       },
       "combined_score": 0.3166,
-      "ret_945_close": null,
+      "ret_945_close": -0.423,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -494,7 +494,7 @@
         "opt_call_share": 0.3271
       },
       "combined_score": 0.2533,
-      "ret_945_close": null,
+      "ret_945_close": -1.619,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -525,7 +525,7 @@
         "opt_call_share": 0.7266
       },
       "combined_score": 0.4247,
-      "ret_945_close": null,
+      "ret_945_close": -2.462,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -557,7 +557,7 @@
         "opt_call_share": 0.749
       },
       "combined_score": 0.4044,
-      "ret_945_close": null,
+      "ret_945_close": 0.45,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -588,7 +588,7 @@
         "opt_call_share": 0.6631
       },
       "combined_score": 0.4044,
-      "ret_945_close": null,
+      "ret_945_close": 0.415,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -619,7 +619,7 @@
         "opt_call_share": 0.1747
       },
       "combined_score": 0.1905,
-      "ret_945_close": null,
+      "ret_945_close": -0.604,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -650,7 +650,7 @@
         "opt_call_share": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": -4.619,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -681,7 +681,7 @@
         "opt_call_share": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": -2.888,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -713,7 +713,7 @@
         "opt_call_share": 0.7709
       },
       "combined_score": 0.5641,
-      "ret_945_close": null,
+      "ret_945_close": 1.433,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -742,7 +742,7 @@
         "opt_call_share": 0.619
       },
       "combined_score": 0.4322,
-      "ret_945_close": null,
+      "ret_945_close": -0.661,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -773,7 +773,7 @@
         "opt_call_share": 0.678
       },
       "combined_score": 0.18,
-      "ret_945_close": null,
+      "ret_945_close": 0.59,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -802,7 +802,7 @@
         "opt_call_share": 0.2302
       },
       "combined_score": 0.4,
-      "ret_945_close": null,
+      "ret_945_close": -0.192,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -834,7 +834,7 @@
         "opt_call_share": 0.8579
       },
       "combined_score": 0.4478,
-      "ret_945_close": null,
+      "ret_945_close": 0.978,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -863,7 +863,7 @@
         "opt_call_share": 0.6349
       },
       "combined_score": 0.04,
-      "ret_945_close": null,
+      "ret_945_close": -3.163,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -898,7 +898,7 @@
         "opt_call_share": 0.7087
       },
       "combined_score": 0.7182,
-      "ret_945_close": null,
+      "ret_945_close": -2.307,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -930,7 +930,7 @@
         "opt_call_share": 0.8786
       },
       "combined_score": 0.5704,
-      "ret_945_close": null,
+      "ret_945_close": -1.778,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -961,7 +961,7 @@
         "opt_call_share": 0.6007
       },
       "combined_score": 0.5021,
-      "ret_945_close": null,
+      "ret_945_close": -0.492,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -992,7 +992,7 @@
         "opt_call_share": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": -3.823,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1021,7 +1021,7 @@
         "opt_call_share": 0.7307
       },
       "combined_score": 0.4667,
-      "ret_945_close": null,
+      "ret_945_close": -8.637,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1052,7 +1052,7 @@
         "opt_call_share": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": -1.437,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1083,7 +1083,7 @@
         "opt_call_share": 0.8448
       },
       "combined_score": 0.4495,
-      "ret_945_close": null,
+      "ret_945_close": -1.467,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1115,7 +1115,7 @@
         "opt_call_share": 0.2808
       },
       "combined_score": 0.6097,
-      "ret_945_close": null,
+      "ret_945_close": -0.165,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1146,7 +1146,7 @@
         "opt_call_share": 0.8679
       },
       "combined_score": 0.24,
-      "ret_945_close": null,
+      "ret_945_close": -2.381,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1178,7 +1178,7 @@
         "opt_call_share": 0.7494
       },
       "combined_score": 0.6191,
-      "ret_945_close": null,
+      "ret_945_close": -5.875,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1209,7 +1209,7 @@
         "opt_call_share": null
       },
       "combined_score": null,
-      "ret_945_close": null,
+      "ret_945_close": 0.216,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1241,7 +1241,7 @@
         "opt_call_share": 0.7901
       },
       "combined_score": 0.1528,
-      "ret_945_close": null,
+      "ret_945_close": -0.414,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1270,7 +1270,7 @@
         "opt_call_share": 0.4186
       },
       "combined_score": 0.3,
-      "ret_945_close": null,
+      "ret_945_close": -2.388,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1301,7 +1301,7 @@
         "opt_call_share": 0.614
       },
       "combined_score": 0.6038,
-      "ret_945_close": null,
+      "ret_945_close": -0.169,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1333,7 +1333,7 @@
         "opt_call_share": 0.9925
       },
       "combined_score": 0.6815,
-      "ret_945_close": null,
+      "ret_945_close": -3.276,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1364,7 +1364,7 @@
         "opt_call_share": 0.4372
       },
       "combined_score": 0.5109,
-      "ret_945_close": null,
+      "ret_945_close": -6.979,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1396,7 +1396,7 @@
         "opt_call_share": 0.8886
       },
       "combined_score": 0.521,
-      "ret_945_close": null,
+      "ret_945_close": 1.045,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1427,7 +1427,7 @@
         "opt_call_share": 0.906
       },
       "combined_score": 0.257,
-      "ret_945_close": null,
+      "ret_945_close": -0.187,
       "ret_1d": null,
       "ret_3d": null
     },
@@ -1460,9 +1460,10 @@
         "opt_call_share": 0.2555
       },
       "combined_score": 0.32,
-      "ret_945_close": null,
+      "ret_945_close": -4.974,
       "ret_1d": null,
       "ret_3d": null
     }
-  ]
+  ],
+  "scored_at": "2026-09-09T16:10:10-04:00"
 }
