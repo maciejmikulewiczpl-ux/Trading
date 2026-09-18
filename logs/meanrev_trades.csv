@@ -52,3 +52,4 @@ entry_date,exit_date,symbol,entry_px,exit_px,ret_pct,days,exit_reason
 2026-09-10,2026-09-17,NVDA,218.37,219.4,0.47,5,bounce
 2026-09-10,2026-09-17,GE,324.15,313.59,-3.26,5,time-stop
 2026-09-16,2026-09-17,PFE,27.48,27.63,0.53,1,bounce
+2026-09-11,2026-09-18,UNH,378.87,376.94,-0.51,5,time-stop
