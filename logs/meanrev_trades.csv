@@ -66,3 +66,4 @@ entry_date,exit_date,symbol,entry_px,exit_px,ret_pct,days,exit_reason
 2026-09-22,2026-09-25,BAC,56.22,56.67,0.8,3,bounce
 2026-09-18,2026-09-25,WFC,86.11,82.97,-3.66,5,time-stop
 2026-09-21,2026-09-28,CVX,203.71,206.38,1.31,5,bounce
+2026-09-28,2026-09-30,AMZN,246.33,249.17,1.15,2,bounce
