@@ -31,7 +31,7 @@
       "combined_score": 0.2157,
       "ret_945_close": 0.598,
       "ret_1d": 0.809,
-      "ret_3d": null
+      "ret_3d": 3.81
     },
     {
       "symbol": "AFRM",
@@ -60,7 +60,7 @@
       "combined_score": 0.4933,
       "ret_945_close": 3.174,
       "ret_1d": 0.167,
-      "ret_3d": null
+      "ret_3d": 3.245
     },
     {
       "symbol": "APLD",
@@ -92,7 +92,7 @@
       "combined_score": 0.4169,
       "ret_945_close": -0.162,
       "ret_1d": 2.568,
-      "ret_3d": null
+      "ret_3d": -3.518
     },
     {
       "symbol": "AVGO",
@@ -123,7 +123,7 @@
       "combined_score": 0.2309,
       "ret_945_close": 1.199,
       "ret_1d": 3.694,
-      "ret_3d": null
+      "ret_3d": -0.683
     },
     {
       "symbol": "AXP",
@@ -152,7 +152,7 @@
       "combined_score": 0.1765,
       "ret_945_close": 0.94,
       "ret_1d": 0.212,
-      "ret_3d": null
+      "ret_3d": 1.341
     },
     {
       "symbol": "AZO",
@@ -181,7 +181,7 @@
       "combined_score": 0.1764,
       "ret_945_close": 1.476,
       "ret_1d": 3.195,
-      "ret_3d": null
+      "ret_3d": 3.592
     },
     {
       "symbol": "BABA",
@@ -212,7 +212,7 @@
       "combined_score": 0.3205,
       "ret_945_close": 1.942,
       "ret_1d": -1.372,
-      "ret_3d": null
+      "ret_3d": -4.586
     },
     {
       "symbol": "BRUN",
@@ -241,7 +241,7 @@
       "combined_score": 0.3004,
       "ret_945_close": -8.008,
       "ret_1d": 5.424,
-      "ret_3d": null
+      "ret_3d": -15.96
     },
     {
       "symbol": "CAPR",
@@ -275,7 +275,7 @@
       "combined_score": 0.7222,
       "ret_945_close": -8.007,
       "ret_1d": -0.257,
-      "ret_3d": null
+      "ret_3d": 2.892
     },
     {
       "symbol": "CCL",
@@ -304,7 +304,7 @@
       "combined_score": 0.1863,
       "ret_945_close": -0.02,
       "ret_1d": 3.87,
-      "ret_3d": null
+      "ret_3d": 2.17
     },
     {
       "symbol": "DNA",
@@ -337,7 +337,7 @@
       "combined_score": 0.6147,
       "ret_945_close": 10.131,
       "ret_1d": -17.211,
-      "ret_3d": null
+      "ret_3d": -24.283
     },
     {
       "symbol": "EA",
@@ -397,7 +397,7 @@
       "combined_score": 0.6355,
       "ret_945_close": 9.215,
       "ret_1d": -4.282,
-      "ret_3d": null
+      "ret_3d": -5.801
     },
     {
       "symbol": "EOG",
@@ -426,7 +426,7 @@
       "combined_score": 0.6502,
       "ret_945_close": 2.59,
       "ret_1d": 0.174,
-      "ret_3d": null
+      "ret_3d": 3.103
     },
     {
       "symbol": "FIGR",
@@ -457,7 +457,7 @@
       "combined_score": 0.0173,
       "ret_945_close": -0.657,
       "ret_1d": -2.092,
-      "ret_3d": null
+      "ret_3d": -1.359
     },
     {
       "symbol": "GRRR",
@@ -486,7 +486,7 @@
       "combined_score": 0.2483,
       "ret_945_close": -5.275,
       "ret_1d": -1.058,
-      "ret_3d": null
+      "ret_3d": -2.726
     },
     {
       "symbol": "HPQ",
@@ -515,7 +515,7 @@
       "combined_score": 0.2843,
       "ret_945_close": -1.273,
       "ret_1d": 0.858,
-      "ret_3d": null
+      "ret_3d": 3.114
     },
     {
       "symbol": "HTZ",
@@ -546,7 +546,7 @@
       "combined_score": null,
       "ret_945_close": 3.458,
       "ret_1d": 15.73,
-      "ret_3d": null
+      "ret_3d": 9.831
     },
     {
       "symbol": "IP",
@@ -577,7 +577,7 @@
       "combined_score": null,
       "ret_945_close": 2.443,
       "ret_1d": 0.265,
-      "ret_3d": null
+      "ret_3d": -0.546
     },
     {
       "symbol": "JOBY",
@@ -608,7 +608,7 @@
       "combined_score": 0.3558,
       "ret_945_close": -1.532,
       "ret_1d": 0.086,
-      "ret_3d": null
+      "ret_3d": -0.518
     },
     {
       "symbol": "LEN",
@@ -640,7 +640,7 @@
       "combined_score": 0.4172,
       "ret_945_close": -3.259,
       "ret_1d": 3.963,
-      "ret_3d": null
+      "ret_3d": 4.272
     },
     {
       "symbol": "LULU",
@@ -669,7 +669,7 @@
       "combined_score": 0.4118,
       "ret_945_close": 0.254,
       "ret_1d": 0.537,
-      "ret_3d": null
+      "ret_3d": -0.499
     },
     {
       "symbol": "MCO",
@@ -698,7 +698,7 @@
       "combined_score": 0.25,
       "ret_945_close": 1.437,
       "ret_1d": 0.956,
-      "ret_3d": null
+      "ret_3d": 2.341
     },
     {
       "symbol": "MELI",
@@ -727,7 +727,7 @@
       "combined_score": 0.3855,
       "ret_945_close": 1.51,
       "ret_1d": -0.094,
-      "ret_3d": null
+      "ret_3d": -0.249
     },
     {
       "symbol": "META",
@@ -759,7 +759,7 @@
       "combined_score": 0.3446,
       "ret_945_close": 0.269,
       "ret_1d": -0.338,
-      "ret_3d": null
+      "ret_3d": -2.792
     },
     {
       "symbol": "MRNA",
@@ -791,7 +791,7 @@
       "combined_score": 0.4543,
       "ret_945_close": 6.997,
       "ret_1d": -7.723,
-      "ret_3d": null
+      "ret_3d": -3.027
     },
     {
       "symbol": "MSFT",
@@ -822,7 +822,7 @@
       "combined_score": 0.6528,
       "ret_945_close": -1.411,
       "ret_1d": 0.833,
-      "ret_3d": null
+      "ret_3d": -0.438
     },
     {
       "symbol": "MU",
@@ -853,7 +853,7 @@
       "combined_score": 0.3867,
       "ret_945_close": 0.249,
       "ret_1d": -1.717,
-      "ret_3d": null
+      "ret_3d": -2.619
     },
     {
       "symbol": "NBIS",
@@ -885,7 +885,7 @@
       "combined_score": 0.5881,
       "ret_945_close": -2.518,
       "ret_1d": 7.476,
-      "ret_3d": null
+      "ret_3d": -5.454
     },
     {
       "symbol": "NVAX",
@@ -920,7 +920,7 @@
       "combined_score": 0.8552,
       "ret_945_close": 22.26,
       "ret_1d": -9.873,
-      "ret_3d": null
+      "ret_3d": -12.42
     },
     {
       "symbol": "NVDA",
@@ -953,7 +953,7 @@
       "combined_score": 0.6604,
       "ret_945_close": 0.48,
       "ret_1d": 0.08,
-      "ret_3d": null
+      "ret_3d": -3.519
     },
     {
       "symbol": "PCVX",
@@ -985,7 +985,7 @@
       "combined_score": 0.8037,
       "ret_945_close": -15.397,
       "ret_1d": -9.56,
-      "ret_3d": null
+      "ret_3d": -11.997
     },
     {
       "symbol": "RDW",
@@ -1014,7 +1014,7 @@
       "combined_score": 0.2799,
       "ret_945_close": -2.58,
       "ret_1d": 1.726,
-      "ret_3d": null
+      "ret_3d": -6.472
     },
     {
       "symbol": "SPCX",
@@ -1045,7 +1045,7 @@
       "combined_score": 0.7011,
       "ret_945_close": 4.062,
       "ret_1d": 0.508,
-      "ret_3d": null
+      "ret_3d": -6.131
     },
     {
       "symbol": "SPY",
@@ -1076,7 +1076,7 @@
       "combined_score": 0.6369,
       "ret_945_close": 0.466,
       "ret_1d": 0.533,
-      "ret_3d": null
+      "ret_3d": -0.141
     },
     {
       "symbol": "TSLA",
@@ -1107,7 +1107,7 @@
       "combined_score": 0.5096,
       "ret_945_close": 1.871,
       "ret_1d": 0.531,
-      "ret_3d": null
+      "ret_3d": -0.955
     },
     {
       "symbol": "VELO",
@@ -1139,7 +1139,7 @@
       "combined_score": 0.5027,
       "ret_945_close": 3.712,
       "ret_1d": -0.261,
-      "ret_3d": null
+      "ret_3d": -6.361
     },
     {
       "symbol": "VST",
@@ -1171,7 +1171,7 @@
       "combined_score": 0.5276,
       "ret_945_close": 1.962,
       "ret_1d": 10.779,
-      "ret_3d": null
+      "ret_3d": 7.752
     },
     {
       "symbol": "VSTM",
@@ -1203,7 +1203,7 @@
       "combined_score": 0.4062,
       "ret_945_close": 2.991,
       "ret_1d": -3.242,
-      "ret_3d": null
+      "ret_3d": 1.122
     },
     {
       "symbol": "WDC",
@@ -1234,7 +1234,7 @@
       "combined_score": 0.4878,
       "ret_945_close": 1.407,
       "ret_1d": -6.83,
-      "ret_3d": null
+      "ret_3d": -10.886
     },
     {
       "symbol": "WULF",
@@ -1266,7 +1266,7 @@
       "combined_score": 0.4723,
       "ret_945_close": -1.632,
       "ret_1d": 1.148,
-      "ret_3d": null
+      "ret_3d": -7.833
     },
     {
       "symbol": "XBI",
@@ -1297,7 +1297,7 @@
       "combined_score": 0.0517,
       "ret_945_close": 0.967,
       "ret_1d": -3.387,
-      "ret_3d": null
+      "ret_3d": -4.424
     },
     {
       "symbol": "XERS",
@@ -1329,9 +1329,9 @@
       "combined_score": 0.6181,
       "ret_945_close": 7.856,
       "ret_1d": -0.69,
-      "ret_3d": null
+      "ret_3d": 0.394
     }
   ],
   "scored_at": "2026-10-05T16:10:05-04:00",
-  "backfilled_at": "2026-10-07T17:03:10-04:00"
+  "backfilled_at": "2026-10-08T17:32:31-04:00"
 }
