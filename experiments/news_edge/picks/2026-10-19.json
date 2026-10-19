@@ -1,0 +1,244 @@
+{
+  "date": "2026-10-19",
+  "logged_at": "2026-10-19T09:38:19-04:00",
+  "picks": [
+    {
+      "symbol": "CLF",
+      "signal": 1,
+      "confidence": 0.75,
+      "reason": "Q3 earnings beat before open (8-K 06:52): EPS $0.28 vs $0.22 est, rev $5.6B; Q4 adj EBITDA guide ~$715M above cons, 2027 EBITDA guide >$4B on new customer contracts. Fresh beat-and-raise, moderate gap ~+14%. Crowd 100% bull.",
+      "sources": [
+        "edgar-8K",
+        "cnbc",
+        "investing.com"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "steel-earnings",
+      "control": false,
+      "gap_pct": 14.33
+    },
+    {
+      "symbol": "DDOG",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Bernstein SocGen upgrade to Outperform from Market Perform, PT raised $237->$350 (+48%). Fresh dated analyst catalyst, ~+6% pm. Crowd 88% bull.",
+      "sources": [
+        "investing.com",
+        "benzinga"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "software-upgrade",
+      "control": false,
+      "gap_pct": 6.44
+    },
+    {
+      "symbol": "CRWV",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Goldman Sachs upgrade to Buy from Neutral, ~+4.6% rebound after being epicentre of last week's AI/neocloud unwind. Named dated catalyst but volatile. Crowd 78% bull, pm RVOL 2.9.",
+      "sources": [
+        "investing.com",
+        "cnbc"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 2.89,
+      "reddit_rank": 6,
+      "earnings_day": false,
+      "theme": "ai-cloud",
+      "control": false,
+      "gap_pct": 4.63
+    },
+    {
+      "symbol": "INTC",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "JPMorgan upgrade Underweight->Neutral, PT unchanged $85 (tepid: only to Neutral, no PT bump). ~+4% pm. Crowd 88% bull, pm RVOL 1.56. Low conviction given weak upgrade.",
+      "sources": [
+        "investing.com"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.56,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "semis-upgrade",
+      "control": false
+    },
+    {
+      "symbol": "IRON",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Disc Medicine fresh 8-K (07:08): positive Phase 3 APOLLO trial results, gapping ~+51% pm. Genuine binary catalyst but very large gap = fade risk per pre-reg (big gappers tend to fade). Crowd 69% bull.",
+      "sources": [
+        "edgar-8K",
+        "chartmill"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-phase3",
+      "control": false
+    },
+    {
+      "symbol": "RARE",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "Ultragenyx fresh 8-K (09:00); crowd 100% bull but catalyst content/direction unconfirmed. Tracked for context, not a call.",
+      "sources": [
+        "edgar-8K"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech",
+      "control": false
+    },
+    {
+      "symbol": "SOXL",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 10.23
+    },
+    {
+      "symbol": "MUU",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 7.6
+    },
+    {
+      "symbol": "APLD",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.12
+    },
+    {
+      "symbol": "XE",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.04
+    },
+    {
+      "symbol": "NBIS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.82
+    },
+    {
+      "symbol": "TQQQ",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 4.26
+    },
+    {
+      "symbol": "DX",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.02
+    },
+    {
+      "symbol": "SLS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.36
+    }
+  ]
+}
