@@ -85,3 +85,4 @@ entry_date,exit_date,symbol,entry_px,exit_px,ret_pct,days,exit_reason
 2026-10-12,2026-10-13,TXN,281.85,288.0,2.18,1,bounce
 2026-10-09,2026-10-16,NVDA,229.35,214.12,-6.64,5,time-stop
 2026-10-09,2026-10-16,AMD,607.86,528.77,-13.01,5,time-stop
+2026-10-16,2026-10-19,AMZN,249.92,262.5,5.03,1,bounce
