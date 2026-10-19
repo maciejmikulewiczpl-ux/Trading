@@ -137,7 +137,16 @@ def _load_lottery_env() -> None:
 # selector opt_expmove -> opt_cheap_score (board blend = mean percentile-rank of expected-move +
 # cheapness). Pure "options" (expected-move only) stays scored side-by-side as the benchmark, so
 # analyze.py shows whether the cheap tilt actually helps. Still a forward-test; re-eval ~early Sept.
-SELECT_SIGNAL = os.environ.get("LOTTERY_SELECT", "opt_cheap_score")   # hype default; "catalyst" = news signal=1
+# 2026-10-18 REVIEW (5-min SIP path replay of all 3,123 board candidates, 79 days, sim calibrated
+# to the real ledger at corr 0.98): opt_cheap_score was the WORST selector (-1.38%/trade net, 08-06+
+# ledger -$1,099) and the whole hype net is negative (-0.61%/trade) -- hit-rate lift = volatility,
+# not direction. The ONLY selector positive in both halves, every month, and ex-top-3 was the
+# biggest premarket GAP-UPS: top-3 by gap_pct with gap >= 10% -> +1.42%/trade net of 0.25pp, dose-
+# response monotonic (top1 > top3 > top5; >=10% > >=5% > >=0%), survives ~1pp/trade cost. Day-
+# bootstrap CI still touches 0 (59 days) -> FORWARD-TEST, re-eval at 40 trading days, do NOT scale.
+# Current 10% trail / T+3 exit was already ~optimal for gappers (no exit change).
+SELECT_SIGNAL = os.environ.get("LOTTERY_SELECT", "gap_pct")   # hype default; "catalyst" = news signal=1
+SELECT_MIN = float(os.environ.get("LOTTERY_SELECT_MIN", "10" if SELECT_SIGNAL == "gap_pct" else "-inf"))
 
 
 def _sel_value(p: dict):
@@ -146,6 +155,12 @@ def _sel_value(p: dict):
 
 def _todays_picks(date_str: str) -> list[dict]:
     f = ROOT / "experiments" / _PICKS_SUBDIR / "picks" / f"{date_str}.json"
+    if not f.exists() and SELECT_SIGNAL == "gap_pct":
+        # Surface board missing (laptop asleep) -> VM-built gap-only board (experiments/lottery/
+        # gap_fallback.py), same pm_gappers() signal the real board uses.
+        f = f.with_name(f"{date_str}.fallback.json")
+        if f.exists():
+            print(f"lottery bot: Surface board missing -- using VM gap fallback {f.name}")
     if not f.exists():
         return []
     rec = json.load(open(f))
@@ -154,7 +169,7 @@ def _todays_picks(date_str: str) -> list[dict]:
         cats = [p for p in ps if p.get("signal") in (1, "1") and not p.get("control")]
         cats.sort(key=lambda p: -(p.get("confidence") or 0))
         return cats[:TOP_N]
-    picks = [p for p in ps if _sel_value(p) is not None]
+    picks = [p for p in ps if _sel_value(p) is not None and _sel_value(p) >= SELECT_MIN]
     picks.sort(key=lambda x: -_sel_value(x))
     return picks[:TOP_N]
 
@@ -361,7 +376,8 @@ def run_entries(tc, dry_run: bool) -> int:
     date_str = datetime.now(ET).date().isoformat()
     picks = _todays_picks(date_str)
     if not picks:
-        print(f"lottery bot: no board picks for {date_str} -- idle, nothing to buy.")
+        print(f"lottery bot: no board picks for {date_str} with {SELECT_SIGNAL} >= {SELECT_MIN:g} "
+              f"-- idle, nothing to buy.")
         return 0
     def _lbl(p):
         v = _sel_value(p)

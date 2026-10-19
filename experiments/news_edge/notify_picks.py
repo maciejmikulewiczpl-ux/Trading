@@ -28,7 +28,12 @@ def main() -> int:
     date = sys.argv[1] if len(sys.argv) > 1 else datetime.now(ET).date().isoformat()
     f = ROOT / "experiments" / "news_edge" / "picks" / f"{date}.json"
     if not f.exists():
-        print(f"no picks file for {date}; nothing to push")
+        # Fail LOUD: a missing picks file means the scan itself failed (e.g. the headless
+        # claude CLI's OAuth token expired 2026-08-24 and every scan 401'd silently for 7 weeks).
+        ok = notify(f"No picks file for {date} -> news-hold bot will sit idle today.\n"
+                    f"Check logs/news_scan_{date}.log (expired claude login? laptop asleep?)",
+                    title=f"News scan FAILED {date}", priority=4, tags=["warning"])
+        print(f"no picks file for {date}; failure alert {'sent' if ok else 'NOT sent'}")
         return 0
     picks = json.load(open(f)).get("picks", [])
     pos = [p for p in picks if p.get("signal", 0) > 0]
