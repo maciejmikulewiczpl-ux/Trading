@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-20",
+  "logged_at": "2026-10-20T12:33:53-04:00",
+  "recs": [
+    {
+      "symbol": "DDOG",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.7,
+      "reason": "No adverse development. Bernstein UPGRADED DDOG to Outperform (PT 237->350) today on stronger-than-expected AI-native demand, reversing its prior-quarter downgrade. Thesis intact/strengthened; red P&L is price action only. Q3 earnings not until early Nov.",
+      "sources": [
+        "WebSearch: Bernstein upgrade (gurufocus, Yahoo Finance, Schaeffers 2026-10-19/20)"
+      ],
+      "px_at_reeval": 255.67,
+      "upl_pct_at_reeval": -1.09
+    },
+    {
+      "symbol": "MSCI",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.8,
+      "reason": "Q3 earnings (8-K 06:46 ET) BEAT: adj EPS 5.11 beat consensus, revenue +12.4% YoY to 892M, index revenue +18.1%, record ETF AUM; stock surged ~6.4% premarket. Positive catalyst confirmed, no adverse change. Position down from a prior-day entry = price action, not bad news.",
+      "sources": [
+        "EDGAR 8-K MSCI 2026-10-20 06:46",
+        "WebSearch: Benzinga/Securities.io/StockTitan Q3 beat"
+      ],
+      "px_at_reeval": 581.98,
+      "upl_pct_at_reeval": -4.05
+    },
+    {
+      "symbol": "NOC",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.75,
+      "reason": "Q3 earnings (8-K noc-20261020) reported today: sales +7% to 11.1B (revenue slightly below forecast) but profit BEAT at 7.89 diluted EPS; RAISED 2026 guidance (seg op income +65M, MTM-adj EPS +0.70 at midpoint); record 110B backlog. Net positive catalyst, no adverse development.",
+      "sources": [
+        "EDGAR 8-K NOC 2026-10-20",
+        "WebSearch: gurufocus/marketbeat Q3 beat + raised guidance"
+      ],
+      "px_at_reeval": 537.4855,
+      "upl_pct_at_reeval": -0.77
+    },
+    {
+      "symbol": "RTX",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.85,
+      "reason": "Q3 earnings (8-K 06:57 ET) strong BEAT: adj EPS 2.26 vs 1.78 cons (+27%), adj sales 25.0B (+12% organic), FCF 2.1B; RAISED FY adj EPS to 7.65-7.75 (from 7.10-7.25) and FCF to 9.0-9.2B; record 340B backlog (+36% YoY). Clear positive catalyst, no adverse change.",
+      "sources": [
+        "EDGAR 8-K RTX 2026-10-20 06:57",
+        "WebSearch: Investing.com/Alphastreet/Tradingpedia beat + guidance hike"
+      ],
+      "px_at_reeval": 191.1075,
+      "upl_pct_at_reeval": -2.3
+    }
+  ]
+}
