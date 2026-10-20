@@ -1,0 +1,233 @@
+{
+  "date": "2026-10-20",
+  "logged_at": "2026-10-20T09:39:21-04:00",
+  "picks": [
+    {
+      "symbol": "RTX",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Q3 beat-and-raise before open: adj EPS $2.26 vs $1.78 est, raised full-year outlook. Defense/aero, +2.2% pm. Crowd 100% bull.",
+      "sources": [
+        "edgar-8K",
+        "investing.com",
+        "benzinga"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 29,
+      "earnings_day": true,
+      "theme": "defense-earnings",
+      "control": false
+    },
+    {
+      "symbol": "NOC",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Q3 earnings (8-K 06:00), strongest S&P defense reaction, +4.8% pm. Crowd 100% bull.",
+      "sources": [
+        "edgar-8K",
+        "chartmill"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "defense-earnings",
+      "control": false
+    },
+    {
+      "symbol": "MSCI",
+      "signal": 1,
+      "confidence": 0.6,
+      "reason": "Q3 earnings beat (8-K 06:46), top S&P premarket gainer +6.5%. Index/analytics data franchise. Crowd 67% bull.",
+      "sources": [
+        "edgar-8K",
+        "chartmill"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "financials-earnings",
+      "control": false
+    },
+    {
+      "symbol": "EFX",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Equifax Q3 earnings (8-K 06:31), +5.6% pm. Credit-data analytics. StockTwits too thin to score (n=2).",
+      "sources": [
+        "edgar-8K",
+        "chartmill"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "financials-earnings",
+      "control": false
+    },
+    {
+      "symbol": "HAL",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "Halliburton Q3 beat on both EPS and revenue (8-K 06:50), +3.4% pm. Oilfield services. Crowd 92% bull.",
+      "sources": [
+        "edgar-8K",
+        "investing.com"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "energy-earnings",
+      "control": false
+    },
+    {
+      "symbol": "MMM",
+      "signal": 1,
+      "confidence": 0.55,
+      "reason": "3M Q3 adj EPS $2.50 beat, raised FY guide to $9.10-9.15 (2nd straight raise), +110bps margin; plus new Amazon data-center warrant + Taiwan optical investment. +3.7% pm. Crowd 60%.",
+      "sources": [
+        "edgar-8K",
+        "benzinga"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "industrials-earnings",
+      "control": false
+    },
+    {
+      "symbol": "RAPP",
+      "signal": 1,
+      "confidence": 0.4,
+      "reason": "Rapport Tx positive Phase 2 topline RAP-219 in bipolar mania (8-K 08:35): primary YMRS met -3.1 pbo-adj (p=0.045, marginal), secondary CGI-BP met, well tolerated. +27% pm. Genuine binary but big gap = fade risk per pre-reg + borderline p. Crowd split 47%.",
+      "sources": [
+        "edgar-8K",
+        "globenewswire"
+      ],
+      "source_signals": {
+        "stocktwits": 0
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech-phase2",
+      "control": false
+    },
+    {
+      "symbol": "GM",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "GM Q3 adj EPS $3.70 beat (cons $3.63) and raised FY, BUT sold off -5.2% pm = sell-the-news (tariff/EV-cost guide worries). Crowd 0% bull (4 bear) confirms bearish reaction.",
+      "sources": [
+        "edgar-8K",
+        "investing.com"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "auto-earnings",
+      "control": false
+    },
+    {
+      "symbol": "GE",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "GE Aerospace Q3 beat (adj EPS $2.25 vs $2.01, rev $13.29B, orders $19B, raised FY) BUT -5.1% pm sell-the-news after big run; crowd 80% bull dip-buying. Mixed - fundamentals strong, reaction negative. Tracked, not a call.",
+      "sources": [
+        "edgar-8K",
+        "investing.com"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "aerospace-earnings",
+      "control": false
+    },
+    {
+      "symbol": "NBIS",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "Nebius -4.5% pm on continued AI/neocloud unwind (Nasdaq futures down); pm RVOL 3.18 = heavy participation, crowd 78% bull, WSB rank 5 - but NO fresh dated catalyst, just momentum. Signal 0.",
+      "sources": [
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 3.18,
+      "reddit_rank": 5,
+      "earnings_day": false,
+      "theme": "ai-cloud",
+      "control": false
+    },
+    {
+      "symbol": "SE",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -5.35
+    },
+    {
+      "symbol": "SMR",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -5.11
+    },
+    {
+      "symbol": "CRWV",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": 2,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": -4.42
+    }
+  ]
+}
