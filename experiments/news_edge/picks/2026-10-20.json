@@ -19,7 +19,9 @@
       "reddit_rank": 29,
       "earnings_day": true,
       "theme": "defense-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.225,
+      "gap_pct": 0.284
     },
     {
       "symbol": "NOC",
@@ -37,7 +39,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "defense-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.049,
+      "gap_pct": 3.106
     },
     {
       "symbol": "MSCI",
@@ -55,7 +59,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "financials-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -2.221,
+      "gap_pct": 4.256
     },
     {
       "symbol": "EFX",
@@ -71,7 +77,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "financials-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.194,
+      "gap_pct": 5.276
     },
     {
       "symbol": "HAL",
@@ -89,7 +97,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "energy-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.343,
+      "gap_pct": 1.515
     },
     {
       "symbol": "MMM",
@@ -107,7 +117,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "industrials-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": 2.351,
+      "gap_pct": 0.722
     },
     {
       "symbol": "RAPP",
@@ -125,7 +137,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "biotech-phase2",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.856,
+      "gap_pct": 1.47
     },
     {
       "symbol": "GM",
@@ -143,7 +157,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "auto-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.947,
+      "gap_pct": -6.549
     },
     {
       "symbol": "GE",
@@ -161,7 +177,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "aerospace-earnings",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.348,
+      "gap_pct": -4.291
     },
     {
       "symbol": "NBIS",
@@ -179,7 +197,9 @@
       "reddit_rank": 5,
       "earnings_day": false,
       "theme": "ai-cloud",
-      "control": false
+      "control": false,
+      "ret_945_close": 6.205,
+      "gap_pct": -3.649
     },
     {
       "symbol": "SE",
@@ -195,7 +215,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -5.35
+      "gap_pct": -5.35,
+      "ret_945_close": -4.51
     },
     {
       "symbol": "SMR",
@@ -211,7 +232,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -5.11
+      "gap_pct": -5.11,
+      "ret_945_close": 3.807
     },
     {
       "symbol": "CRWV",
@@ -227,7 +249,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.42
+      "gap_pct": -4.42,
+      "ret_945_close": 7.89
     }
-  ]
+  ],
+  "outcomes_at": "2026-10-20T16:05:09-04:00"
 }
