@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-21",
+  "logged_at": "2026-10-21T12:33:09-04:00",
+  "recs": [
+    {
+      "symbol": "DDOG",
+      "action": "hold",
+      "catalyst_changed": true,
+      "confidence": 0.75,
+      "reason": "Fresh POSITIVE development today: Bernstein upgrade to Outperform PT $350 on AI cloud-monitoring demand (token consumption +50% q/q); Mizuho/Barclays/RBC/CIBC raised PTs. Stock +~7% intraday. Thesis strengthened, no reason to exit.",
+      "sources": [
+        "investing.com",
+        "finance.yahoo.com"
+      ],
+      "px_at_reeval": 275.91,
+      "upl_pct_at_reeval": 6.74
+    },
+    {
+      "symbol": "MSCI",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.65,
+      "reason": "Q3 2026 earnings (10-20) played out positively: adj EPS $5.11 beat $5.02, revenue +12.4%, CEO called net new sales historic. Original catalyst intact; stock +~3.8% intraday. No new development since morning.",
+      "sources": [
+        "finance.yahoo.com",
+        "seekingalpha.com"
+      ],
+      "px_at_reeval": 605.21,
+      "upl_pct_at_reeval": -0.22
+    },
+    {
+      "symbol": "NOC",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.65,
+      "reason": "Q3 2026 earnings (10-20) beat, FY26 adj EPS guidance RAISED to $29.35-29.75, record backlog $110B, Baird upgrade to Outperform PT $675. Original earnings catalyst intact and reinforced; no new development since morning.",
+      "sources": [
+        "news.northropgrumman.com",
+        "benzinga.com"
+      ],
+      "px_at_reeval": 542.1,
+      "upl_pct_at_reeval": 0.08
+    },
+    {
+      "symbol": "RTX",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.6,
+      "reason": "Q3 2026 earnings (10-20) strong beat: adj EPS $2.26 vs $1.78, rev +11%, record $340B backlog incl ~$37B Tomahawk/AMRAAM awards, FY26 EPS guidance RAISED. Position red (-2.2%) on price action only, NOT a changed catalyst (no dilution/deal-break/guidance-cut) -> hold per shadow rule.",
+      "sources": [
+        "rtx.com",
+        "benzinga.com",
+        "fool.com"
+      ],
+      "px_at_reeval": 191.305,
+      "upl_pct_at_reeval": -2.2
+    }
+  ]
+}
