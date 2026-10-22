@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-22",
+  "logged_at": "2026-10-22T12:33:53-04:00",
+  "recs": [
+    {
+      "symbol": "ABUS",
+      "action": "hold",
+      "catalyst_changed": true,
+      "confidence": 0.78,
+      "reason": "Fresh 8-K today (10-22, 07:31 ET): FDA LIFTED the ~3yr clinical hold on the IND for AB-101 (oral PD-L1 inhibitor for chronic HBV); Part 3 data showed high receptor occupancy + HBsAg decline at 30mg. Clearly POSITIVE regulatory catalyst, thesis strengthened. Position -0.9% is price action only; hold per shadow rule.",
+      "sources": [
+        "globenewswire.com",
+        "benzinga.com",
+        "sec.gov"
+      ],
+      "px_at_reeval": 4.27,
+      "upl_pct_at_reeval": -0.93
+    },
+    {
+      "symbol": "LMT",
+      "action": "hold",
+      "catalyst_changed": true,
+      "confidence": 0.65,
+      "reason": "Q3 2026 earnings reported today (10-22): adj EPS $7.97 beat by $0.45, rev +11.3% to $20.7B, FY sales guidance RAISED to $80-82B, record $292B backlog (F-35 + missile defense). Strong beat + raise = catalyst reinforced. Position -3.0% is price action/volatility only, NOT a bad development; hold per shadow rule.",
+      "sources": [
+        "gurufocus.com",
+        "moneycheck.com",
+        "investing.com"
+      ],
+      "px_at_reeval": 580.5,
+      "upl_pct_at_reeval": -3.04
+    },
+    {
+      "symbol": "MMM",
+      "action": "hold",
+      "catalyst_changed": true,
+      "confidence": 0.62,
+      "reason": "Q3 2026 earnings (reported 10-21/22): adj EPS $2.50 beat by $0.12, 3.3% organic growth, adj op margin 26.2%, FY26 EPS guidance RAISED to $9.10-9.15. JPMorgan PT 185 to 191, Citi 183 to 188. Catalyst intact and reinforced; hold.",
+      "sources": [
+        "marketbeat.com",
+        "streetinsider.com",
+        "proactiveinvestors.com"
+      ],
+      "px_at_reeval": 174.67,
+      "upl_pct_at_reeval": 0.18
+    },
+    {
+      "symbol": "MSCI",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.62,
+      "reason": "Q3 2026 earnings (10-20) played out positively: non-GAAP EPS $5.11 vs $5.03, rev +12.4% to $892M (Index +18%), op margin 56.3%, FY cash-flow guidance reaffirmed. Original catalyst intact; stock green (+2.8%). No new development since morning; hold.",
+      "sources": [
+        "seekingalpha.com",
+        "marketbeat.com"
+      ],
+      "px_at_reeval": 623.52,
+      "upl_pct_at_reeval": 2.8
+    },
+    {
+      "symbol": "NOC",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.62,
+      "reason": "Q3 2026 earnings (10-20) beat: EPS $7.89 vs $7.18 consensus, sales +7% to $11.1B, record $110B backlog (book-to-bill 1.5), guidance raised, stock +7.2%. BNP Exane PT 540 to 600, Morgan Stanley 745 to 765 OW. Catalyst intact/reinforced; no new development since morning; hold.",
+      "sources": [
+        "defenseworld.net",
+        "247wallst.com",
+        "sec.gov"
+      ],
+      "px_at_reeval": 549.285,
+      "upl_pct_at_reeval": 1.4
+    },
+    {
+      "symbol": "RTX",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.6,
+      "reason": "Q3 2026 earnings strong beat (reported this week): adj EPS $2.26 vs $1.78, rev +11% to $24.97B, record $340B backlog incl ~$37B Tomahawk/AMRAAM awards, FY26 outlook RAISED; Barclays PT 223 to 235 OW (10-21). Position -2.0% is price action only, NOT a changed catalyst (no dilution/deal-break/guidance-cut); hold per shadow rule.",
+      "sources": [
+        "airforce-technology.com",
+        "tradingview.com",
+        "ad-hoc-news.de"
+      ],
+      "px_at_reeval": 191.62,
+      "upl_pct_at_reeval": -2.04
+    }
+  ]
+}
