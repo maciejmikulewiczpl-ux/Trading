@@ -88,3 +88,5 @@ entry_date,exit_date,symbol,entry_px,exit_px,ret_pct,days,exit_reason
 2026-10-16,2026-10-19,AMZN,249.92,262.5,5.03,1,bounce
 2026-10-15,2026-10-22,CSCO,109.83,104.9,-4.49,5,time-stop
 2026-10-15,2026-10-22,INTC,95.33,85.5,-10.31,5,time-stop
+2026-10-22,2026-10-26,MSFT,521.6,532.54,2.1,2,bounce
+2026-10-19,2026-10-26,META,704.99,630.43,-10.58,5,time-stop
