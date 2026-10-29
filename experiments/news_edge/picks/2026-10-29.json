@@ -19,7 +19,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "ai-cloud",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.541,
+      "gap_pct": 1.518
     },
     {
       "symbol": "MA",
@@ -38,7 +40,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "payments",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.082,
+      "gap_pct": 1.502
     },
     {
       "symbol": "META",
@@ -57,7 +61,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "social-ai",
-      "control": false
+      "control": false,
+      "ret_945_close": 0.602,
+      "gap_pct": 1.406
     },
     {
       "symbol": "CART",
@@ -76,7 +82,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "m&a-target",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.175,
+      "gap_pct": 0.086
     },
     {
       "symbol": "ICE",
@@ -94,7 +102,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "exchanges",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.232,
+      "gap_pct": 2.878
     },
     {
       "symbol": "HSY",
@@ -112,7 +122,9 @@
       "reddit_rank": null,
       "earnings_day": true,
       "theme": "consumer-staples",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.071,
+      "gap_pct": -1.654
     },
     {
       "symbol": "HIMS",
@@ -130,7 +142,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "telehealth-glp1",
-      "control": false
+      "control": false,
+      "ret_945_close": 2.642,
+      "gap_pct": -0.443
     },
     {
       "symbol": "FTNT",
@@ -146,7 +160,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -26.49
+      "gap_pct": -26.49,
+      "ret_945_close": 3.512
     },
     {
       "symbol": "TDOC",
@@ -162,7 +177,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 25.49
+      "gap_pct": 25.49,
+      "ret_945_close": 0.513
     },
     {
       "symbol": "IOVA",
@@ -178,7 +194,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -24.31
+      "gap_pct": -24.31,
+      "ret_945_close": -10.13
     },
     {
       "symbol": "NOW",
@@ -194,7 +211,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -23.97
+      "gap_pct": -23.97,
+      "ret_945_close": -4.08
     },
     {
       "symbol": "SFM",
@@ -210,7 +228,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -19.56
+      "gap_pct": -19.56,
+      "ret_945_close": -5.161
     },
     {
       "symbol": "GOOGL",
@@ -226,7 +245,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -13.03
+      "gap_pct": -13.03,
+      "ret_945_close": 0.014
     },
     {
       "symbol": "GOOG",
@@ -242,7 +262,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -12.92
+      "gap_pct": -12.92,
+      "ret_945_close": 0.144
     },
     {
       "symbol": "PURR",
@@ -258,7 +279,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 11.69
+      "gap_pct": 11.69,
+      "ret_945_close": 11.781
     },
     {
       "symbol": "MRVL",
@@ -274,7 +296,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -11.3
+      "gap_pct": -11.3,
+      "ret_945_close": -1.732
     },
     {
       "symbol": "CAT",
@@ -290,7 +313,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -10.25
+      "gap_pct": -10.25,
+      "ret_945_close": -1.434
     },
     {
       "symbol": "PGY",
@@ -306,7 +330,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -10.06
+      "gap_pct": -10.06,
+      "ret_945_close": 5.891
     },
     {
       "symbol": "NCLH",
@@ -322,7 +347,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 8.55
+      "gap_pct": 8.55,
+      "ret_945_close": 1.962
     },
     {
       "symbol": "MBLY",
@@ -338,7 +364,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -8.26
+      "gap_pct": -8.26,
+      "ret_945_close": -2.217
     },
     {
       "symbol": "LLY",
@@ -354,7 +381,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 7.33
+      "gap_pct": 7.33,
+      "ret_945_close": -0.657
     },
     {
       "symbol": "LITE",
@@ -370,7 +398,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.42
+      "gap_pct": 5.42,
+      "ret_945_close": -1.663
     },
     {
       "symbol": "PHAT",
@@ -386,7 +415,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 5.1
+      "gap_pct": 5.1,
+      "ret_945_close": -2.07
     },
     {
       "symbol": "RSI",
@@ -402,7 +432,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -5.09
+      "gap_pct": -5.09,
+      "ret_945_close": -6.366
     },
     {
       "symbol": "DASH",
@@ -418,7 +449,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 4.89
+      "gap_pct": 4.89,
+      "ret_945_close": 0.313
     },
     {
       "symbol": "BOIL",
@@ -434,7 +466,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.76
+      "gap_pct": -4.76,
+      "ret_945_close": -0.308
     },
     {
       "symbol": "RDDT",
@@ -450,7 +483,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -4.11
+      "gap_pct": -4.11,
+      "ret_945_close": -0.146
     },
     {
       "symbol": "AMZN",
@@ -466,7 +500,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": -3.74
+      "gap_pct": -3.74,
+      "ret_945_close": -0.131
     }
-  ]
+  ],
+  "outcomes_at": "2026-10-29T16:05:14-04:00"
 }
