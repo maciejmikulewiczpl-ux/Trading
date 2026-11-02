@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-01",
-  "generated": "2026-11-01T08:17:08-05:00",
+  "date": "2026-11-02",
+  "generated": "2026-11-02T08:16:57-05:00",
   "probs_asof": "2026-06-30",
   "surge_pct": 0.3,
   "fwd_days": 10,
@@ -14,57 +14,6 @@
     2000000000.0
   ],
   "setups": [
-    {
-      "cash_runway_months": null,
-      "dilution_risk": false,
-      "symbol": "INCY",
-      "name": "Incyte Corporation",
-      "price": 120.39,
-      "heat": 0.64,
-      "setup": 0.85,
-      "near_high": 0.908,
-      "extended": false,
-      "pos_in_range": 0.619,
-      "tightness": 0.16,
-      "market_cap": 24539393587.47052,
-      "in_band": false,
-      "dollar_vol": 217491224.0,
-      "liquid": true,
-      "short_pct": 0.0834,
-      "bucket_label": "baseline",
-      "p_up": 0.0564,
-      "p_down": 0.02,
-      "why": "+4% 5d, 8% short",
-      "days_to_catalyst": 66,
-      "nearest_phase": "PHASE1,PHASE2",
-      "exit_by": "2026-12-30",
-      "cat_quality": "phase2",
-      "platform": false,
-      "catalysts": [
-        {
-          "date": "2026-12-26",
-          "phase": "PHASE3",
-          "title": "A Study to Evaluate the Long-Term Safety and E"
-        },
-        {
-          "date": "2027-01-06",
-          "phase": "PHASE1,PHASE2",
-          "title": "A Ph1b/2 Study of Axatilimab Monotherapy in Ch"
-        },
-        {
-          "date": "2027-09-23",
-          "phase": "PHASE2",
-          "title": "Study to Assess the Safety and Tolerability of"
-        }
-      ],
-      "insider_buys": 0,
-      "insider_usd": 0,
-      "insider_recent": null,
-      "conviction": "MED",
-      "stop": 90.29,
-      "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~66d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-30 (~1wk BEFORE data); don't hold the binary."
-    },
     {
       "cash_runway_months": 38.5,
       "dilution_risk": false,
@@ -86,7 +35,7 @@
       "p_up": 0.0911,
       "p_down": 0.0318,
       "why": "vol building 1.3x, +13% 5d, 39% short",
-      "days_to_catalyst": 57,
+      "days_to_catalyst": 56,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-12-21",
       "cat_quality": "phase2",
@@ -114,7 +63,7 @@
       "conviction": "MED",
       "stop": 20.42,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~57d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~56d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 25.7,
@@ -314,6 +263,57 @@
       "structure": "no near-term Phase-2 catalyst - momentum/heat play only (higher uncertainty)."
     },
     {
+      "cash_runway_months": null,
+      "dilution_risk": false,
+      "symbol": "INCY",
+      "name": "Incyte Corporation",
+      "price": 120.39,
+      "heat": 0.64,
+      "setup": 0.85,
+      "near_high": 0.908,
+      "extended": false,
+      "pos_in_range": 0.619,
+      "tightness": 0.16,
+      "market_cap": 24539393587.47052,
+      "in_band": false,
+      "dollar_vol": 217491224.0,
+      "liquid": true,
+      "short_pct": 0.0834,
+      "bucket_label": "baseline",
+      "p_up": 0.0564,
+      "p_down": 0.02,
+      "why": "+4% 5d, 8% short",
+      "days_to_catalyst": 12,
+      "nearest_phase": "PHASE1",
+      "exit_by": null,
+      "cat_quality": null,
+      "platform": false,
+      "catalysts": [
+        {
+          "date": "2026-11-14",
+          "phase": "PHASE1",
+          "title": "A Study to Evaluate the Pharmacokinetics, Safe"
+        },
+        {
+          "date": "2027-01-04",
+          "phase": "PHASE1",
+          "title": "A Study to Assess the Safety and Pharmacokinet"
+        },
+        {
+          "date": "2027-03-31",
+          "phase": "PHASE1",
+          "title": "A Study to Evaluate the Pharmacokinetics and S"
+        }
+      ],
+      "insider_buys": 0,
+      "insider_usd": 0,
+      "insider_recent": null,
+      "conviction": "LOW",
+      "stop": 90.29,
+      "trail_pct": 28,
+      "structure": "catalyst IMMINENT (~12d, PHASE1) - run-up priced in; entering now = holding the binary. AVOID."
+    },
+    {
       "cash_runway_months": 26.6,
       "dilution_risk": false,
       "symbol": "XNCR",
@@ -334,7 +334,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.6x, coiled near range-top, +18% 5d, 23% short",
-      "days_to_catalyst": 119,
+      "days_to_catalyst": 118,
       "nearest_phase": "PHASE1",
       "exit_by": null,
       "cat_quality": "phase1_weak",
@@ -362,7 +362,7 @@
       "conviction": "LOW",
       "stop": 22.37,
       "trail_pct": 28,
-      "structure": "Phase 1 only ~119d - SAFETY/dosage (~3% avg uplift). WEAK run-up - skip unless it's a platform play. NOT the Phase-2 efficacy setup."
+      "structure": "Phase 1 only ~118d - SAFETY/dosage (~3% avg uplift). WEAK run-up - skip unless it's a platform play. NOT the Phase-2 efficacy setup."
     }
   ],
   "heat": [
@@ -473,7 +473,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.6x, coiled near range-top, +18% 5d, 23% short",
-      "days_to_catalyst": 119,
+      "days_to_catalyst": 118,
       "nearest_phase": "PHASE1",
       "exit_by": null,
       "cat_quality": "phase1_weak",
@@ -501,7 +501,7 @@
       "conviction": "LOW",
       "stop": 22.37,
       "trail_pct": 28,
-      "structure": "Phase 1 only ~119d - SAFETY/dosage (~3% avg uplift). WEAK run-up - skip unless it's a platform play. NOT the Phase-2 efficacy setup."
+      "structure": "Phase 1 only ~118d - SAFETY/dosage (~3% avg uplift). WEAK run-up - skip unless it's a platform play. NOT the Phase-2 efficacy setup."
     },
     {
       "cash_runway_months": null,
@@ -559,26 +559,26 @@
       "p_up": 0.0911,
       "p_down": 0.0318,
       "why": "vol building 1.4x, coiled near range-top, +15% 5d, 2% short",
-      "days_to_catalyst": 12,
-      "nearest_phase": "PHASE1,PHASE2",
+      "days_to_catalyst": null,
+      "nearest_phase": null,
       "exit_by": null,
       "cat_quality": null,
       "platform": false,
       "catalysts": [
         {
-          "date": "2026-11-13",
-          "phase": "PHASE1,PHASE2",
-          "title": "A Trial to Find Out How Safe REGN7075 is and H"
+          "date": "2027-05-20",
+          "phase": "PHASE2",
+          "title": "A Study of Cemiplimab Plus Chemotherapy Versus"
         },
         {
-          "date": "2027-04-29",
+          "date": "2027-08-31",
           "phase": "PHASE1",
-          "title": "A Study of ImmunoPet Imaging Using 89Zr-DFO-RE"
+          "title": "Short-Term Linvoseltamab Treatment on Top of C"
         },
         {
-          "date": "2027-05-10",
+          "date": "2027-11-22",
           "phase": "PHASE1,PHASE2",
-          "title": "Study of REGN4018 (Ubamatamab) Administered Al"
+          "title": "A Study to Learn How Safe and Tolerable Vonset"
         }
       ],
       "insider_buys": 0,
@@ -587,7 +587,7 @@
       "conviction": "LOW",
       "stop": 695.92,
       "trail_pct": 28,
-      "structure": "catalyst IMMINENT (~12d, PHASE1,PHASE2) - run-up priced in; entering now = holding the binary. AVOID."
+      "structure": "no near-term Phase-2 catalyst - momentum/heat play only (higher uncertainty)."
     },
     {
       "cash_runway_months": 71.0,
