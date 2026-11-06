@@ -97,3 +97,5 @@ entry_date,exit_date,symbol,entry_px,exit_px,ret_pct,days,exit_reason
 2026-11-03,2026-11-04,AAPL,331.7,349.56,5.38,1,bounce
 2026-10-30,2026-11-04,MSFT,521.97,556.07,6.53,3,bounce
 2026-10-29,2026-11-05,CRM,230.84,222.36,-3.67,5,time-stop
+2026-10-30,2026-11-06,NVDA,204.76,186.7,-8.82,5,time-stop
+2026-10-30,2026-11-06,CSCO,104.53,93.8,-10.26,5,time-stop
