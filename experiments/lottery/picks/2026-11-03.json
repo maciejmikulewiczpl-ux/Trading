@@ -494,7 +494,7 @@
       "combined_score": null,
       "ret_945_close": null,
       "ret_1d": 4.813,
-      "ret_3d": null
+      "ret_3d": 4.813
     },
     {
       "symbol": "FISV",
@@ -1334,5 +1334,5 @@
     }
   ],
   "scored_at": "2026-11-03T16:10:06-05:00",
-  "backfilled_at": "2026-11-06T16:10:17-05:00"
+  "backfilled_at": "2026-11-09T16:10:10-05:00"
 }

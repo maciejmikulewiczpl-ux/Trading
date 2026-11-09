@@ -34,7 +34,7 @@
       "combined_score": 0.2965,
       "ret_945_close": -0.247,
       "ret_1d": -1.418,
-      "ret_3d": null
+      "ret_3d": 0.279
     },
     {
       "symbol": "ADI",
@@ -63,7 +63,7 @@
       "combined_score": 0.1789,
       "ret_945_close": -3.818,
       "ret_1d": -11.169,
-      "ret_3d": null
+      "ret_3d": -2.939
     },
     {
       "symbol": "ALAB",
@@ -92,7 +92,7 @@
       "combined_score": 0.2626,
       "ret_945_close": -5.225,
       "ret_1d": -19.825,
-      "ret_3d": null
+      "ret_3d": -2.902
     },
     {
       "symbol": "AMD",
@@ -127,7 +127,7 @@
       "combined_score": 0.6631,
       "ret_945_close": -4.26,
       "ret_1d": -17.452,
-      "ret_3d": null
+      "ret_3d": 4.085
     },
     {
       "symbol": "ANET",
@@ -158,7 +158,7 @@
       "combined_score": 0.5206,
       "ret_945_close": -4.842,
       "ret_1d": -10.806,
-      "ret_3d": null
+      "ret_3d": 4.336
     },
     {
       "symbol": "API",
@@ -189,7 +189,7 @@
       "combined_score": 0.28,
       "ret_945_close": 1.399,
       "ret_1d": -2.301,
-      "ret_3d": null
+      "ret_3d": -1.266
     },
     {
       "symbol": "BCRX",
@@ -220,7 +220,7 @@
       "combined_score": 0.3937,
       "ret_945_close": -1.078,
       "ret_1d": -8.102,
-      "ret_3d": null
+      "ret_3d": -7.618
     },
     {
       "symbol": "BKNG",
@@ -251,7 +251,7 @@
       "combined_score": 0.4473,
       "ret_945_close": 1.025,
       "ret_1d": -1.292,
-      "ret_3d": null
+      "ret_3d": -4.398
     },
     {
       "symbol": "CAR",
@@ -282,7 +282,7 @@
       "combined_score": 0.1724,
       "ret_945_close": -1.089,
       "ret_1d": 0.518,
-      "ret_3d": null
+      "ret_3d": 6.581
     },
     {
       "symbol": "CRH",
@@ -311,7 +311,7 @@
       "combined_score": 0.1463,
       "ret_945_close": 1.329,
       "ret_1d": -3.411,
-      "ret_3d": null
+      "ret_3d": -1.103
     },
     {
       "symbol": "CVNA",
@@ -340,7 +340,7 @@
       "combined_score": 0.4276,
       "ret_945_close": 3.378,
       "ret_1d": -7.001,
-      "ret_3d": null
+      "ret_3d": -1.637
     },
     {
       "symbol": "DDOG",
@@ -372,7 +372,7 @@
       "combined_score": 0.6093,
       "ret_945_close": -3.049,
       "ret_1d": -7.481,
-      "ret_3d": null
+      "ret_3d": -4.824
     },
     {
       "symbol": "DJT",
@@ -405,7 +405,7 @@
       "combined_score": 0.397,
       "ret_945_close": -15.132,
       "ret_1d": -10.345,
-      "ret_3d": null
+      "ret_3d": -9.677
     },
     {
       "symbol": "DTE",
@@ -436,7 +436,7 @@
       "combined_score": 0.4,
       "ret_945_close": 1.838,
       "ret_1d": -1.956,
-      "ret_3d": null
+      "ret_3d": 0.629
     },
     {
       "symbol": "DUOL",
@@ -467,7 +467,7 @@
       "combined_score": 0.5158,
       "ret_945_close": 0.864,
       "ret_1d": -2.658,
-      "ret_3d": null
+      "ret_3d": -4.222
     },
     {
       "symbol": "FCNCA",
@@ -496,7 +496,7 @@
       "combined_score": 0.5804,
       "ret_945_close": -1.143,
       "ret_1d": -1.266,
-      "ret_3d": null
+      "ret_3d": -1.88
     },
     {
       "symbol": "FSLR",
@@ -529,7 +529,7 @@
       "combined_score": 0.7528,
       "ret_945_close": -8.495,
       "ret_1d": 0.71,
-      "ret_3d": null
+      "ret_3d": -1.481
     },
     {
       "symbol": "GLW",
@@ -558,7 +558,7 @@
       "combined_score": 0.3219,
       "ret_945_close": -4.147,
       "ret_1d": -12.993,
-      "ret_3d": null
+      "ret_3d": -2.427
     },
     {
       "symbol": "HD",
@@ -587,7 +587,7 @@
       "combined_score": 0.0488,
       "ret_945_close": 1.88,
       "ret_1d": -1.509,
-      "ret_3d": null
+      "ret_3d": -0.55
     },
     {
       "symbol": "HTZ",
@@ -618,7 +618,7 @@
       "combined_score": null,
       "ret_945_close": 1.124,
       "ret_1d": -20.354,
-      "ret_3d": null
+      "ret_3d": -28.097
     },
     {
       "symbol": "HUT",
@@ -649,7 +649,7 @@
       "combined_score": 0.5807,
       "ret_945_close": -12.93,
       "ret_1d": -6.29,
-      "ret_3d": null
+      "ret_3d": 16.439
     },
     {
       "symbol": "INO",
@@ -680,7 +680,7 @@
       "combined_score": null,
       "ret_945_close": -9.577,
       "ret_1d": -10.217,
-      "ret_3d": null
+      "ret_3d": -6.192
     },
     {
       "symbol": "KHC",
@@ -712,7 +712,7 @@
       "combined_score": 0.4847,
       "ret_945_close": -0.137,
       "ret_1d": -0.511,
-      "ret_3d": null
+      "ret_3d": -4.046
     },
     {
       "symbol": "KVUE",
@@ -803,7 +803,7 @@
       "combined_score": 0.1949,
       "ret_945_close": 2.642,
       "ret_1d": -0.771,
-      "ret_3d": null
+      "ret_3d": 0.487
     },
     {
       "symbol": "MSOS",
@@ -834,7 +834,7 @@
       "combined_score": 0.492,
       "ret_945_close": -3.02,
       "ret_1d": -4.74,
-      "ret_3d": null
+      "ret_3d": -5.896
     },
     {
       "symbol": "MU",
@@ -863,7 +863,7 @@
       "combined_score": 0.3886,
       "ret_945_close": -6.046,
       "ret_1d": -17.133,
-      "ret_3d": null
+      "ret_3d": -7.747
     },
     {
       "symbol": "NVO",
@@ -892,7 +892,7 @@
       "combined_score": 0.2472,
       "ret_945_close": -1.871,
       "ret_1d": -4.553,
-      "ret_3d": null
+      "ret_3d": -1.85
     },
     {
       "symbol": "NXPI",
@@ -921,7 +921,7 @@
       "combined_score": 0.6115,
       "ret_945_close": -3.139,
       "ret_1d": -7.767,
-      "ret_3d": null
+      "ret_3d": -3.237
     },
     {
       "symbol": "QCOM",
@@ -952,7 +952,7 @@
       "combined_score": 0.4904,
       "ret_945_close": -0.094,
       "ret_1d": -9.696,
-      "ret_3d": null
+      "ret_3d": -1.249
     },
     {
       "symbol": "QQQ",
@@ -983,7 +983,7 @@
       "combined_score": 0.3249,
       "ret_945_close": -0.936,
       "ret_1d": -6.308,
-      "ret_3d": null
+      "ret_3d": -1.866
     },
     {
       "symbol": "RIOT",
@@ -1018,7 +1018,7 @@
       "combined_score": 0.7903,
       "ret_945_close": -4.927,
       "ret_1d": -4.094,
-      "ret_3d": null
+      "ret_3d": 14.685
     },
     {
       "symbol": "SBUX",
@@ -1047,7 +1047,7 @@
       "combined_score": 0.5438,
       "ret_945_close": 2.592,
       "ret_1d": -3.246,
-      "ret_3d": null
+      "ret_3d": -0.264
     },
     {
       "symbol": "SEDG",
@@ -1079,7 +1079,7 @@
       "combined_score": 0.4194,
       "ret_945_close": -6.32,
       "ret_1d": -12.879,
-      "ret_3d": null
+      "ret_3d": -7.987
     },
     {
       "symbol": "SMCI",
@@ -1114,7 +1114,7 @@
       "combined_score": 0.7493,
       "ret_945_close": -8.757,
       "ret_1d": -8.466,
-      "ret_3d": null
+      "ret_3d": -3.312
     },
     {
       "symbol": "SMH",
@@ -1145,7 +1145,7 @@
       "combined_score": 0.277,
       "ret_945_close": -3.459,
       "ret_1d": -11.525,
-      "ret_3d": null
+      "ret_3d": -3.405
     },
     {
       "symbol": "SOXL",
@@ -1176,7 +1176,7 @@
       "combined_score": 0.3253,
       "ret_945_close": -11.855,
       "ret_1d": -38.644,
-      "ret_3d": null
+      "ret_3d": -15.632
     },
     {
       "symbol": "SPCX",
@@ -1207,7 +1207,7 @@
       "combined_score": 0.6704,
       "ret_945_close": -1.358,
       "ret_1d": -9.053,
-      "ret_3d": null
+      "ret_3d": 4.6
     },
     {
       "symbol": "SPY",
@@ -1238,7 +1238,7 @@
       "combined_score": 0.5187,
       "ret_945_close": -0.205,
       "ret_1d": -4.343,
-      "ret_3d": null
+      "ret_3d": -1.827
     },
     {
       "symbol": "TSLA",
@@ -1269,7 +1269,7 @@
       "combined_score": 0.4259,
       "ret_945_close": 0.622,
       "ret_1d": -10.813,
-      "ret_3d": null
+      "ret_3d": -1.893
     },
     {
       "symbol": "VST",
@@ -1298,7 +1298,7 @@
       "combined_score": 0.3107,
       "ret_945_close": -4.834,
       "ret_1d": -6.174,
-      "ret_3d": null
+      "ret_3d": 11.251
     },
     {
       "symbol": "WULF",
@@ -1333,7 +1333,7 @@
       "combined_score": 0.7877,
       "ret_945_close": -8.506,
       "ret_1d": -14.243,
-      "ret_3d": null
+      "ret_3d": 5.817
     },
     {
       "symbol": "XYZ",
@@ -1362,9 +1362,9 @@
       "combined_score": 0.3967,
       "ret_945_close": 0.799,
       "ret_1d": -4.03,
-      "ret_3d": null
+      "ret_3d": 1.084
     }
   ],
   "scored_at": "2026-11-04T16:10:09-05:00",
-  "backfilled_at": "2026-11-06T16:10:19-05:00"
+  "backfilled_at": "2026-11-09T16:10:11-05:00"
 }
