@@ -772,7 +772,7 @@
       "combined_score": 0.3467,
       "ret_945_close": null,
       "ret_1d": 0.0,
-      "ret_3d": null
+      "ret_3d": 0.0
     },
     {
       "symbol": "MCD",
@@ -1366,5 +1366,5 @@
     }
   ],
   "scored_at": "2026-11-04T16:10:09-05:00",
-  "backfilled_at": "2026-11-09T16:10:11-05:00"
+  "backfilled_at": "2026-11-10T16:10:16-05:00"
 }

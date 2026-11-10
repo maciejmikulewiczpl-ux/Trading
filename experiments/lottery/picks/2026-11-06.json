@@ -987,7 +987,7 @@
       },
       "combined_score": 0.4583,
       "ret_945_close": null,
-      "ret_1d": null,
+      "ret_1d": 0.0,
       "ret_3d": null
     },
     {
@@ -1854,5 +1854,5 @@
     }
   ],
   "scored_at": "2026-11-06T16:10:09-05:00",
-  "backfilled_at": "2026-11-09T16:10:13-05:00"
+  "backfilled_at": "2026-11-10T16:10:19-05:00"
 }
