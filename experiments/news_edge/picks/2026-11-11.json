@@ -1,0 +1,220 @@
+{
+  "date": "2026-11-11",
+  "logged_at": "2026-11-11T09:38:36-05:00",
+  "picks": [
+    {
+      "symbol": "CRWV",
+      "signal": 1,
+      "confidence": 0.5,
+      "reason": "Q3 rev $3.66B +168%, raised FY26 guide to $13.0-13.3B, ~+17% pm; plans GPU-backed debt. Clear bullish earnings catalyst but big gapper tends to fade -> moderate conf.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 1.49,
+      "reddit_rank": 2,
+      "earnings_day": true,
+      "theme": "ai-cloud",
+      "control": false,
+      "gap_pct": 14.18
+    },
+    {
+      "symbol": "CIEN",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "Optical/AI-infra rally on CoreWeave guide-up; +6.6-9.7% pm sympathy. Fresh sector catalyst, no CIEN-specific news -> moderate conf.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-optical",
+      "control": false,
+      "gap_pct": 9.71
+    },
+    {
+      "symbol": "AVGO",
+      "signal": 1,
+      "confidence": 0.45,
+      "reason": "AI-chip rebound on CoreWeave demand signal; pm RVOL 3.25 strong, ST 93% bull. Sector catalyst not AVGO-specific.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 3.25,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-chips",
+      "control": false,
+      "gap_pct": 6.68
+    },
+    {
+      "symbol": "CAPR",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "Deramiocel FDA decision due Nov 22; Q3 (11-10) weak financials but event run-up, +6.9% pm. Binary biotech -> low conf.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.0,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "fda-biotech",
+      "control": false,
+      "gap_pct": 6.88
+    },
+    {
+      "symbol": "NBIS",
+      "signal": 0,
+      "confidence": 0.3,
+      "reason": "AI-cloud sympathy to CRWV, WSB surge, no own dated catalyst.",
+      "sources": [
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.55,
+      "reddit_rank": 7,
+      "earnings_day": false,
+      "theme": "ai-cloud",
+      "control": false
+    },
+    {
+      "symbol": "IREN",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "WSB mention surge; AI-datacenter/crypto-miner story, no fresh dated catalyst today -> crowding only.",
+      "sources": [
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.49,
+      "reddit_rank": 24,
+      "earnings_day": false,
+      "theme": "crypto-ai-dc",
+      "control": false
+    },
+    {
+      "symbol": "RGTI",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Quantum-crowd momentum, no dated catalyst; pm RVOL 0.06 (thin).",
+      "sources": [
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": 0.06,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "quantum",
+      "control": false
+    },
+    {
+      "symbol": "RUM",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "ST trending 94% bull but no confirmed fresh catalyst -> crowding, not direction.",
+      "sources": [
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "momentum",
+      "control": false
+    },
+    {
+      "symbol": "CMPS",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Psychedelics crowd (ST n=23), no dated catalyst today.",
+      "sources": [
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "psychedelics-biotech",
+      "control": false
+    },
+    {
+      "symbol": "KURA",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "Mixed securities shelf filed (dilution overhang); ST bull but weak setup.",
+      "sources": [
+        "stocktwits",
+        "websearch"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "biotech",
+      "control": false
+    },
+    {
+      "symbol": "NVDA",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 3.43
+    },
+    {
+      "symbol": "NN",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true,
+      "gap_pct": 6.97
+    }
+  ]
+}
