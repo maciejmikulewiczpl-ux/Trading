@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-11",
+  "logged_at": "2026-11-11T12:32:31-05:00",
+  "recs": [
+    {
+      "symbol": "AVGO",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.8,
+      "reason": "No new adverse catalyst. Up ~5% premarket on strengthening AI-compute demand: JPMorgan flags Google TPU 8i Max as consistent with Broadcom custom-silicon roadmap (reiterated Overweight), and AVGO named a cornerstone investor in a $26B Anthropic private placement. Multiple analyst upgrades/initiations at Buy. FQ4/FY26 earnings Dec 9. Catalyst intact and reinforced; hold.",
+      "sources": [
+        "https://www.benzinga.com/markets/tech/26/11/63145055/what-is-going-on-with-broadcom-stock-on-wednesday",
+        "https://blockonomi.com/broadcom-avgo-stock-has-wall-street-watching-after-anthropic-and-google-news"
+      ],
+      "px_at_reeval": 355.64,
+      "upl_pct_at_reeval": 1.84
+    },
+    {
+      "symbol": "CIEN",
+      "action": "hold",
+      "catalyst_changed": false,
+      "confidence": 0.75,
+      "reason": "No company-specific news; up ~9% in a broad, synchronized optical-networking rally (Lumentum +11%, AAOI +12%, Coherent +7%) tied to the AI buildout. Fundamentals supportive (last Q rev $1.67B +37% YoY, backlog >$8.5B). No adverse development; sector tailwind intact. Hold.",
+      "sources": [
+        "https://www.investing.com/news/stock-market-news/why-is-ciena-stock-surging-today-93CH-5019548",
+        "https://news.alphastreet.com/ciena-jumps-9-0-amid-sector-wide-rally/"
+      ],
+      "px_at_reeval": 305.04,
+      "upl_pct_at_reeval": 5.7
+    },
+    {
+      "symbol": "CRWV",
+      "action": "hold",
+      "catalyst_changed": true,
+      "confidence": 0.8,
+      "reason": "New dated catalyst, strongly positive: Q3 beat-and-raise reported today (rev $3.66B +168% YoY, backlog $132.5B, FY outlook raised to ~$13.3B); CEO committed to stop funding via high-yield unsecured debt, easing financing fears. Stock +17-23%. Chanos bear note on low ROIC exists but market dismissed it. No adverse development; catalyst reinforced. Hold (shadow does not trim winners on bear commentary alone).",
+      "sources": [
+        "https://247wallst.com/investing/2026/11/11/coreweave-jumps-16-as-beat-and-raise-quarter-eases-financing-fears-nebius-surges-13-oracle-rises-5/",
+        "https://www.benzinga.com/markets/earnings/26/11/63134315/crwv-stock-surges-15-pre-market-as-coreweave-touts-133-billion-backlog-but-short-seller-jim-chanos-warns-of-weak-returns-on-capital-2-3-pre-tax-roic"
+      ],
+      "px_at_reeval": 61.15,
+      "upl_pct_at_reeval": 9.65
+    }
+  ]
+}
