@@ -20,7 +20,8 @@
       "earnings_day": true,
       "theme": "ai-cloud",
       "control": false,
-      "gap_pct": 14.18
+      "gap_pct": 14.18,
+      "ret_945_close": 8.042
     },
     {
       "symbol": "CIEN",
@@ -39,7 +40,8 @@
       "earnings_day": false,
       "theme": "ai-optical",
       "control": false,
-      "gap_pct": 9.71
+      "gap_pct": 9.71,
+      "ret_945_close": 2.732
     },
     {
       "symbol": "AVGO",
@@ -58,7 +60,8 @@
       "earnings_day": false,
       "theme": "ai-chips",
       "control": false,
-      "gap_pct": 6.68
+      "gap_pct": 6.68,
+      "ret_945_close": -1.36
     },
     {
       "symbol": "CAPR",
@@ -77,7 +80,8 @@
       "earnings_day": true,
       "theme": "fda-biotech",
       "control": false,
-      "gap_pct": 6.88
+      "gap_pct": 6.88,
+      "ret_945_close": 13.9
     },
     {
       "symbol": "NBIS",
@@ -95,7 +99,9 @@
       "reddit_rank": 7,
       "earnings_day": false,
       "theme": "ai-cloud",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.96,
+      "gap_pct": 11.705
     },
     {
       "symbol": "IREN",
@@ -113,7 +119,9 @@
       "reddit_rank": 24,
       "earnings_day": false,
       "theme": "crypto-ai-dc",
-      "control": false
+      "control": false,
+      "ret_945_close": -0.024,
+      "gap_pct": 6.085
     },
     {
       "symbol": "RGTI",
@@ -130,7 +138,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "quantum",
-      "control": false
+      "control": false,
+      "ret_945_close": -5.65,
+      "gap_pct": 5.029
     },
     {
       "symbol": "RUM",
@@ -147,7 +157,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "momentum",
-      "control": false
+      "control": false,
+      "ret_945_close": 10.831,
+      "gap_pct": 2.434
     },
     {
       "symbol": "CMPS",
@@ -164,7 +176,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "psychedelics-biotech",
-      "control": false
+      "control": false,
+      "ret_945_close": 1.251,
+      "gap_pct": 2.432
     },
     {
       "symbol": "KURA",
@@ -182,7 +196,9 @@
       "reddit_rank": null,
       "earnings_day": false,
       "theme": "biotech",
-      "control": false
+      "control": false,
+      "ret_945_close": -1.719,
+      "gap_pct": 3.501
     },
     {
       "symbol": "NVDA",
@@ -198,7 +214,8 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 3.43
+      "gap_pct": 3.43,
+      "ret_945_close": 0.905
     },
     {
       "symbol": "NN",
@@ -214,7 +231,9 @@
       "earnings_day": false,
       "theme": null,
       "control": true,
-      "gap_pct": 6.97
+      "gap_pct": 6.97,
+      "ret_945_close": -2.27
     }
-  ]
+  ],
+  "outcomes_at": "2026-11-11T16:05:14-05:00"
 }
