@@ -1,0 +1,237 @@
+{
+  "date": "2026-11-12",
+  "logged_at": "2026-11-12T09:40:07-05:00",
+  "picks": [
+    {
+      "symbol": "NVDA",
+      "signal": -1,
+      "confidence": 0.5,
+      "reason": "CEO Jensen Huang resigned effective immediately (affair/alleged-Chinese-spy scandal), CFO Colette Kress interim; -10 to -12% pm, securities fraud class action filed. Leadership/credibility shock = day-long overhang, but big-cap oversold bounce risk from -10% open -> moderate conf.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "cnbc"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-chips",
+      "control": false
+    },
+    {
+      "symbol": "NBIS",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "AI-cloud sympathy to the NVDA leadership shock; ~-17% pm, WSB rank 3 (471 mentions) = crowded long unwinding. No own positive catalyst today.",
+      "sources": [
+        "websearch",
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 3,
+      "earnings_day": false,
+      "theme": "ai-cloud",
+      "control": false
+    },
+    {
+      "symbol": "CRWV",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "AI-cloud; reversing yesterday's +14% earnings pop, ~-11% pm in the NVDA-led AI selloff. Give-back + sector risk-off.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-cloud",
+      "control": false
+    },
+    {
+      "symbol": "SMCI",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "AI-server; named among top S&P500 premarket losers (NVDA/Sandisk/SMCI) on the semiconductor-complex selloff. No own positive catalyst.",
+      "sources": [
+        "websearch",
+        "stocktwits"
+      ],
+      "source_signals": {
+        "stocktwits": -1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "ai-server",
+      "control": false
+    },
+    {
+      "symbol": "CTVA",
+      "signal": -1,
+      "confidence": 0.4,
+      "reason": "Q3 miss (GAAP -0.08 vs +0.09 yr-ago), sales -9% to 1.59B, FY26 guide CUT to 0.76-0.80 vs 1.07 est on Brazil weakness; -12.7% pm to 52-wk low. Large-cap guide-cut tends to drift, though deep gap = bounce risk.",
+      "sources": [
+        "websearch",
+        "benzinga"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "ag-chemicals",
+      "control": false
+    },
+    {
+      "symbol": "PSFE",
+      "signal": -1,
+      "confidence": 0.35,
+      "reason": "Q3 adj EPS 0.44 vs 0.55 est, rev 439.6M miss, FY26 guide CUT to 1.45-1.54 from 1.90-2.03; ~-29% pm. Clear bearish but a -29% gapper from 9:45 carries bounce risk -> low-mod conf.",
+      "sources": [
+        "websearch",
+        "investing"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "payments-fintech",
+      "control": false
+    },
+    {
+      "symbol": "CDNL",
+      "signal": -1,
+      "confidence": 0.3,
+      "reason": "Q3 big miss: GAAP EPS -0.21 (miss by 0.71), rev 202M +65% yoy but 33M below est; -34% pm on execution worries. Micro-cap, thin/binary -> low conf.",
+      "sources": [
+        "websearch",
+        "gurufocus"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "infrastructure",
+      "control": false
+    },
+    {
+      "symbol": "CURI",
+      "signal": 1,
+      "confidence": 0.35,
+      "reason": "Q3 beat: revenue +13%, Adj EBITDA +67%; +15% pm to ~2.72. Only clean positive earnings catalyst in a risk-off tape, but micro-cap big gapper = fade risk -> low-mod conf.",
+      "sources": [
+        "websearch",
+        "stockanalysis"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": true,
+      "theme": "media-streaming",
+      "control": false
+    },
+    {
+      "symbol": "LUNR",
+      "signal": 0,
+      "confidence": 0.25,
+      "reason": "Space-sector momentum, +10-17% pm, WSB rank 40 + ST trending = crowding, no fresh dated company catalyst today -> neutral direction.",
+      "sources": [
+        "stocktwits",
+        "reddit"
+      ],
+      "source_signals": {
+        "stocktwits": 1
+      },
+      "premarket_rvol": null,
+      "reddit_rank": 40,
+      "earnings_day": false,
+      "theme": "space",
+      "control": false
+    },
+    {
+      "symbol": "IREN",
+      "signal": 0,
+      "confidence": 0.2,
+      "reason": "AI-datacenter/crypto-miner crowd caught in the AI risk-off; no own dated catalyst -> crowding, not direction.",
+      "sources": [
+        "stocktwits"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": "crypto-ai-dc",
+      "control": false
+    },
+    {
+      "symbol": "HUBS",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper (control)",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true
+    },
+    {
+      "symbol": "XPEV",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper (control)",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true
+    },
+    {
+      "symbol": "ABSI",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper (control)",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true
+    },
+    {
+      "symbol": "EROC",
+      "signal": 0,
+      "confidence": 0.5,
+      "reason": "mechanical >3% gapper (control)",
+      "sources": [
+        "control"
+      ],
+      "source_signals": {},
+      "premarket_rvol": null,
+      "reddit_rank": null,
+      "earnings_day": false,
+      "theme": null,
+      "control": true
+    }
+  ]
+}
