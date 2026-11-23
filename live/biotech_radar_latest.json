@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-21",
-  "generated": "2026-11-21T08:16:51-05:00",
+  "date": "2026-11-23",
+  "generated": "2026-11-23T08:16:39-05:00",
   "probs_asof": "2026-06-30",
   "surge_pct": 0.3,
   "fwd_days": 10,
@@ -35,7 +35,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.9x, +7% 5d, 10% short",
-      "days_to_catalyst": 130,
+      "days_to_catalyst": 128,
       "nearest_phase": "PHASE2",
       "exit_by": "2027-03-24",
       "cat_quality": "phase2",
@@ -58,7 +58,7 @@
       "conviction": "HIGH",
       "stop": 59.6,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~130d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-03-24 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~128d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-03-24 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 26.7,
@@ -81,7 +81,7 @@
       "p_up": 0.1307,
       "p_down": 0.0368,
       "why": "vol building 2.9x, +3% 5d, 24% short",
-      "days_to_catalyst": 37,
+      "days_to_catalyst": 35,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-12-21",
       "cat_quality": "phase2",
@@ -109,7 +109,7 @@
       "conviction": "MED",
       "stop": 2.22,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~37d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~35d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": null,
@@ -132,11 +132,11 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "vol building 1.4x, coiled near range-top, +6% 5d, 7% short",
-      "days_to_catalyst": 144,
+      "days_to_catalyst": 142,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2027-04-07",
       "cat_quality": "phase2",
-      "platform": false,
+      "platform": true,
       "catalysts": [
         {
           "date": "2027-04-14",
@@ -145,13 +145,13 @@
         },
         {
           "date": "2027-12",
-          "phase": "PHASE2",
-          "title": "A Study to Evaluate Long-Term Safety, Tolerabi"
+          "phase": "PHASE1,PHASE2",
+          "title": "AAV Gene Therapy Study for Subjects with PKU"
         },
         {
-          "date": "2028-06-30",
+          "date": "2027-12",
           "phase": "PHASE2",
-          "title": "A Study of Vosoritide Versus Placebo in Childr"
+          "title": "A Clinical Trial to Evaluate Safety of Vosorit"
         }
       ],
       "insider_buys": 0,
@@ -160,58 +160,7 @@
       "conviction": "MED",
       "stop": 45.31,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~144d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-04-07 (~1wk BEFORE data); don't hold the binary."
-    },
-    {
-      "cash_runway_months": null,
-      "dilution_risk": false,
-      "symbol": "ABBV",
-      "name": "AbbVie Inc.",
-      "price": 286.2,
-      "heat": 0.66,
-      "setup": 0.88,
-      "near_high": 0.945,
-      "extended": false,
-      "pos_in_range": 0.759,
-      "tightness": 0.13,
-      "market_cap": 505891808354.5475,
-      "in_band": false,
-      "dollar_vol": 1547392843.0,
-      "liquid": true,
-      "short_pct": 0.0099,
-      "bucket_label": "baseline",
-      "p_up": 0.0564,
-      "p_down": 0.02,
-      "why": "1% short",
-      "days_to_catalyst": 99,
-      "nearest_phase": "PHASE2",
-      "exit_by": "2027-02-21",
-      "cat_quality": "phase2",
-      "platform": false,
-      "catalysts": [
-        {
-          "date": "2027-02",
-          "phase": "PHASE2",
-          "title": "A Study to Investigate the Safety and Efficacy"
-        },
-        {
-          "date": "2027-09",
-          "phase": "PHASE2",
-          "title": "A Study to Assess Adverse Events and Change in"
-        },
-        {
-          "date": "2028-02",
-          "phase": "PHASE2",
-          "title": "A Study to Assess Adverse Events and How Intra"
-        }
-      ],
-      "insider_buys": 0,
-      "insider_usd": 0,
-      "insider_recent": null,
-      "conviction": "MED",
-      "stop": 214.65,
-      "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~99d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-02-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~142d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-04-07 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 16.5,
@@ -234,7 +183,7 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "coiled near range-top, +2% 5d, 13% short",
-      "days_to_catalyst": 68,
+      "days_to_catalyst": 66,
       "nearest_phase": "PHASE2",
       "exit_by": "2027-01-21",
       "cat_quality": "phase2",
@@ -262,7 +211,7 @@
       "conviction": "MED",
       "stop": 72.1,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~68d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-01-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~66d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-01-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 59.2,
@@ -285,7 +234,7 @@
       "p_up": 0.1546,
       "p_down": 0.0461,
       "why": "vol building 2.6x, +74% 5d, 28% short",
-      "days_to_catalyst": 39,
+      "days_to_catalyst": 37,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-12-23",
       "cat_quality": "phase2",
@@ -303,7 +252,7 @@
       "conviction": "MED",
       "stop": 10.25,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~39d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-23 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~37d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-23 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 48.5,
@@ -326,7 +275,7 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "14% short",
-      "days_to_catalyst": 127,
+      "days_to_catalyst": 125,
       "nearest_phase": "PHASE3",
       "exit_by": null,
       "cat_quality": "phase3",
@@ -349,7 +298,7 @@
       "conviction": "MED",
       "stop": 14.39,
       "trail_pct": 28,
-      "structure": "Phase 3 ~127d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
+      "structure": "Phase 3 ~125d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
     },
     {
       "cash_runway_months": 107.2,
@@ -391,6 +340,41 @@
       "stop": 17.41,
       "trail_pct": 28,
       "structure": "no near-term Phase-2 catalyst - momentum/heat play only (higher uncertainty)."
+    },
+    {
+      "cash_runway_months": 21.0,
+      "dilution_risk": false,
+      "symbol": "ANAB",
+      "name": "AnaptysBio, Inc.",
+      "price": 46.63,
+      "heat": 0.66,
+      "setup": 0.83,
+      "near_high": 0.658,
+      "extended": false,
+      "pos_in_range": 0.223,
+      "tightness": 0.113,
+      "market_cap": 1386302797.3649025,
+      "in_band": true,
+      "dollar_vol": 18290994.0,
+      "liquid": true,
+      "short_pct": 0.3703,
+      "bucket_label": "baseline",
+      "p_up": 0.0564,
+      "p_down": 0.02,
+      "why": "vol building 1.3x, +1% 5d, 37% short",
+      "days_to_catalyst": null,
+      "nearest_phase": null,
+      "exit_by": null,
+      "cat_quality": null,
+      "platform": false,
+      "catalysts": [],
+      "insider_buys": 3,
+      "insider_usd": 17224593.0,
+      "insider_recent": "2026-11-18",
+      "conviction": "MED",
+      "stop": 34.97,
+      "trail_pct": 28,
+      "structure": "no near-term Phase-2 catalyst - momentum/heat play only (higher uncertainty)."
     }
   ],
   "heat": [
@@ -415,7 +399,7 @@
       "p_up": 0.1034,
       "p_down": 0.0332,
       "why": "vol building 1.9x, +7% 5d, 10% short",
-      "days_to_catalyst": 130,
+      "days_to_catalyst": 128,
       "nearest_phase": "PHASE2",
       "exit_by": "2027-03-24",
       "cat_quality": "phase2",
@@ -438,7 +422,7 @@
       "conviction": "HIGH",
       "stop": 59.6,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~130d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-03-24 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~128d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-03-24 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 23.1,
@@ -496,7 +480,7 @@
       "p_up": 0.1546,
       "p_down": 0.0461,
       "why": "vol building 2.6x, +74% 5d, 28% short",
-      "days_to_catalyst": 39,
+      "days_to_catalyst": 37,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-12-23",
       "cat_quality": "phase2",
@@ -514,7 +498,7 @@
       "conviction": "MED",
       "stop": 10.25,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~39d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-23 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~37d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-23 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 16.0,
@@ -572,7 +556,7 @@
       "p_up": 0.1307,
       "p_down": 0.0368,
       "why": "vol building 2.9x, +3% 5d, 24% short",
-      "days_to_catalyst": 37,
+      "days_to_catalyst": 35,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2026-12-21",
       "cat_quality": "phase2",
@@ -600,7 +584,7 @@
       "conviction": "MED",
       "stop": 2.22,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~37d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-21 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~35d = the sweet spot) - buy the run-up, TARGET EXIT ~2026-12-21 (~1wk BEFORE data); don't hold the binary."
     },
     {
       "cash_runway_months": 27.8,
@@ -623,7 +607,7 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "vol building 1.3x, 15% short",
-      "days_to_catalyst": 37,
+      "days_to_catalyst": 35,
       "nearest_phase": "PHASE3",
       "exit_by": null,
       "cat_quality": "phase3",
@@ -651,7 +635,7 @@
       "conviction": "MED",
       "stop": 225.32,
       "trail_pct": 28,
-      "structure": "Phase 3 ~37d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
+      "structure": "Phase 3 ~35d - largely PRICED IN + binary gap-down risk if it misses. Not a clean run-up."
     },
     {
       "cash_runway_months": 12.1,
@@ -715,11 +699,11 @@
       "p_up": 0.0564,
       "p_down": 0.02,
       "why": "vol building 1.4x, coiled near range-top, +6% 5d, 7% short",
-      "days_to_catalyst": 144,
+      "days_to_catalyst": 142,
       "nearest_phase": "PHASE1,PHASE2",
       "exit_by": "2027-04-07",
       "cat_quality": "phase2",
-      "platform": false,
+      "platform": true,
       "catalysts": [
         {
           "date": "2027-04-14",
@@ -728,13 +712,13 @@
         },
         {
           "date": "2027-12",
-          "phase": "PHASE2",
-          "title": "A Study to Evaluate Long-Term Safety, Tolerabi"
+          "phase": "PHASE1,PHASE2",
+          "title": "AAV Gene Therapy Study for Subjects with PKU"
         },
         {
-          "date": "2028-06-30",
+          "date": "2027-12",
           "phase": "PHASE2",
-          "title": "A Study of Vosoritide Versus Placebo in Childr"
+          "title": "A Clinical Trial to Evaluate Safety of Vosorit"
         }
       ],
       "insider_buys": 0,
@@ -743,7 +727,7 @@
       "conviction": "MED",
       "stop": 45.31,
       "trail_pct": 28,
-      "structure": "RUN-UP PLAY (Phase 2 efficacy ~144d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-04-07 (~1wk BEFORE data); don't hold the binary."
+      "structure": "RUN-UP PLAY (Phase 2 efficacy ~142d = the sweet spot) - buy the run-up, TARGET EXIT ~2027-04-07 (~1wk BEFORE data); don't hold the binary."
     }
   ]
 }
