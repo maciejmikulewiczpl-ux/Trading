@@ -120,3 +120,4 @@ entry_date,exit_date,symbol,entry_px,exit_px,ret_pct,days,exit_reason
 2026-11-17,2026-11-24,MRK,143.38,141.64,-1.21,5,bounce
 2026-11-18,2026-11-24,LLY,1382.72,1409.83,1.96,4,bounce
 2026-11-17,2026-11-24,PFE,28.46,28.48,0.07,5,bounce
+2026-11-18,2026-11-25,XOM,160.57,158.17,-1.49,5,time-stop
